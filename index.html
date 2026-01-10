@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TEAM BCT | CYBER OPERATIONS HUB</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #ff0033;
+            --primary-dark: #8f001d;
+            --primary-dim: rgba(255, 0, 51, 0.08);
+            --primary-glow: rgba(255, 0, 51, 0.4);
+            --accent: #ffffff;
+            --text-main: #e6e6e6;
+            --text-sec: #888888;
+            --bg-void: #050505;
+            --bg-panel: #0a0a0a;
+            --bg-card: #0f0f0f;
+            --border-base: rgba(255, 255, 255, 0.05);
+            --border-highlight: rgba(255, 0, 51, 0.3);
+            --glass: blur(10px);
+            --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+            --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 6px; background: var(--bg-void); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 0px; border: 1px solid #000; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        body {
+            background-color: var(--bg-void);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Decorative Backgrounds */
+        .cyber-grid-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; pointer-events: none;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px; opacity: 0.5;
+        }
+
+        .vignette-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
+            background: radial-gradient(circle at center, transparent 0%, var(--bg-void) 90%);
+        }
+
+        /* Decorative Lines */
+        .deco-line { position: fixed; background: var(--border-base); z-index: -1; }
+        .dl-1 { top: 15%; left: 0; width: 100%; height: 1px; opacity: 0.3; }
+        .dl-2 { top: 85%; left: 0; width: 100%; height: 1px; opacity: 0.3; }
+        .dl-3 { top: 0; left: 10%; width: 1px; height: 100%; opacity: 0.2; }
+        .dl-4 { top: 0; right: 10%; width: 1px; height: 100%; opacity: 0.2; }
+
+        @media (max-width: 768px) { .deco-line { display: none; } }
+
+        /* Boot Screen */
+        #boot-screen {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s var(--ease-out);
+            padding: 20px;
+            text-align: center;
+        }
+        .boot-loader { width: 100%; max-width: 200px; height: 2px; background: #222; margin-top: 20px; position: relative; overflow: hidden; }
+        .boot-bar { width: 0%; height: 100%; background: var(--primary); animation: loadBar 1.5s ease-in-out forwards; }
+        .boot-text { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--primary); margin-top: 10px; letter-spacing: 2px; }
+        @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
+
+        /* Header */
+        header {
+            height: 80px; padding: 0 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(5, 5, 5, 0.8); border-bottom: 1px solid var(--border-base);
+            backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 0 20px; height: 70px; }
+            .brand-name { font-size: 24px !important; }
+            .brand-tag { display: none; }
+        }
+
+        .brand-wrapper { display: flex; align-items: center; gap: 15px; }
+        .brand-icon {
+            width: 40px; height: 40px; position: relative; display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--primary); transform: rotate(45deg); transition: 0.3s; flex-shrink: 0;
+        }
+        .brand-icon i { transform: rotate(-45deg); color: var(--primary); font-size: 18px; }
+        .brand-icon::after { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(255,255,255,0.2); }
+        .brand-name { font-family: 'Rajdhani'; font-weight: 800; font-size: 32px; text-transform: uppercase; letter-spacing: 2px; line-height: 1; }
+        .brand-name span { color: var(--primary); }
+        .brand-tag { font-family: 'JetBrains Mono'; font-size: 10px; color: #666; letter-spacing: 3px; }
+
+        .menu-trigger {
+            font-family: 'Rajdhani'; font-weight: 700; font-size: 14px; color: #fff;
+            background: transparent; border: 1px solid var(--border-base);
+            padding: 8px 16px; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+        }
+        .menu-trigger:hover { background: var(--primary); border-color: var(--primary); color: #000; }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed; top: 0; right: -400px; width: 350px; height: 100vh;
+            background: #080808; border-left: 1px solid var(--primary);
+            z-index: 200; padding: 50px 30px; display: flex; flex-direction: column;
+            transition: 0.4s var(--ease-out); box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+            overflow-y: auto;
+        }
+        @media (max-width: 450px) { .sidebar { width: 100%; right: -100%; } }
+        .sidebar.active { right: 0; }
+        .sidebar::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,0,51,0.02) 2px, rgba(255,0,51,0.02) 4px);
+            pointer-events: none;
+        }
+        .close-menu { position: absolute; top: 20px; right: 20px; font-size: 32px; color: var(--primary); cursor: pointer; transition: 0.3s; z-index: 10; }
+        .nav-link { display: block; font-family: 'Rajdhani'; font-weight: 700; font-size: 22px; color: #888; padding: 15px 0; border-bottom: 1px solid #1a1a1a; transition: 0.3s; text-transform: uppercase; text-decoration: none;}
+        .nav-link:hover { color: #fff; padding-left: 10px; border-bottom-color: var(--primary); }
+        .nav-link span { color: var(--primary); font-size: 12px; vertical-align: middle; margin-right: 10px; }
+
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 150; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px); }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* Layout Wrapper */
+        .wrapper { max-width: 1200px; margin: 0 auto; padding: 40px 20px; z-index: 10; position: relative; }
+        @media (max-width: 768px) { .wrapper { padding: 20px 15px; } }
+
+        /* Banner Style - Updated for Original Size & Responsive */
+        .banner-frame {
+            width: 100%;
+            max-width: 1000px; /* সর্বোচ্চ চওড়া */
+            margin: 20px auto;
+            border: 1px solid var(--border-highlight);
+            box-shadow: 0 0 20px rgba(255, 0, 51, 0.1);
+            line-height: 0; /* ইমেজের নিচের গ্যাপ দূর করতে */
+            overflow: hidden;
+            background: #000;
+        }
+        .banner-frame img {
+            width: 100%;
+            height: auto; /* এতে অরিজিনাল রেশিও বজায় থাকবে */
+            display: block;
+        }
+
+        .hero-text-block { border-left: 2px solid var(--primary); padding-left: 30px; margin-bottom: 60px; position: relative; }
+        @media (max-width: 768px) { .hero-text-block { padding-left: 20px; margin-bottom: 40px; } }
+        .hero-title { font-family: 'Rajdhani'; font-weight: 800; font-size: clamp(32px, 6vw, 48px); line-height: 1.1; margin-bottom: 15px; text-transform: uppercase; color: #fff; }
+        .hero-title span { color: var(--primary); }
+        .hero-sub { font-size: 15px; color: #888; max-width: 700px; line-height: 1.6; }
+
+        /* Dynamic Grid Section */
+        .section-separator { display: flex; align-items: center; gap: 20px; margin: 60px 0 30px; }
+        .sep-line { flex: 1; height: 1px; background: #222; }
+        .sep-title { font-family: 'JetBrains Mono'; font-weight: 700; border: 1px solid currentColor; padding: 5px 15px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+
+        .mega-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        @media (max-width: 480px) { .mega-grid { grid-template-columns: 1fr; } }
+        
+        .tech-card {
+            background: var(--bg-card); border: 1px solid var(--border-base); padding: 30px; position: relative; overflow: hidden;
+            transition: all 0.4s var(--ease-out); cursor: pointer; display: flex; flex-direction: column; gap: 20px; text-decoration: none;
+            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+        }
+        .tech-card:hover { border-color: var(--border-highlight); background: rgba(20, 20, 20, 0.8); transform: translateY(-5px); }
+        .tech-card::before { content: ''; position: absolute; top: 0; left: 0; width: 20px; height: 20px; border-top: 2px solid var(--primary); border-left: 2px solid var(--primary); opacity: 0.5; }
+        .tech-card::after { content: ''; position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; border-bottom: 2px solid var(--primary); border-right: 2px solid var(--primary); opacity: 0.5; }
+        
+        .card-icon { font-size: 32px; color: #fff; opacity: 0.8; }
+        .card-tag { font-family: 'JetBrains Mono'; font-size: 9px; font-weight: 700; color: #000; background: #fff; padding: 2px 8px; }
+        .tag-red { background: var(--primary); color: #fff; }
+        .card-body h3 { font-family: 'Rajdhani'; font-weight: 800; font-size: 24px; text-transform: uppercase; color: #fff; margin-bottom: 8px; }
+        .card-body p { font-size: 14px; color: #888; line-height: 1.5; }
+        .card-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .open-btn { font-family: 'JetBrains Mono'; font-size: 11px; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Request Zone */
+        .req-zone { margin-top: 60px; padding: 40px 20px; background: rgba(10,10,10,0.5); border: 1px solid var(--border-base); text-align: center; }
+        .req-btn { display: inline-block; padding: 12px 30px; background: var(--primary); color: #000; font-family: 'Rajdhani'; font-weight: 800; font-size: 16px; text-transform: uppercase; text-decoration: none; clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%); }
+
+        /* Footer */
+        footer { background: #000; border-top: 1px solid #1a1a1a; padding: 60px 20px 30px; margin-top: 50px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .f-col h4 { font-family: 'Rajdhani'; font-weight: 700; font-size: 18px; color: #fff; margin-bottom: 20px; border-left: 3px solid var(--primary); padding-left: 15px; }
+        .f-links a { display: block; color: #888; font-size: 14px; margin-bottom: 12px; text-decoration: none; cursor: pointer; transition: 0.3s; }
+        .f-links a:hover { color: var(--primary); padding-left: 5px; }
+        .f-socials { display: flex; gap: 15px; margin-top: 20px;}
+        .fs-icon { width: 35px; height: 35px; border: 1px solid #333; display: flex; align-items: center; justify-content: center; color: #fff; text-decoration: none; transition: 0.3s;}
+        .fs-icon:hover { border-color: var(--primary); color: var(--primary); }
+        .f-bottom { border-top: 1px solid #111; margin-top: 40px; padding-top: 20px; text-align: center; font-family: 'JetBrains Mono'; font-size: 11px; color: #444; line-height: 1.6;}
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 500; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.4s; backdrop-filter: blur(10px); padding: 15px; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-box { width: 800px; max-width: 100%; background: #0c0c0c; border: 1px solid var(--primary); padding: 0; position: relative; }
+        .m-head { padding: 15px 25px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .m-title { font-family: 'Rajdhani'; font-weight: 700; color: var(--primary); letter-spacing: 1px; }
+        .m-body { padding: 30px; overflow-y: auto; color: #ccc; max-height: 70vh; font-size: 14px; line-height: 1.6; }
+
+        /* Loader Animation */
+        #content-loader { text-align: center; padding: 50px; font-family: 'JetBrains Mono'; color: var(--primary); font-size: 13px; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div id="boot-screen">
+        <div class="brand-name" style="font-size: 40px;">TEAM <span>BCT</span></div>
+        <div class="boot-text">INITIALIZING PROTOCOLS...</div>
+        <div class="boot-loader"><div class="boot-bar"></div></div>
+    </div>
+
+    <div class="cyber-grid-bg"></div>
+    <div class="vignette-overlay"></div>
+    <div class="deco-line dl-1"></div><div class="deco-line dl-2"></div><div class="deco-line dl-3"></div><div class="deco-line dl-4"></div>
+
+    <header>
+        <div class="brand-wrapper">
+            <div class="brand-icon"><i class="fas fa-shield-alt"></i></div>
+            <div>
+                <div class="brand-name">TEAM <span>BCT</span></div>
+                <div class="brand-tag">SECURE CYBERSPACE</div>
+            </div>
+        </div>
+        <button class="menu-trigger" onclick="toggleMenu()">Menu <i class="fas fa-bars"></i></button>
+    </header>
+
+    <div class="overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="close-menu" onclick="toggleMenu()">&times;</div>
+        <div style="margin-top: 40px;">
+            <a href="#" class="nav-link"><span>01.</span> About Us</a>
+            <a href="#" class="nav-link"><span>02.</span> Meet The Team</a>
+            <a href="#" class="nav-link"><span>03.</span> Our Services</a>
+            <a href="#" class="nav-link"><span>04.</span> Courses</a>
+            <a href="#" class="nav-link"><span>05.</span> Notable Works</a>
+            <a href="#" class="nav-link" style="color:var(--primary);"><span>06.</span> Contact</a>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <div class="hero-text-block">
+            <h1 class="hero-title">ELITE CYBER<br><span>INTELLIGENCE & SECURITY</span></h1>
+            <p class="hero-sub">We are Bangladesh Cyber Troops. We provide advanced digital infrastructure, security auditing, and web solutions while actively neutralizing cyber threats.</p>
+        </div>
+
+        <!-- Banner Updated to IMG for true responsiveness and original size -->
+        <div class="banner-frame">
+            <img src="https://d.top4top.io/p_3662nzvpq0.jpg" alt="Team BCT Banner">
+        </div>
+
+        <!-- DYNAMIC CONTENT AREA -->
+        <div id="dynamic-tools-container">
+            <div id="content-loader">
+                <i class="fas fa-sync fa-spin"></i> LOADING ENCRYPTED TOOLS...
+            </div>
+        </div>
+
+        <div class="req-zone">
+            <h2 style="font-family: 'Rajdhani'; font-size: 24px; color: #fff; margin-bottom: 10px;">MISSING A TOOL?</h2>
+            <p style="color:#888; max-width:500px; margin:0 auto 25px; font-size: 14px;">We are constantly updating our arsenal. If you need a specific tool, let us know.</p>
+            <a href="#" class="req-btn">REQUEST FEATURE</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="f-col">
+                <div class="brand-name" style="margin-bottom: 15px; font-size: 24px;">TEAM <span>BCT</span></div>
+                <p class="f-desc" style="font-size: 13px; color: #666; line-height: 1.5;">We are the guardians of the digital frontier. Committed to securing Bangladesh's cyberspace through innovation and tactical intelligence.</p>
+                <div class="f-socials">
+                    <a href="https://t.me/bct_muslims" class="fs-icon"><i class="fab fa-telegram-plane"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61586091802176" class="fs-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://github.com/MR-D4RK-OFFICIAL" class="fs-icon"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="f-col">
+                <h4>QUICK LINKS</h4>
+                <div class="f-links">
+                    <a href="#">Home</a><a href="#">Services</a><a href="#">Portfolio</a><a href="#">Contact</a>
+                </div>
+            </div>
+            <div class="f-col">
+                <h4>LEGAL</h4>
+                <div class="f-links">
+                    <a onclick="openModal('privacy')">Privacy Policy</a>
+                    <a onclick="openModal('terms')">Terms of Service</a>
+                    <a onclick="openModal('cookie')">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+        <div class="f-bottom">
+            &copy; 2026 TEAM BCT | ALL RIGHTS RESERVED<br>
+            <span style="color: #222;">ENGINEERING BY TROOPS IT SOLUTION</span>
+        </div>
+    </footer>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box">
+            <div class="m-head">
+                <div class="m-title" id="mTitle">Policy</div>
+                <div class="m-close" onclick="closeModal()" style="cursor:pointer; font-size:28px; color: var(--primary); line-height: 1;">&times;</div>
+            </div>
+            <div class="m-body" id="mBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const BIN_ID = '6960ab9d43b1c97be923b2dd'; 
+        const API_KEY = '$2a$10$FCZs3q0UrVn3ftm8i8x5t.J7uhYK1gkrozCVhKbUNdLM/ws0IfM3K'; 
+
+        // --- FETCH DATA FROM JSONBIN ---
+        async function fetchTools() {
+            const container = document.getElementById('dynamic-tools-container');
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': API_KEY }
+                });
+                const data = await response.json();
+                renderTools(data.record.sections);
+            } catch (error) {
+                container.innerHTML = `<div style="color:var(--primary); text-align:center; padding: 40px; font-family: 'JetBrains Mono'; border: 1px solid #222;">[!] ERROR: FAILED TO LOAD SYSTEM DATA</div>`;
+                console.error(error);
+            }
+        }
+
+        // --- RENDER TOOLS DYNAMICALLY ---
+        function renderTools(sections) {
+            const container = document.getElementById('dynamic-tools-container');
+            container.innerHTML = ''; 
+
+            sections.forEach(section => {
+                const sectionHTML = `
+                    <div class="section-separator">
+                        <span class="sep-title" style="color:${section.title_color || 'var(--primary)'}; border-color:${section.title_color || 'var(--primary)'};">
+                            ${section.section_title}
+                        </span>
+                        <div class="sep-line"></div>
+                    </div>
+                    <div class="mega-grid">
+                        ${section.tools.map(tool => `
+                            <a href="${tool.url}" class="tech-card">
+                                <div class="card-header">
+                                    <i class="${tool.icon} card-icon"></i>
+                                    ${tool.tag ? `<span class="card-tag ${tool.tag_class}">${tool.tag}</span>` : ''}
+                                </div>
+                                <div class="card-body">
+                                    <h3>${tool.title}</h3>
+                                    <p>${tool.desc}</p>
+                                </div>
+                                <div class="card-footer">
+                                    <span class="open-btn">ACCESS TOOL</span>
+                                    <i class="fas fa-arrow-right arrow" style="color:${tool.arrow_color || 'var(--primary)'}"></i>
+                                </div>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+                container.innerHTML += sectionHTML;
+            });
+        }
+
+        // --- BOOT SEQUENCE ---
+        window.addEventListener('load', () => {
+            fetchTools(); 
+            setTimeout(() => {
+                document.getElementById('boot-screen').style.opacity = '0';
+                setTimeout(() => { document.getElementById('boot-screen').style.display = 'none'; }, 500);
+            }, 1500);
+        });
+
+        // --- SIDEBAR TOGGLE ---
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('menu-overlay').classList.toggle('active');
+        }
+
+        // --- MODAL LOGIC ---
+        const modal = document.getElementById('modal');
+        const mTitle = document.getElementById('mTitle');
+        const mBody = document.getElementById('mBody');
+
+        function openModal(type) {
+            const content = {
+                privacy: "<h3>Data Privacy Policy</h3><p>We value your privacy. Our cyber intelligence tools do not store personal logs. All traffic is routed through encrypted tunnels.</p>",
+                terms: "<h3>Terms of Service</h3><p>By using our infrastructure, you agree to abide by international cyber security laws. Unauthorized malicious use is strictly prohibited.</p>",
+                cookie: "<h3>Cookie Policy</h3><p>We use session cookies to maintain security protocols and user preference within the dashboard.</p>"
+            };
+            mTitle.innerText = type.replace(/^\w/, c => c.toUpperCase()) + " POLICY";
+            mBody.innerHTML = content[type];
+            modal.classList.add('active');
+        }
+
+        function closeModal() { modal.classList.remove('active'); }
+
+        window.onclick = function(event) {
+            if (event.target == modal) { closeModal(); }
+        }
+    </script>
+</body>
+</html>
