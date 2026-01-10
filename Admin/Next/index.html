@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCT | TERMINAL v2.0</title>
+    
+    <!-- Fonts & UI Kit -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --neon-red: #ff003c;
+            --neon-glow: rgba(255, 0, 60, 0.3);
+            --bg-deep: #030305;
+            --panel-bg: rgba(15, 15, 20, 0.95);
+            --input-bg: #0a0a0c;
+            --text-cyan: #00f2ff;
+            --border-color: rgba(0, 242, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+            background-size: 100% 2px, 3px 100%;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0; padding: 20px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; position: relative; }
+
+        /* Modern Header */
+        header {
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-red);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px var(--neon-glow);
+            margin-bottom: 30px;
+            clip-path: polygon(0 0, 100% 0, 100% 80%, 95% 100%, 0 100%);
+        }
+
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--neon-red); text-transform: uppercase; }
+        .logo span { color: #fff; text-shadow: 0 0 10px #fff; }
+
+        /* Login Screen */
+        #login-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .login-box {
+            background: var(--panel-bg); border: 1px solid var(--neon-red);
+            padding: 40px; width: 350px; text-align: center; border-radius: 5px;
+        }
+
+        /* Section Styling */
+        .section-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        .section-header-input {
+            background: transparent; border: none; border-bottom: 2px solid var(--neon-red);
+            color: #fff; font-family: 'Orbitron'; font-size: 20px; padding: 5px; width: 60%;
+        }
+
+        /* Accordion Tool Item */
+        .tool-item {
+            background: var(--input-bg);
+            border: 1px solid #1a1a1c;
+            margin-top: 10px;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .tool-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .tool-header:hover { background: rgba(255, 0, 60, 0.1); }
+        .tool-header i.chevron { transition: 0.3s; color: var(--text-cyan); }
+        
+        /* Expand/Collapse Logic */
+        .tool-body {
+            max-height: 0;
+            padding: 0 20px;
+            overflow: hidden;
+            border-top: 0px solid var(--neon-red);
+            opacity: 0;
+        }
+        .tool-item.active .tool-body {
+            max-height: 1000px;
+            padding: 20px;
+            opacity: 1;
+            border-top: 1px solid rgba(255, 0, 60, 0.3);
+        }
+        .tool-item.active .chevron { transform: rotate(180deg); }
+
+        /* Inputs */
+        .field-group { margin-bottom: 15px; }
+        label { font-size: 10px; color: var(--text-cyan); text-transform: uppercase; letter-spacing: 1px; }
+        input, textarea {
+            width: 100%; background: #000; border: 1px solid #222;
+            color: #ddd; padding: 10px; font-family: 'JetBrains Mono';
+            margin-top: 5px; border-radius: 2px;
+        }
+        input:focus { border-color: var(--neon-red); outline: none; }
+
+        /* Buttons */
+        .btn {
+            background: transparent; border: 1px solid var(--text-cyan);
+            color: var(--text-cyan); padding: 10px 20px; cursor: pointer;
+            font-family: 'Orbitron'; font-size: 12px;
+        }
+        .btn:hover { background: var(--text-cyan); color: #000; box-shadow: 0 0 15px var(--text-cyan); }
+        
+        .btn-add-tool { border-style: dashed; width: 100%; margin-top: 15px; color: #888; border-color: #333; }
+        .btn-add-tool:hover { border-color: var(--neon-red); color: var(--neon-red); }
+
+        .btn-save {
+            position: fixed; bottom: 30px; right: 30px;
+            background: var(--neon-red); color: white; border: none;
+            padding: 20px 40px; font-size: 18px; font-weight: bold;
+            box-shadow: 0 0 30px var(--neon-glow); border-radius: 50px;
+            z-index: 100; cursor: pointer;
+        }
+        .btn-save:hover { transform: scale(1.1); box-shadow: 0 0 50px var(--neon-red); }
+
+        .delete-icon { color: #444; cursor: pointer; }
+        .delete-icon:hover { color: var(--neon-red); }
+
+        .tool-title-display { font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .tool-title-display i { color: var(--neon-red); }
+
+    </style>
+</head>
+<body>
+
+    <!-- Auth Layer -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2 style="font-family: 'Orbitron'; color: var(--neon-red);">TERMINAL LOGIN</h2>
+            <input type="password" id="admin-pass" placeholder="ACCESS KEY" style="text-align: center; margin-bottom: 20px;">
+            <button class="btn" onclick="checkPass()" style="width: 100%;">AUTHENTICATE</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">BCT <span>SYSTEM CONFIG</span></div>
+            <button class="btn" onclick="addSection()"><i class="fas fa-plus"></i> NEW SECTION</button>
+        </header>
+
+        <div id="editor-container">
+            <!-- Dynamic Content -->
+        </div>
+
+        <div style="height: 100px;"></div> <!-- Spacer -->
+        
+        <button class="btn btn-save" id="sync-btn" onclick="updateSystem()">
+            <i class="fas fa-sync-alt"></i> UPDATE TO CLOUD
+        </button>
+    </div>
+
+    <script>
+        const BIN_ID = '6960ab9d43b1c97be923b2dd';
+        const API_KEY = '$2a$10$FCZs3q0UrVn3ftm8i8x5t.J7uhYK1gkrozCVhKbUNdLM/ws0IfM3K';
+        let mainData = { sections: [] };
+
+        function checkPass() {
+            if(document.getElementById('admin-pass').value === "bct123") {
+                document.getElementById('login-overlay').style.display = 'none';
+                loadCurrentData();
+            } else {
+                Swal.fire('ACCESS DENIED', 'Invalid decryption key.', 'error');
+            }
+        }
+
+        async function loadCurrentData() {
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': API_KEY }
+                });
+                const data = await response.json();
+                mainData = data.record;
+                renderEditor();
+            } catch (e) {
+                Swal.fire('Error', 'Could not sync with neural link.', 'error');
+            }
+        }
+
+        function renderEditor() {
+            const container = document.getElementById('editor-container');
+            container.innerHTML = '';
+
+            mainData.sections.forEach((sec, sIdx) => {
+                const secDiv = document.createElement('div');
+                secDiv.className = 'section-container';
+                secDiv.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <input type="text" class="section-header-input" value="${sec.section_title}" onchange="updateSecTitle(${sIdx}, this.value)">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <input type="color" value="${sec.title_color}" onchange="updateSecColor(${sIdx}, this.value)" style="width:30px; height:30px; border:none; padding:0; background:none; cursor:pointer;">
+                            <i class="fas fa-trash delete-icon" onclick="removeSection(${sIdx})"></i>
+                        </div>
+                    </div>
+                    
+                    <div id="tools-${sIdx}">
+                        ${sec.tools.map((tool, tIdx) => `
+                            <div class="tool-item" id="tool-${sIdx}-${tIdx}">
+                                <div class="tool-header" onclick="toggleTool(${sIdx}, ${tIdx})">
+                                    <div class="tool-title-display">
+                                        <i class="${tool.icon || 'fas fa-cube'}"></i>
+                                        <span>${tool.title || 'Untitled Tool'}</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down chevron"></i>
+                                </div>
+                                <div class="tool-body">
+                                    <div class="field-group">
+                                        <label>Tool Title</label>
+                                        <input type="text" value="${tool.title}" oninput="updateTool(${sIdx}, ${tIdx}, 'title', this.value)">
+                                    </div>
+                                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                                        <div class="field-group">
+                                            <label>Icon Class (FontAwesome)</label>
+                                            <input type="text" value="${tool.icon}" oninput="updateTool(${sIdx}, ${tIdx}, 'icon', this.value)">
+                                        </div>
+                                        <div class="field-group">
+                                            <label>Tag Text</label>
+                                            <input type="text" value="${tool.tag}" oninput="updateTool(${sIdx}, ${tIdx}, 'tag', this.value)">
+                                        </div>
+                                    </div>
+                                    <div class="field-group">
+                                        <label>Target URL</label>
+                                        <input type="text" value="${tool.url}" oninput="updateTool(${sIdx}, ${tIdx}, 'url', this.value)">
+                                    </div>
+                                    <div class="field-group">
+                                        <label>Description</label>
+                                        <textarea rows="3" oninput="updateTool(${sIdx}, ${tIdx}, 'desc', this.value)">${tool.desc}</textarea>
+                                    </div>
+                                    <div style="text-align:right;">
+                                        <button class="btn" style="border-color:var(--neon-red); color:var(--neon-red); font-size:10px;" onclick="removeTool(${sIdx}, ${tIdx})">DELETE TOOL</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn btn-add-tool" onclick="addTool(${sIdx})">+ ADD NEW MODULE</button>
+                `;
+                container.appendChild(secDiv);
+            });
+        }
+
+        // --- Core Functions ---
+
+        function toggleTool(sIdx, tIdx) {
+            const el = document.getElementById(`tool-${sIdx}-${tIdx}`);
+            el.classList.toggle('active');
+        }
+
+        function updateSecTitle(sIdx, val) { mainData.sections[sIdx].section_title = val; }
+        function updateSecColor(sIdx, val) { 
+            mainData.sections[sIdx].title_color = val;
+            mainData.sections[sIdx].tools.forEach(t => t.arrow_color = val);
+        }
+        function updateTool(sIdx, tIdx, field, val) { 
+            mainData.sections[sIdx].tools[tIdx][field] = val;
+            if(field === 'title') {
+                // Real-time title update in header
+                document.querySelector(`#tool-${sIdx}-${tIdx} .tool-title-display span`).innerText = val;
+            }
+        }
+
+        function addSection() {
+            mainData.sections.push({ section_title: "NEW CATEGORY", title_color: "#ff003c", tools: [] });
+            renderEditor();
+        }
+
+        function removeSection(sIdx) {
+            Swal.fire({
+                title: 'Destroy Section?',
+                text: "All modules inside will be purged!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff003c',
+                background: '#0a0a0c',
+                color: '#fff'
+            }).then((res) => {
+                if(res.isConfirmed) {
+                    mainData.sections.splice(sIdx, 1);
+                    renderEditor();
+                }
+            });
+        }
+
+        function addTool(sIdx) {
+            mainData.sections[sIdx].tools.push({
+                title: "New Tool",
+                desc: "Description of the tool...",
+                url: "https://",
+                icon: "fas fa-microchip",
+                tag: "ACTIVE",
+                tag_class: "tag-red",
+                arrow_color: mainData.sections[sIdx].title_color
+            });
+            renderEditor();
+        }
+
+        function removeTool(sIdx, tIdx) {
+            mainData.sections[sIdx].tools.splice(tIdx, 1);
+            renderEditor();
+        }
+
+        async function updateSystem() {
+            const btn = document.getElementById('sync-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                    body: JSON.stringify(mainData)
+                });
+                if(response.ok) {
+                    Swal.fire({ icon: 'success', title: 'SYSTEM UPDATED', background: '#0a0a0c', color: '#00f2ff' });
+                }
+            } catch (e) {
+                Swal.fire('ERROR', 'Link synchronization failed.', 'error');
+            }
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> UPDATE TO CLOUD';
+        }
+    </script>
+</body>
+</html>
