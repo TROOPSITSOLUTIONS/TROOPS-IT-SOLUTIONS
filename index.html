@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
+  
+
+   :root {
             --primary: #ff0033;
             --primary-dark: #8f001d;
             --primary-dim: rgba(255, 0, 51, 0.08);
@@ -95,11 +97,25 @@
 
         .brand-wrapper { display: flex; align-items: center; gap: 15px; }
         .brand-icon {
-            width: 40px; height: 40px; position: relative; display: flex; align-items: center; justify-content: center;
-            border: 1px solid var(--primary); transform: rotate(45deg); transition: 0.3s; flex-shrink: 0;
-        }
-        .brand-icon i { transform: rotate(-45deg); color: var(--primary); font-size: 18px; }
-        .brand-icon::after { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(255,255,255,0.2); }
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;       /* যদি চাই border না থাকে */
+    transform: none;    /* diamond rotation remove */
+    flex-shrink: 0;
+}
+
+.brand-icon::after {
+    content: none;      /* ভিতরের diamond remove */
+}
+
+.brand-icon img {
+    width: 36px;       /* logo proper size */
+    height: 36px;
+    object-fit: contain;
+}
         .brand-name { font-family: 'Rajdhani'; font-weight: 800; font-size: 32px; text-transform: uppercase; letter-spacing: 2px; line-height: 1; }
         .brand-name span { color: var(--primary); }
         .brand-tag { font-family: 'JetBrains Mono'; font-size: 10px; color: #666; letter-spacing: 3px; }
@@ -140,21 +156,23 @@
         @media (max-width: 768px) { .wrapper { padding: 20px 15px; } }
 
         /* Banner Style - Updated for Original Size & Responsive */
-        .banner-frame {
-            width: 100%;
-            max-width: 1000px; /* সর্বোচ্চ চওড়া */
-            margin: 20px auto;
-            border: 1px solid var(--border-highlight);
-            box-shadow: 0 0 20px rgba(255, 0, 51, 0.1);
-            line-height: 0; /* ইমেজের নিচের গ্যাপ দূর করতে */
-            overflow: hidden;
-            background: #000;
-        }
-        .banner-frame img {
-            width: 100%;
-            height: auto; /* এতে অরিজিনাল রেশিও বজায় থাকবে */
-            display: block;
-        }
+        /* ===== Banner Slider ===== */
+.banner-slider {
+    display: flex;
+    width: 100%;
+    transition: transform 0.6s ease-in-out;
+}
+
+.banner-slider img {
+    width: 100%;
+    height: auto;
+    flex-shrink: 0;
+    display: block;
+}
+
+.banner-frame {
+    overflow: hidden;
+}
 
         .hero-text-block { border-left: 2px solid var(--primary); padding-left: 30px; margin-bottom: 60px; position: relative; }
         @media (max-width: 768px) { .hero-text-block { padding-left: 20px; margin-bottom: 40px; } }
@@ -227,9 +245,11 @@
     <div class="deco-line dl-1"></div><div class="deco-line dl-2"></div><div class="deco-line dl-3"></div><div class="deco-line dl-4"></div>
 
     <header>
-        <div class="brand-wrapper">
-            <div class="brand-icon"><i class="fas fa-shield-alt"></i></div>
-            <div>
+     <div class="brand-wrapper">
+    <a href="https://www.facebook.com/bct.404" class="brand-icon logo-link">
+        <img src="https://l.top4top.io/p_3663mnm6f0.png" alt="TEAM BCT">
+    </a>
+    <div>
                 <div class="brand-name">TEAM <span>BCT</span></div>
                 <div class="brand-tag">SECURE CYBERSPACE</div>
             </div>
@@ -252,14 +272,18 @@
 
     <div class="wrapper">
         <div class="hero-text-block">
-            <h1 class="hero-title">BANGLADESH'S TRUSTED CYBER &<br><span>IT SOLUTIONS TEAM </span></h1>
+            <h1 class="hero-title">BANGLADESH'S TRUSTED CYBER &<br><span>IT SOLUTIONS TEAM</span></h1>
             <p class="hero-sub">Bangladesh Cyber Troops - BCT is a cyber and IT solutions team in Bangladesh, providing cybersecurity, IT infrastructure, and web development, while actively combating obscene and harmful digital content through monitoring, reporting, and takedown support.</p>
         </div>
 
         <!-- Banner Updated to IMG for true responsiveness and original size -->
-        <div class="banner-frame">
-            <img src="https://d.top4top.io/p_3662nzvpq0.jpg" alt="Team BCT Banner">
-        </div>
+  <div class="banner-frame">
+    <div class="banner-slider" id="bannerSlider">
+        <img src="https://d.top4top.io/p_3662nzvpq0.jpg" alt="">
+        <img src="https://c.top4top.io/p_3663jsg8w0.png" alt="">
+        <img src="https://l.top4top.io/p_3663q7p9i0.png" alt="">
+    </div>
+</div>
 
         <!-- DYNAMIC CONTENT AREA -->
         <div id="dynamic-tools-container">
@@ -278,7 +302,7 @@
     <footer>
         <div class="footer-grid">
             <div class="f-col">
-                <div class="brand-name" style="margin-bottom: 15px; font-size: 24px;">TEAM <span>BCT</span></div>
+                <div class="brand-name" style="margin-bottom: 15px; font-size: 24px;">BANGLADESH<span> CYBER TROOPS </span></div>
                 <p class="f-desc" style="font-size: 13px; color: #666; line-height: 1.5;">We are the guardians of the digital frontier. Committed to securing Bangladesh's cyberspace through innovation and tactical intelligence.</p>
                 <div class="f-socials">
                     <a href="https://t.me/bct_muslims" class="fs-icon"><i class="fab fa-telegram-plane"></i></a>
@@ -289,7 +313,9 @@
             <div class="f-col">
                 <h4>QUICK LINKS</h4>
                 <div class="f-links">
-                    <a href="#">Home</a><a href="#">Services</a><a href="#">Portfolio</a><a href="#">Contact</a>
+                    <a href="#">Home</a>
+<a href="#">Services</a>
+<a href="#">Contact</a>
                 </div>
             </div>
             <div class="f-col">
@@ -303,7 +329,7 @@
         </div>
         <div class="f-bottom">
             &copy; 2026 TEAM BCT | ALL RIGHTS RESERVED<br>
-            <span style="color: #222;">ENGINEERING BY TROOPS IT SOLUTION</span>
+            <span style="color: #222;">DEVELOPED BY TROOPS IT SOLUTIONS</span>
         </div>
     </footer>
 
@@ -322,7 +348,7 @@
         const BIN_ID = '6960ab9d43b1c97be923b2dd'; 
         const API_KEY = '$2a$10$FCZs3q0UrVn3ftm8i8x5t.J7uhYK1gkrozCVhKbUNdLM/ws0IfM3K'; 
 
-        // --- FETCH DATA FROM JSONBIN ---
+        // --- FETCH DATA FROM  ---
         async function fetchTools() {
             const container = document.getElementById('dynamic-tools-container');
             try {
@@ -409,6 +435,21 @@
         window.onclick = function(event) {
             if (event.target == modal) { closeModal(); }
         }
+   
+    const slider = document.getElementById('bannerSlider');
+    const slides = slider.children;
+    let index = 0;
+
+    function slideNext() {
+        index++;
+        if (index >= slides.length) {
+            index = 0;
+        }
+        slider.style.transform = `translateX(-${index * 100}%)`;
+    }
+
+    setInterval(slideNext, 3000); // 3 second পর পর স্লাইড
+
     </script>
 </body>
 </html>
