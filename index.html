@@ -404,14 +404,33 @@
         }
 
         // --- BOOT SEQUENCE ---
-        window.addEventListener('load', () => {
-            fetchTools(); 
-            setTimeout(() => {
-                document.getElementById('boot-screen').style.opacity = '0';
-                setTimeout(() => { document.getElementById('boot-screen').style.display = 'none'; }, 500);
-            }, 1500);
-        });
+        window.addEventListener('DOMContentLoaded', () => {
 
+        // tools load (fail হলেও site চলবে)
+        fetchTools().catch(() => {});
+
+        // intro auto hide
+        setTimeout(() => {
+            const boot = document.getElementById('boot-screen');
+            if (boot) {
+                boot.style.opacity = '0';
+                setTimeout(() => {
+                    boot.style.display = 'none';
+                }, 500);
+            }
+        }, 1800);
+    });
+
+    // hard fail-safe (৩ সেকেন্ডের বেশি থাকলে জোর করে off)
+    setTimeout(() => {
+        const boot = document.getElementById('boot-screen');
+        if (boot) {
+            boot.style.opacity = '0';
+            setTimeout(() => {
+                boot.style.display = 'none';
+            }, 500);
+        }
+    }, 3000);
         // --- SIDEBAR TOGGLE ---
         function toggleMenu() {
             document.getElementById('sidebar').classList.toggle('active');
