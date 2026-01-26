@@ -7,6 +7,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
   
@@ -230,6 +231,32 @@
 
         /* Loader Animation */
         #content-loader { text-align: center; padding: 50px; font-family: 'JetBrains Mono'; color: var(--primary); font-size: 13px; letter-spacing: 1px; }
+
+        /* ===== MINIMAL FOOTER ===== */
+.mini-footer {
+    text-align: center;
+    padding: 20px 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    color: #555;
+    background: #000;
+    border-top: 1px solid #111;
+}
+
+.mini-footer strong {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+/* ===== CLEAN FOOTER LINKS ===== */
+.footer-link {
+    text-decoration: none;
+}
+
+.footer-link strong {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
     </style>
 
     
@@ -319,7 +346,7 @@
                 <div class="f-links">
                     <a href="#">Home</a>
 <a href="#">Services</a>
-<a href="#">Contact</a>
+<a href="https://bct-contact-us.netlify.app">Contact</a>
                 </div>
             </div>
             <div class="f-col">
@@ -331,10 +358,18 @@
                 </div>
             </div>
         </div>
-        <div class="f-bottom">
-            &copy; 2026 TEAM BCT | ALL RIGHTS RESERVED<br>
-            <span style="color: #222;">DEVELOPED BY TROOPS IT SOLUTIONS</span>
-        </div>
+        <footer class="mini-footer">
+    <p>
+        © 2026 
+        <a href="https://www.facebook.com/bct.404" target="_blank" class="footer-link">
+            <strong>BANGLADESH CYBER TROOPS</strong>
+        </a>
+        | DEVELOPED BY 
+        <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="footer-link">
+            <strong>TROOPS IT SOLUTIONS</strong>
+        </a>
+    </p>
+        </footer>
     </footer>
 
     <div class="modal-overlay" id="modal">
