@@ -473,26 +473,49 @@
         }
 
         // --- MODAL LOGIC ---
-        const modal = document.getElementById('modal');
-        const mTitle = document.getElementById('mTitle');
-        const mBody = document.getElementById('mBody');
+const modal = document.getElementById('modal');
+const mTitle = document.getElementById('mTitle');
+const mBody = document.getElementById('mBody');
 
-        function openModal(type) {
-            const content = {
-                privacy: "<h3>Data Privacy Policy</h3><p>We value your privacy. Our cyber intelligence tools do not store personal logs. All traffic is routed through encrypted tunnels.</p>",
-                terms: "<h3>Terms of Service</h3><p>By using our infrastructure, you agree to abide by international cyber security laws. Unauthorized malicious use is strictly prohibited.</p>",
-                cookie: "<h3>Cookie Policy</h3><p>We use session cookies to maintain security protocols and user preference within the dashboard.</p>"
-            };
-            mTitle.innerText = type.replace(/^\w/, c => c.toUpperCase()) + " POLICY";
-            mBody.innerHTML = content[type];
-            modal.classList.add('active');
-        }
+function openModal(type) {
+    const content = {
+        privacy: `
+            <h3>Data Privacy Policy</h3>
+            <p>
+                We take your privacy very seriously. Our cyber intelligence tools <strong>do not store any personal logs</strong> or identifiable information. 
+                All traffic is routed through <strong>secure, encrypted tunnels</strong>, ensuring your actions remain private and fully protected at all times.
+            </p>
+        `,
+        terms: `
+            <h3>Terms of Service</h3>
+            <p>
+                By accessing and using our platform, you agree to follow all <strong>international cyber security laws</strong>. 
+                Any unauthorized or malicious activity is strictly prohibited and may result in legal action. 
+                Please use our services responsibly and ethically.
+            </p>
+        `,
+        cookie: `
+            <h3>Cookie Policy</h3>
+            <p>
+                We use <strong>session cookies</strong> to enhance your experience, maintain security protocols, 
+                and remember your preferences within the dashboard. Cookies do not track personal information beyond the session.
+            </p>
+        `
+    };
+    mTitle.innerText = type.replace(/^\w/, c => c.toUpperCase()) + " POLICY";
+    mBody.innerHTML = content[type];
+    modal.classList.add('active');
+}
 
-        function closeModal() { modal.classList.remove('active'); }
+function closeModal() { 
+    modal.classList.remove('active'); 
+}
 
-        window.onclick = function(event) {
-            if (event.target == modal) { closeModal(); }
-        }
+window.onclick = function(event) {
+    if (event.target == modal) { 
+        closeModal(); 
+    }
+}
    
     const slider = document.getElementById('bannerSlider');
     const slides = slider.children;
