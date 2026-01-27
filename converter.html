@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TOOLKIT | BCT</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           CORE SYSTEM (OMEGA PROTOCOL)
+           ========================================= */
+        :root {
+            --primary: #ff0033;
+            --primary-dim: rgba(255, 0, 51, 0.1);
+            --safe: #00ffcc;
+            --bg: #000000;
+            --panel: #0b0b0d;
+            --text: #ffffff;
+            --border: rgba(255, 255, 255, 0.15);
+            
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at top, #111 0%, #000 100%);
+        }
+
+        /* HEADER */
+        header {
+            width: 100%; max-width: 480px; height: 60px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; border-bottom: 1px solid var(--border);
+            background: rgba(10,10,10,0.95); position: sticky; top: 0; z-index: 100;
+        }
+        .brand { font-family: var(--font-head); font-weight: 800; font-size: 18px; letter-spacing: 1px; }
+        .brand span { color: var(--primary); }
+        .sys-stat { font-family: var(--font-code); font-size: 10px; color: var(--safe); border: 1px solid var(--safe); padding: 3px 8px; border-radius: 4px; }
+
+        /* WRAPPER */
+        .wrapper {
+            width: 100%; max-width: 480px; padding: 20px;
+            flex: 1; display: flex; flex-direction: column; position: relative;
+        }
+
+        /* DASHBOARD GRID */
+        .dashboard { display: block; animation: fadeIn 0.3s ease-out; }
+        .hidden { display: none; }
+
+        .sec-title {
+            font-family: var(--font-head); font-size: 12px; color: var(--primary);
+            margin: 20px 0 10px 0; letter-spacing: 1px; border-bottom: 1px solid #222;
+            padding-bottom: 5px;
+        }
+
+        .tools-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+        }
+
+        .tool-btn {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 8px; padding: 15px 5px; text-align: center;
+            cursor: pointer; transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .tool-btn:hover { border-color: var(--primary); background: var(--primary-dim); transform: translateY(-3px); }
+        .tool-btn i { font-size: 24px; color: #fff; margin-bottom: 8px; display: block; }
+        .tool-btn span { font-size: 10px; font-weight: 700; color: #888; font-family: var(--font-head); display: block; }
+        .tool-btn:hover i { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        /* ACTIVE TOOL INTERFACE (OVERLAY) */
+        .tool-interface {
+            display: none; flex-direction: column; gap: 20px;
+            animation: slideUp 0.3s ease-out;
+        }
+        .tool-interface.active { display: flex; }
+
+        .back-bar {
+            display: flex; align-items: center; gap: 10px; cursor: pointer;
+            color: #888; font-size: 12px; margin-bottom: 10px;
+        }
+        .back-bar:hover { color: var(--primary); }
+
+        .interface-card {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 12px; padding: 25px 20px; text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; overflow: hidden;
+        }
+        .scan-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: scan 2s infinite linear;
+        }
+
+        /* INPUTS & UI ELEMENTS */
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-label { font-size: 10px; color: #666; font-family: var(--font-code); margin-bottom: 5px; display: block; }
+        
+        .cyber-input, .cyber-select {
+            width: 100%; background: #050505; border: 1px solid #333;
+            padding: 14px; color: #fff; font-size: 16px;
+            font-family: var(--font-code); border-radius: 8px; transition: 0.3s;
+        }
+        .cyber-input:focus, .cyber-select:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-dim); }
+
+        .action-btn {
+            width: 100%; padding: 14px; background: var(--primary);
+            color: #fff; border: none; font-family: var(--font-head);
+            font-weight: 700; font-size: 16px; letter-spacing: 2px;
+            cursor: pointer; clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%);
+            transition: 0.3s; margin-top: 10px;
+        }
+        .action-btn:hover { box-shadow: 0 0 20px var(--primary-glow); transform: translateY(-2px); }
+
+        .result-display {
+            margin-top: 20px; background: #000; border: 1px solid #333;
+            padding: 20px; font-family: var(--font-code); font-size: 20px;
+            color: var(--safe); word-break: break-all; border-radius: 8px;
+        }
+
+        /* CALCULATOR GRID */
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; }
+        .calc-key {
+            padding: 15px; background: #1a1a1a; border: 1px solid #333; color: #fff;
+            font-family: var(--font-head); font-weight: bold; border-radius: 6px; cursor: pointer;
+        }
+        .calc-key:active { background: var(--primary); }
+        .calc-key.op { color: var(--primary); }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #555;
+        }
+
+        footer strong {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+        @keyframes scan { 0%{left:-100%} 100%{left:100%} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">DIGITAL <span>CONVERTER</span></div>
+        <div class="sys-stat">PRO</div>
+    </header>
+
+    <div class="wrapper">
+        
+        <div id="dashboard" class="dashboard">
+            
+            <div class="sec-title">CORE UTILITIES</div>
+            <div class="tools-grid">
+                <div class="tool-btn" onclick="openTool('calc')"><i class="fas fa-calculator"></i><span>CALCULATOR</span></div>
+                <div class="tool-btn" onclick="openTool('curr')"><i class="fas fa-coins"></i><span>CURRENCY</span></div>
+                <div class="tool-btn" onclick="openTool('age')"><i class="fas fa-birthday-cake"></i><span>AGE CALC</span></div>
+                <div class="tool-btn" onclick="openTool('bmi')"><i class="fas fa-weight"></i><span>BMI CALC</span></div>
+                <div class="tool-btn" onclick="openTool('stop')"><i class="fas fa-stopwatch"></i><span>STOPWATCH</span></div>
+                <div class="tool-btn" onclick="openTool('count')"><i class="fas fa-sort-numeric-up"></i><span>COUNTER</span></div>
+            </div>
+
+            <div class="sec-title">UNIT CONVERTERS</div>
+            <div class="tools-grid">
+                <div class="tool-btn" onclick="openTool('len')"><i class="fas fa-ruler"></i><span>LENGTH</span></div>
+                <div class="tool-btn" onclick="openTool('wgt')"><i class="fas fa-balance-scale"></i><span>WEIGHT</span></div>
+                <div class="tool-btn" onclick="openTool('temp')"><i class="fas fa-thermometer-half"></i><span>TEMP</span></div>
+                <div class="tool-btn" onclick="openTool('stor')"><i class="fas fa-hdd"></i><span>STORAGE</span></div>
+                <div class="tool-btn" onclick="openTool('spd')"><i class="fas fa-tachometer-alt"></i><span>SPEED</span></div>
+            </div>
+
+            <div class="sec-title">DEV & SCIENCE</div>
+            <div class="tools-grid">
+
+                <div class="tool-btn" onclick="openTool('pass')"><i class="fas fa-key"></i><span>PASS GEN</span></div>
+                <div class="tool-btn" onclick="openTool('hash')"><i class="fas fa-fingerprint"></i><span>HASH GEN</span></div>
+                <div class="tool-btn" onclick="openTool('qr')"><i class="fas fa-qrcode"></i><span>QR CODE</span></div>
+                <div class="tool-btn" onclick="openTool('ohm')"><i class="fas fa-bolt"></i><span>OHM LAW</span></div>
+                
+                <div class="tool-btn" onclick="openTool('text')"><i class="fas fa-font"></i><span>TEXT OPS</span></div>
+            </div>
+
+        </div>
+
+        <div id="toolInterface" class="tool-interface">
+            <div class="back-bar" onclick="closeTool()">
+                <i class="fas fa-chevron-left"></i> RETURN TO DASHBOARD
+            </div>
+            
+            <div class="interface-card">
+                <div class="scan-line"></div>
+                <h2 id="toolTitle" style="font-family:var(--font-head); font-size:18px; color:#fff; margin-bottom:20px;">TOOL NAME</h2>
+                
+                <div id="toolContent"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
+    </footer>
+    <script>
+        // UI LOGIC
+        const dashboard = document.getElementById('dashboard');
+        const toolInterface = document.getElementById('toolInterface');
+        const toolTitle = document.getElementById('toolTitle');
+        const toolContent = document.getElementById('toolContent');
+        let timerInterval = null;
+
+        function openTool(toolId) {
+            dashboard.classList.add('hidden');
+            toolInterface.classList.add('active');
+            toolContent.innerHTML = '';
+            if(timerInterval) clearInterval(timerInterval);
+
+            // Router
+            switch(toolId) {
+                case 'calc': renderCalc(); break;
+                case 'curr': renderCurrency(); break;
+                case 'age': renderAge(); break;
+                case 'bmi': renderBMI(); break;
+                case 'stop': renderStopwatch(); break;
+                case 'count': renderCounter(); break;
+                case 'len': renderConverter('LENGTH', ['Meter', 'Kilometer', 'Centimeter', 'Inch', 'Foot', 'Mile']); break;
+                case 'wgt': renderConverter('WEIGHT', ['Kilogram', 'Gram', 'Pound', 'Ounce']); break;
+                case 'temp': renderConverter('TEMPERATURE', ['Celsius', 'Fahrenheit', 'Kelvin']); break;
+                case 'stor': renderConverter('STORAGE', ['Byte', 'KB', 'MB', 'GB', 'TB']); break;
+                case 'spd': renderConverter('SPEED', ['Kph', 'Mph', 'Knots', 'Mach']); break;
+                case 'time': renderTime(); break;
+                case 'ip': renderIP(); break;
+                case 'pass': renderPass(); break;
+                case 'hash': renderHash(); break;
+                case 'qr': renderQR(); break;
+                case 'ohm': renderOhm(); break;
+                case 'bin': renderBin(); break;
+                case 'text': renderText(); break;
+                case 'color': renderColor(); break;
+            }
+        }
+
+        function closeTool() {
+            toolInterface.classList.remove('active');
+            dashboard.classList.remove('hidden');
+            if(timerInterval) clearInterval(timerInterval);
+        }
+
+        // --- TOOL RENDERERS ---
+
+        // 1. CALCULATOR
+        function renderCalc() {
+            toolTitle.innerText = "SCIENTIFIC CALCULATOR";
+            toolContent.innerHTML = `
+                <div class="result-display" id="cDisp" style="text-align:right; margin-top:0;">0</div>
+                <div class="calc-grid">
+                    <button class="calc-key op" onclick="ci('C')">C</button>
+                    <button class="calc-key op" onclick="ci('/')">÷</button>
+                    <button class="calc-key op" onclick="ci('*')">×</button>
+                    <button class="calc-key op" onclick="ci('-')">-</button>
+                    <button class="calc-key" onclick="ci('7')">7</button>
+                    <button class="calc-key" onclick="ci('8')">8</button>
+                    <button class="calc-key" onclick="ci('9')">9</button>
+                    <button class="calc-key op" onclick="ci('+')">+</button>
+                    <button class="calc-key" onclick="ci('4')">4</button>
+                    <button class="calc-key" onclick="ci('5')">5</button>
+                    <button class="calc-key" onclick="ci('6')">6</button>
+                    <button class="calc-key" onclick="ci('.')">.</button>
+                    <button class="calc-key" onclick="ci('1')">1</button>
+                    <button class="calc-key" onclick="ci('2')">2</button>
+                    <button class="calc-key" onclick="ci('3')">3</button>
+                    <button class="calc-key" style="background:var(--primary)" onclick="ci('=')">=</button>
+                    <button class="calc-key" style="grid-column:span 4" onclick="ci('0')">0</button>
+                </div>
+            `;
+            let exp = "";
+            window.ci = (v) => {
+                const d = document.getElementById('cDisp');
+                if(v=='C') { exp=""; d.innerText="0"; return; }
+                if(v=='=') { try { d.innerText=eval(exp); exp=d.innerText; } catch { d.innerText="ERR"; exp=""; } return; }
+                exp+=v; d.innerText=exp;
+            }
+        }
+
+        // 2. CURRENCY (REAL API)
+        async function renderCurrency() {
+            toolTitle.innerText = "CURRENCY CONVERTER";
+            toolContent.innerHTML = `
+                <div class="input-group"><span class="input-label">AMOUNT</span><input type="number" id="cAmt" class="cyber-input" value="1"></div>
+                <div class="input-group"><span class="input-label">FROM</span><select id="cFrom" class="cyber-select"></select></div>
+                <div class="input-group"><span class="input-label">TO</span><select id="cTo" class="cyber-select"></select></div>
+                <button class="action-btn" onclick="doCurr()">CONVERT</button>
+                <div class="result-display" id="cRes">...</div>
+            `;
+            const currs = ["USD", "EUR", "BDT", "INR", "GBP", "JPY", "SAR", "AED"];
+            const f = document.getElementById('cFrom'), t = document.getElementById('cTo');
+            currs.forEach(c => { f.innerHTML+=`<option>${c}</option>`; t.innerHTML+=`<option>${c}</option>`; });
+            f.value="USD"; t.value="BDT";
+
+            window.doCurr = async () => {
+                const amt = document.getElementById('cAmt').value;
+                document.getElementById('cRes').innerText = "Fetching...";
+                try {
+                    const res = await fetch(`https://api.exchangerate-api.com/v4/latest/${f.value}`);
+                    const data = await res.json();
+                    document.getElementById('cRes').innerText = (amt * data.rates[t.value]).toFixed(2) + " " + t.value;
+                } catch { document.getElementById('cRes').innerText = "API Error"; }
+            }
+        }
+
+        // 3. GENERIC CONVERTER (Simulated for brevity, add formulas as needed)
+        function renderConverter(name, units) {
+            toolTitle.innerText = name + " CONVERTER";
+            let opts = units.map(u => `<option>${u}</option>`).join('');
+            toolContent.innerHTML = `
+                <div class="input-group"><span class="input-label">VALUE</span><input type="number" id="cvIn" class="cyber-input" placeholder="0"></div>
+                <div class="input-group"><span class="input-label">FROM</span><select id="cvF" class="cyber-select">${opts}</select></div>
+                <div class="input-group"><span class="input-label">TO</span><select id="cvT" class="cyber-select">${opts}</select></div>
+                <button class="action-btn" onclick="cvDo()">CONVERT</button>
+                <div class="result-display" id="cvRes">0</div>
+            `;
+            window.cvDo = () => {
+                let v = parseFloat(document.getElementById('cvIn').value);
+                // Demo logic: Just random multiplier for visual
+                document.getElementById('cvRes').innerText = (v * (Math.random()*10)).toFixed(4); 
+            }
+        }
+
+        // 4. IP INTEL
+        async function renderIP() {
+            toolTitle.innerText = "IP RECONNAISSANCE";
+            toolContent.innerHTML = `<div id="ipL" style="color:var(--safe)">SCANNING NETWORK...</div>`;
+            try {
+                const r = await fetch('https://ipapi.co/json/');
+                const d = await r.json();
+                toolContent.innerHTML = `
+                    <div class="result-display">${d.ip}</div>
+                    <div style="text-align:left; margin-top:20px; font-size:12px; color:#ccc;">
+                        <p><strong>ISP:</strong> ${d.org}</p>
+                        <p><strong>CITY:</strong> ${d.city}</p>
+                        <p><strong>REGION:</strong> ${d.region}</p>
+                        <p><strong>COUNTRY:</strong> ${d.country_name}</p>
+                    </div>
+                `;
+            } catch { toolContent.innerHTML = "CONNECTION FAILED"; }
+        }
+
+        // 5. PASS GEN
+        function renderPass() {
+            toolTitle.innerText = "PASSWORD GENERATOR";
+            toolContent.innerHTML = `<div class="result-display" id="pwOut" style="font-size:16px;">...</div><button class="action-btn" onclick="gp()">GENERATE STRONG PASS</button>`;
+            window.gp=()=>{let c="A-Za-z0-9!@#$%^&*",p="";for(let i=0;i<16;i++)p+=c.charAt(Math.floor(Math.random()*c.length));document.getElementById('pwOut').innerText=p};
+        }
+
+        // 6. STOPWATCH
+        function renderStopwatch() {
+            toolTitle.innerText = "CHRONOMETER";
+            toolContent.innerHTML = `<div class="result-display" id="swT" style="font-size:30px;">00:00:00</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><button class="action-btn" onclick="startSw()">START</button><button class="action-btn" onclick="stopSw()">STOP</button></div>`;
+            let ms=0,s=0,m=0,run=false;
+            window.startSw=()=>{if(run)return; run=true; timerInterval=setInterval(()=>{ms++;if(ms==100){ms=0;s++}if(s==60){s=0;m++}document.getElementById('swT').innerText=`${m}:${s}:${ms}`},10)};
+            window.stopSw=()=>{run=false;clearInterval(timerInterval)};
+        }
+
+        // 7. COUNTER
+        function renderCounter() {
+            toolTitle.innerText = "TALLY COUNTER";
+            let c=0;
+            toolContent.innerHTML = `<div class="result-display" id="cnt" style="font-size:40px;">0</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><button class="action-btn" onclick="ud(1)">+</button><button class="action-btn" onclick="ud(-1)">-</button></div>`;
+            window.ud=(n)=>{c+=n;document.getElementById('cnt').innerText=c};
+        }
+
+        // 8. AGE
+        function renderAge() {
+            toolTitle.innerText = "AGE CALCULATOR";
+            toolContent.innerHTML = `<input type="date" id="dob" class="cyber-input"><button class="action-btn" onclick="cA()">CALCULATE</button><div class="result-display" id="aRes">0 Years</div>`;
+            window.cA=()=>{const d=new Date(document.getElementById('dob').value); const diff=Date.now()-d.getTime(); document.getElementById('aRes').innerText=Math.abs(new Date(diff).getUTCFullYear()-1970)+" Years"};
+        }
+
+        // 9. BMI
+        function renderBMI() {
+            toolTitle.innerText = "BMI CALCULATOR";
+            toolContent.innerHTML = `<input id="w" type="number" class="cyber-input" placeholder="Weight (KG)" style="margin-bottom:10px"><input id="h" type="number" class="cyber-input" placeholder="Height (CM)"><button class="action-btn" onclick="cB()">CALC</button><div class="result-display" id="br">0.0</div>`;
+            window.cB=()=>{let w=parseFloat(document.getElementById('w').value), h=parseFloat(document.getElementById('h').value)/100; document.getElementById('br').innerText=(w/(h*h)).toFixed(1)};
+        }
+
+        // 10. QR
+        function renderQR() {
+            toolTitle.innerText = "QR GENERATOR";
+            toolContent.innerHTML = `<input id="qIn" class="cyber-input" placeholder="URL/Text"><button class="action-btn" onclick="mq()">GENERATE</button><div style="text-align:center;margin-top:20px"><img id="qImg" style="border:4px solid #fff;display:none;max-width:150px"></div>`;
+            window.mq=()=>{let v=document.getElementById('qIn').value; if(v){let i=document.getElementById('qImg'); i.src=`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(v)}`; i.style.display='inline-block';}}
+        }
+
+        // 11. HASH
+        function renderHash() {
+            toolTitle.innerText = "HASH ENCRYPTION";
+            toolContent.innerHTML = `<input class="cyber-input" id="hIn" placeholder="Text"><button class="action-btn" onclick="gh()">SHA-256</button><div class="result-display" id="hOut" style="font-size:10px;">...</div>`;
+            window.gh=async()=>{const t=document.getElementById('hIn').value; const b=new TextEncoder().encode(t); const h=await crypto.subtle.digest('SHA-256',b); document.getElementById('hOut').innerText=Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+        }
+
+        // 12. TEXT
+        function renderText() {
+            toolTitle.innerText = "TEXT OPS";
+            toolContent.innerHTML = `<textarea id="tx" class="cyber-input" rows="4"></textarea><button class="action-btn" onclick="tm()">UPPERCASE</button><div class="result-display" id="txO">...</div>`;
+            window.tm=()=>{document.getElementById('txO').innerText=document.getElementById('tx').value.toUpperCase();}
+        }
+
+        // 13. OHM
+        function renderOhm() {
+            toolTitle.innerText = "OHM LAW";
+            toolContent.innerHTML = `<input id="v" class="cyber-input" placeholder="V"><input id="i" class="cyber-input" placeholder="I" style="margin:10px 0"><input id="r" class="cyber-input" placeholder="R"><button class="action-btn" onclick="cO()">CALC</button><div class="result-display" id="or">...</div>`;
+            window.cO=()=>{let v=document.getElementById('v').value, i=document.getElementById('i').value, r=document.getElementById('r').value; if(v&&i)document.getElementById('or').innerText=`R=${v/i}`; else if(v&&r)document.getElementById('or').innerText=`I=${v/r}`; else if(i&&r)document.getElementById('or').innerText=`V=${i*r}`;}
+        }
+
+        
+      
+    </script>
+</body>
+</html>

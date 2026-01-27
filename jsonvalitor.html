@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JSON INTERCEPTOR | BCT</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           1. CORE CONFIG
+           ========================================= */
+        :root {
+            --primary: #ff0033;
+            --primary-dim: rgba(255, 0, 51, 0.1);
+            --primary-glow: rgba(255, 0, 51, 0.5);
+            
+            --success: #00ff88;
+            --info: #00ccff;
+            --error: #ff3333;
+            
+            --bg-void: #050505;
+            --bg-panel: #0e0e0e;
+            --bg-editor: #111111;
+            
+            --border: rgba(255, 255, 255, 0.1);
+            --font-head: 'Orbitron', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        
+        body {
+            background-color: var(--bg-void);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* BG FX */
+        .cyber-grid {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background: 
+                linear-gradient(rgba(255, 0, 51, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 51, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* HEADER */
+        header {
+            height: 70px; padding: 0 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(10,10,10,0.95); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-family: var(--font-head); font-size: 24px; font-weight: 800; letter-spacing: 2px; }
+        .logo span { color: var(--primary); }
+        
+        .tool-status {
+            font-family: var(--font-code); font-size: 12px; color: var(--success);
+            padding: 5px 15px; border: 1px solid var(--success); border-radius: 50px;
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        /* =========================================
+           2. MAIN EDITOR UI
+           ========================================= */
+        .workspace {
+            flex: 1; padding: 30px; max-width: 1600px; margin: 0 auto; width: 100%;
+            display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .toolbar {
+            display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px;
+            background: var(--bg-panel); padding: 15px 20px; border-radius: 12px;
+            border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .btn-group { display: flex; gap: 10px; }
+
+        .btn {
+            padding: 10px 20px; background: #222; border: 1px solid var(--border);
+            color: #fff; font-family: var(--font-head); font-weight: 700; font-size: 14px;
+            cursor: pointer; transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn:hover { background: var(--primary); border-color: var(--primary); color: #000; }
+        
+        .btn-green:hover { background: var(--success); border-color: var(--success); }
+        .btn-blue:hover { background: var(--info); border-color: var(--info); }
+
+        .file-upload { position: relative; overflow: hidden; display: inline-block; }
+        .file-upload input { position: absolute; top: 0; left: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+        /* EDITOR GRID */
+        .editor-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; min-height: 500px;
+        }
+
+        .editor-box {
+            display: flex; flex-direction: column;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden; position: relative;
+        }
+        
+        .box-header {
+            padding: 10px 20px; background: #151515; border-bottom: 1px solid var(--border);
+            font-family: var(--font-code); font-size: 12px; color: #888;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .box-badge { color: var(--primary); font-weight: bold; }
+
+        /* INPUT AREA */
+        #jsonInput {
+            flex: 1; width: 100%; background: var(--bg-editor); border: none;
+            padding: 20px; font-family: var(--font-code); font-size: 14px;
+            color: #ccc; resize: none; line-height: 1.6;
+        }
+        #jsonInput:focus { background: #131313; }
+
+        /* OUTPUT AREA (Visual) */
+        #jsonOutput {
+            flex: 1; width: 100%; background: var(--bg-editor); 
+            padding: 20px; font-family: var(--font-code); font-size: 14px;
+            color: #a0a0a0; overflow: auto; white-space: pre-wrap; line-height: 1.6;
+        }
+
+        /* SYNTAX HIGHLIGHTING COLORS */
+        .key { color: var(--primary); }
+        .string { color: var(--success); }
+        .number { color: var(--info); }
+        .boolean { color: #ff9900; }
+        .null { color: #ff00ff; }
+
+        /* STATUS BAR */
+        .status-bar {
+            background: #111; border: 1px solid var(--border);
+            padding: 15px; border-radius: 8px; font-family: var(--font-code);
+            font-size: 13px; color: #666; display: flex; align-items: center; gap: 10px;
+        }
+        .status-bar.error { color: var(--error); border-color: var(--error); background: rgba(255,51,51,0.05); }
+        .status-bar.valid { color: var(--success); border-color: var(--success); background: rgba(0,255,136,0.05); }
+
+        .status-icon { font-size: 16px; }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #555;
+        }
+
+        footer strong {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* RESPONSIVE */
+        @media(max-width: 900px) {
+            .editor-grid { grid-template-columns: 1fr; }
+            .toolbar { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cyber-grid"></div>
+
+    <header>
+        <div class="logo">TEAM <span>BCT</span></div>
+        <div class="tool-status"><i class="fas fa-code"></i> JSON PARSER</div>
+    </header>
+
+    <div class="workspace">
+        
+        <div style="text-align:center; margin-bottom:10px;">
+            <h1 style="font-family:'Orbitron'; font-size:32px; color:#fff;">JSON <span style="color:var(--primary)">INTERCEPTOR</span></h1>
+            <p style="color:#888; font-family:var(--font-code);">VALIDATE // FORMAT // MINIFY // PARSE</p>
+        </div>
+
+        <div class="toolbar">
+            <div class="btn-group">
+                <button class="btn btn-green" onclick="formatJSON()"><i class="fas fa-align-left"></i> BEAUTIFY</button>
+                <button class="btn btn-blue" onclick="minifyJSON()"><i class="fas fa-compress-arrows-alt"></i> MINIFY</button>
+                <div class="file-upload btn">
+                    <i class="fas fa-upload"></i> UPLOAD
+                    <input type="file" id="fileInput" accept=".json">
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn" onclick="copyOutput()"><i class="fas fa-copy"></i> COPY</button>
+                <button class="btn" style="border-color:var(--primary); color:var(--primary);" onclick="clearAll()"><i class="fas fa-trash"></i> CLEAR</button>
+            </div>
+        </div>
+
+        <div class="editor-grid">
+            <div class="editor-box">
+                <div class="box-header">
+                    <span>RAW INPUT</span>
+                    <span class="box-badge">INPUT</span>
+                </div>
+                <textarea id="jsonInput" placeholder="Paste your raw JSON code here..." spellcheck="false"></textarea>
+            </div>
+
+            <div class="editor-box">
+                <div class="box-header">
+                    <span>PARSED OUTPUT</span>
+                    <span class="box-badge">RESULT</span>
+                </div>
+                <div id="jsonOutput"></div>
+            </div>
+        </div>
+
+        <div class="status-bar" id="statusBar">
+            <i class="fas fa-info-circle status-icon"></i>
+            <span id="statusText">WAITING FOR INPUT...</span>
+        </div>
+
+    </div>
+
+
+<footer>
+        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
+    </footer>
+
+    <script>
+        const input = document.getElementById('jsonInput');
+        const output = document.getElementById('jsonOutput');
+        const status = document.getElementById('statusBar');
+        const statusText = document.getElementById('statusText');
+
+        // FORMAT JSON (PRETTIFY)
+        function formatJSON() {
+            const raw = input.value;
+            if(!raw) return showStatus('Please enter JSON to format.', 'error');
+
+            try {
+                const parsed = JSON.parse(raw);
+                const formatted = JSON.stringify(parsed, null, 4);
+                
+                // Set to output & Highlight
+                output.innerHTML = syntaxHighlight(formatted);
+                showStatus('JSON Validated & Formatted Successfully.', 'valid');
+            } catch (e) {
+                showStatus(`Syntax Error: ${e.message}`, 'error');
+            }
+        }
+
+        // MINIFY JSON
+        function minifyJSON() {
+            const raw = input.value;
+            if(!raw) return showStatus('Please enter JSON to minify.', 'error');
+
+            try {
+                const parsed = JSON.parse(raw);
+                const minified = JSON.stringify(parsed);
+                
+                output.textContent = minified; // No highlight for minify
+                showStatus('JSON Minified Successfully.', 'valid');
+            } catch (e) {
+                showStatus(`Syntax Error: ${e.message}`, 'error');
+            }
+        }
+
+        // SYNTAX HIGHLIGHTER LOGIC
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'key'; // Key
+                    } else {
+                        cls = 'string'; // String
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // FILE UPLOAD
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                input.value = e.target.result;
+                formatJSON(); // Auto format on upload
+            };
+            reader.readAsText(file);
+        });
+
+        // UTILS
+        function copyOutput() {
+            const content = output.innerText;
+            if(!content) return;
+            navigator.clipboard.writeText(content);
+            showStatus('Copied to Clipboard!', 'valid');
+        }
+
+        function clearAll() {
+            input.value = '';
+            output.innerHTML = '';
+            showStatus('Workspace Cleared.', 'normal');
+        }
+
+        function showStatus(msg, type) {
+            statusText.innerText = msg;
+            status.className = 'status-bar'; // Reset
+            if(type === 'error') {
+                status.classList.add('error');
+                status.querySelector('i').className = 'fas fa-exclamation-triangle status-icon';
+            } else if (type === 'valid') {
+                status.classList.add('valid');
+                status.querySelector('i').className = 'fas fa-check-circle status-icon';
+            } else {
+                status.querySelector('i').className = 'fas fa-info-circle status-icon';
+            }
+        }
+    </script>
+
+</body>
+</html>

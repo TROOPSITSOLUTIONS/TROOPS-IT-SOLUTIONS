@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangladesh Cyber Troops | Troops IT Solutions</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary-red: #ff0000;
+            --dark-red: #8b0000;
+            --bg-black: #0a0a0a;
+            --card-bg: #151515;
+            --text-white: #ffffff;
+            --text-gray: #cccccc;
+            --transition: all 0.3s ease;
+            --glow: 0 0 15px rgba(255, 0, 0, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .brand-name {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        ul { list-style: none; }
+        a { text-decoration: none; color: inherit; }
+
+        /* --- REUSABLE COMPONENTS --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-padding { padding: 80px 0; }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            text-shadow: var(--glow);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            display: inline-block;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .btn-red {
+            background: var(--primary-red);
+            color: white;
+            box-shadow: var(--glow);
+        }
+
+        .btn-red:hover {
+            background: var(--dark-red);
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(255, 0, 0, 1);
+        }
+
+        .btn-outline {
+            border: 2px solid var(--primary-red);
+            color: var(--primary-red);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            height: 80px;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--dark-red);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+  .logo {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-red);
+    white-space: nowrap;        /* 🔑 one line */
+    overflow: hidden;
+    text-overflow: ellipsis;    /* extreme small screen এ safe */
+    max-width: 100%;
+}
+        /* --- HERO SECTION --- */
+        #hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2070') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .hero h1 {
+    font-size: clamp(1.6rem, 5vw, 3rem);
+    color: var(--primary-red);
+    white-space: nowrap;        /* 🔑 one line */
+    overflow: hidden;
+    text-overflow: ellipsis;    /* ultra small screen safe */
+    letter-spacing: 1px;
+}
+        .hero-content p { font-size: 1.2rem; color: var(--text-gray); margin-bottom: 30px; }
+        .hero-btns { display: flex; gap: 20px; justify-content: center; }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+
+
+        .course-card {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .course-card:hover {
+            border-color: var(--primary-red);
+            transform: scale(1.03);
+            box-shadow: var(--glow);
+        }
+
+        .course-card i { font-size: 3rem; color: var(--primary-red); margin-bottom: 20px; }
+        .course-card h3 { margin-bottom: 10px; font-size: 1.2rem; }
+        .course-info { display: flex; justify-content: space-between; margin: 20px 0; color: var(--text-gray); font-size: 0.9rem; }
+        .price { color: var(--primary-red); font-weight: bold; font-size: 1.2rem; }
+
+        /* --- WHY CHOOSE US --- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+        .feature-item i { font-size: 2.5rem; color: var(--primary-red); margin-bottom: 15px; }
+
+        
+
+        /* --- FAQ SECTION --- */
+        .faq-container { max-width: 800px; margin: 0 auto; }
+        .faq-item { background: var(--card-bg); margin-bottom: 10px; border-radius: 5px; overflow: hidden; }
+        .faq-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+        .faq-header:hover { background: #222; }
+        .faq-body { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; color: var(--text-gray); }
+        .faq-item.active .faq-body { padding: 20px; max-height: 200px; border-top: 1px solid #333; }
+
+        /* --- CONTACT SECTION --- */
+        .contact-content { max-width: 600px; margin: 0 auto; background: var(--card-bg); padding: 40px; border-radius: 10px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 5px;
+        }
+        .form-group input:focus { border-color: var(--primary-red); outline: none; }
+
+        /* --- MODAL / POPUP --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            border: 2px solid var(--primary-red);
+            box-shadow: var(--glow);
+            transform: scale(0.7);
+            transition: 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-content i { font-size: 4rem; color: var(--primary-red); margin-bottom: 20px; }
+        .modal-content h2 { margin-bottom: 15px; }
+
+        /* --- FOOTER --- */
+        footer {
+            background: #000;
+            padding: 50px 0 20px;
+            border-top: 1px solid var(--dark-red);
+            text-align: center;
+        }
+        .social-icons { margin: 20px 0; display: flex; justify-content: center; gap: 20px; }
+        .social-icons a { font-size: 1.5rem; transition: var(--transition); }
+        .social-icons a:hover { color: var(--primary-red); transform: translateY(-5px); }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.5rem; }
+            .about-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .section-title { font-size: 2rem; }
+        }
+
+        /* Ripple Effect */
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="container">
+            <div class="logo">BANGLADESH CYBER TROOPS</div>
+            <ul class="nav-links">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#courses">Courses</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="hero-content container">
+            <h4>Bangladesh Cyber Troops</h4>
+            <p>Powered by <strong>Troops IT Solutions</strong></p>
+            <div class="hero-btns">
+                <a href="#courses" class="btn btn-red">View Courses</a>
+                <button class="btn btn-outline enroll-btn">Enroll Now</button>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- Why Choose Us -->
+    <section id="features" class="section-padding">
+        <div class="container">
+            <h2 class="section-title">Why Choose Us</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-user-shield"></i>
+                    <h3>Expert Mentors</h3>
+                    <p>Learn from industry veterans.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-laptop-code"></i>
+                    <h3>Practical Training</h3>
+                    <p>Real-world lab environments.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-certificate"></i>
+                    <h3>Certificate</h3>
+                    <p>Get recognized globally.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-headset"></i>
+                    <h3>Lifetime Support</h3>
+                    <p>We guide you forever.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="section-padding">
+        <div class="container">
+            <h2 class="section-title">Our Courses</h2>
+            <div class="course-grid">
+                <!-- Course 1 -->
+                <div class="course-card">
+                    <i class="fas fa-user-secret"></i>
+                    <h3>Ethical Hacking (Basic)</h3>
+                    <p>Master the basics of penetration testing and network security.</p>
+                    <div class="course-info">
+                        <span><i class="far fa-clock"></i> 3 Months</span>
+                        <span class="price">৳ 5,000</span>
+                    </div>
+                    <button class="btn btn-red enroll-btn" style="width:100%;">Enroll Now</button>
+                </div>
+                <!-- Course 2 -->
+                <div class="course-card">
+                    <i class="fas fa-code"></i>
+                    <h3>Python for Hackers</h3>
+                    <p>Build custom security tools and automate attacks using Python.</p>
+                    <div class="course-info">
+                        <span><i class="far fa-clock"></i> 2 Months</span>
+                        <span class="price">৳ 4,000</span>
+                    </div>
+                    <button class="btn btn-red enroll-btn" style="width:100%;">Enroll Now</button>
+                </div>
+                <!-- Course 3 -->
+                <div class="course-card">
+                    <i class="fas fa-shield-virus"></i>
+                    <h3>Cyber Defense Specialist</h3>
+                    <p>Advanced techniques to defend infrastructure from cyber threats.</p>
+                    <div class="course-info">
+                        <span><i class="far fa-clock"></i> 4 Months</span>
+                        <span class="price">৳ 8,000</span>
+                    </div>
+                    <button class="btn btn-red enroll-btn" style="width:100%;">Enroll Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    
+    <!-- FAQ Section -->
+    <section id="faq" class="section-padding">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-header">What is the requirement for joining? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-body">Just a basic understanding of computers and a passion for learning security.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-header">Do you provide certificates? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-body">Yes, upon successful completion and exam, you will receive a professional certificate.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-header">Is this for beginners? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-body">Yes, we have courses ranging from basic to advanced levels.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section-padding">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <div class="contact-content">
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="name" required placeholder="Your Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" required placeholder="Your Email">
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea id="message" rows="5" required placeholder="How can we help?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-red" style="width:100%;">Send Message</button>
+                </form>
+                <div id="formSuccess" style="display:none; color: #00ff00; text-align:center; margin-top:20px;">
+                    <i class="fas fa-check-circle"></i> Message sent successfully!
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <h3 class="brand-name" style="color: var(--primary-red);">Bangladesh Cyber Troops</h3>
+            <p>A Unit of Troops IT Solutions</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+            <p>&copy; 2026 Bangladesh Cyber Troops – All Rights Reserved</p>
+        </div>
+    </footer>
+
+    <!-- Enrollment Modal -->
+    <div class="modal-overlay" id="enrollModal">
+        <div class="modal-content">
+            <i class="fas fa-tools"></i>
+            <h2>🚧 Enrollment Coming Soon</h2>
+            <p>We are preparing something powerful. Stay connected with Bangladesh Cyber Troops.</p>
+            <br>
+            <button class="btn btn-red" id="closeModal">Close</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // 1. Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(0, 0, 0, 0.95)';
+                nav.style.boxShadow = '0 5px 20px rgba(0,0,0,0.5)';
+            } else {
+                nav.style.background = 'rgba(0, 0, 0, 0.9)';
+                nav.style.boxShadow = 'none';
+            }
+        });
+
+        // 2. Enrollment Modal Logic
+        const enrollBtns = document.querySelectorAll('.enroll-btn');
+        const modal = document.getElementById('enrollModal');
+        const closeModal = document.getElementById('closeModal');
+
+        enrollBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modal.classList.add('active');
+            });
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        // Close modal on click outside
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // 3. FAQ Accordion Logic
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            item.querySelector('.faq-header').addEventListener('click', () => {
+                item.classList.toggle('active');
+                // Close other items
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // 4. Contact Form Validation & Fake Success Message
+        const contactForm = document.getElementById('contactForm');
+        const formSuccess = document.getElementById('formSuccess');
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Basic validation check
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            if (name && email && message) {
+                contactForm.style.display = 'none';
+                formSuccess.style.display = 'block';
+                
+                // Reset form for later
+                setTimeout(() => {
+                    formSuccess.style.display = 'none';
+                    contactForm.style.display = 'block';
+                    contactForm.reset();
+                }, 5000);
+            }
+        });
+
+        // 5. Smooth Scroll for Navigation Links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                document.querySelector(targetId).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

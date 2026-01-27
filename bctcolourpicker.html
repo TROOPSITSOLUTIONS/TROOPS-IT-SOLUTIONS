@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BCT CHROMATIC | ULTIMATE ENGINE</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* =========================================
+           1. CORE CONFIGURATION
+           ========================================= */
+        :root {
+            --primary: #ff0033;
+            --primary-dim: rgba(255, 0, 51, 0.15);
+            --primary-glow: rgba(255, 0, 51, 0.6);
+            --bg-body: #050505;
+            --bg-panel: #0f0f0f;
+            --surface: #161616;
+            --border: #2a2a2a;
+            --text-main: #ffffff;
+            --text-muted: #888;
+            --glass: blur(15px);
+            --radius: 12px;
+            --ease: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* =========================================
+           2. ANIMATED BACKGROUND
+           ========================================= */
+        #particle-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0.2; pointer-events: none;
+        }
+        
+        .vignette {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at center, transparent 0%, #000 120%);
+            pointer-events: none;
+        }
+
+        /* =========================================
+           3. HEADER & NAV
+           ========================================= */
+        header {
+            padding: 15px 30px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(10, 10, 10, 0.9);
+            border-bottom: 1px solid var(--primary);
+            backdrop-filter: var(--glass);
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 5px 30px rgba(255, 0, 51, 0.1);
+        }
+
+        .brand { 
+            font-size: 24px; font-weight: 800; letter-spacing: 2px; 
+            display: flex; align-items: center; gap: 12px; 
+        }
+        .brand i { color: var(--primary); font-size: 28px; filter: drop-shadow(0 0 10px var(--primary)); }
+        .brand span { color: #fff; text-transform: uppercase; }
+        
+        .sys-status {
+            font-family: 'JetBrains Mono'; font-size: 10px; color: var(--primary);
+            border: 1px solid var(--primary); padding: 4px 8px; border-radius: 4px;
+            animation: pulse 2s infinite;
+        }
+
+        /* TABS */
+        .nav-dock {
+            display: flex; justify-content: center; gap: 15px; padding: 20px;
+            background: var(--bg-panel); border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-item {
+            background: var(--surface); color: var(--text-muted);
+            padding: 12px 25px; border-radius: 30px; cursor: pointer;
+            border: 1px solid var(--border); transition: 0.3s var(--ease);
+            font-weight: 700; display: flex; align-items: center; gap: 8px;
+            font-size: 14px;
+        }
+        .nav-item:hover { color: #fff; border-color: #555; }
+        .nav-item.active {
+            background: var(--primary); color: #000; border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        /* =========================================
+           4. MAIN LAYOUT
+           ========================================= */
+        .engine-wrapper {
+            flex: 1; padding: 30px 20px;
+            width: 100%; max-width: 1100px; margin: 0 auto;
+            display: grid; gap: 30px;
+        }
+
+        .panel-view { display: none; grid-template-columns: 350px 1fr; gap: 30px; animation: slideUp 0.5s var(--ease); }
+        .panel-view.active { display: grid; }
+        .panel-view.single-col { display: block; max-width: 600px; margin: 0 auto; }
+
+        /* Left Column (Controls) */
+        .col-left {
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 16px; padding: 25px; height: fit-content;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        /* Right Column (Data) */
+        .col-right {
+            display: flex; flex-direction: column; gap: 20px;
+        }
+
+        /* =========================================
+           5. WHEEL & SLIDERS
+           ========================================= */
+        .wheel-box {
+            position: relative; width: 260px; height: 260px; margin: 0 auto 30px;
+            border-radius: 50%; padding: 5px;
+            background: linear-gradient(145deg, #222, #000);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            display: flex; justify-content: center; align-items: center;
+        }
+        #wheelCanvas { border-radius: 50%; cursor: crosshair; touch-action: none; }
+        
+        .wheel-cursor {
+            position: absolute; top: 50%; left: 50%; width: 20px; height: 20px;
+            background: transparent; border: 2px solid #fff; border-radius: 50%;
+            transform: translate(-50%, -50%); pointer-events: none;
+            box-shadow: 0 0 5px rgba(0,0,0,0.8); z-index: 10;
+        }
+
+        /* Sliders */
+        .slider-wrap { margin-bottom: 20px; }
+        .slider-head { display: flex; justify-content: space-between; font-size: 11px; color: #888; margin-bottom: 8px; font-weight: 700; letter-spacing: 1px; }
+        
+        input[type="range"] {
+            -webkit-appearance: none; width: 100%; height: 6px;
+            background: #222; border-radius: 3px; outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+            background: #fff; cursor: pointer; border: 2px solid #000;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5); transition: transform 0.2s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); background: var(--primary); }
+
+        /* Preview Bar */
+        .preview-strip {
+            width: 100%; height: 60px; border-radius: 8px; overflow: hidden;
+            border: 1px solid #333; margin-bottom: 25px; position: relative;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAACpJREFUKFNjTc3W/88ABowgdgxL1m9A52HEqIiR1YEMwKkYlxm4FBM2CwB8GguP63Ip6AAAAABJRU5ErkJggg==');
+        }
+        .preview-color {
+            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono'; font-weight: 700; font-size: 18px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8); letter-spacing: 1px;
+        }
+
+        /* =========================================
+           6. DATA CARDS & ANALYSIS
+           ========================================= */
+        .section-title {
+            font-size: 14px; font-weight: 700; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #222; }
+
+        .data-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;
+        }
+
+        .info-card {
+            background: var(--bg-panel); border: 1px solid var(--border);
+            padding: 15px; border-radius: 10px; position: relative;
+            cursor: pointer; transition: 0.3s;
+        }
+        .info-card:hover { border-color: var(--primary); transform: translateY(-3px); background: #1a1a1a; }
+        
+        .lbl { font-size: 10px; color: #666; font-weight: 800; margin-bottom: 5px; }
+        .val { font-family: 'JetBrains Mono'; font-size: 14px; color: #fff; word-break: break-all; }
+        .copy-btn { position: absolute; top: 15px; right: 15px; color: var(--primary); opacity: 0; transition: 0.2s; }
+        .info-card:hover .copy-btn { opacity: 1; }
+
+        /* Harmony Grid */
+        .harmony-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+        .harmony-box {
+            flex: 1; min-width: 80px; height: 80px; border-radius: 8px; border: 1px solid #333;
+            cursor: pointer; position: relative; overflow: hidden; transition: 0.3s;
+        }
+        .harmony-box:hover { transform: scale(1.05); border-color: #fff; z-index: 10; }
+        .h-tag {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 5px;
+            background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; text-align: center;
+            font-family: 'JetBrains Mono'; opacity: 0; transition: 0.3s;
+        }
+        .harmony-box:hover .h-tag { opacity: 1; }
+
+        /* History Bar */
+        .history-bar {
+            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px;
+        }
+        .hist-dot {
+            min-width: 40px; height: 40px; border-radius: 8px; border: 1px solid #333;
+            cursor: pointer; transition: 0.2s; position: relative;
+        }
+        .hist-dot:hover { transform: translateY(-5px); border-color: #fff; }
+
+        /* =========================================
+           7. IMAGE TOOL (FIXED & ENHANCED)
+           ========================================= */
+        .upload-area {
+            border: 2px dashed #333; border-radius: 16px; padding: 60px 20px;
+            text-align: center; cursor: pointer; transition: 0.3s;
+            background: rgba(255,255,255,0.02);
+        }
+        .upload-area:hover { border-color: var(--primary); background: rgba(255,0,51,0.05); }
+        .upload-icon { font-size: 50px; color: #444; margin-bottom: 15px; transition: 0.3s; }
+        .upload-area:hover .upload-icon { color: var(--primary); transform: scale(1.1); }
+
+        .image-stage {
+            position: relative; margin-top: 20px; display: none; width: 100%;
+            border-radius: 12px; overflow: hidden; border: 1px solid #333;
+            background: #000; cursor: crosshair; touch-action: none;
+        }
+        #targetImg { width: 100%; display: block; }
+
+        .loupe {
+            position: absolute; width: 100px; height: 100px; border: 3px solid #fff;
+            border-radius: 50%; pointer-events: none; display: none;
+            box-shadow: 0 10px 40px #000; background: #000; z-index: 50;
+            overflow: hidden;
+        }
+        .loupe-cross {
+            position: absolute; top: 50%; left: 50%; width: 6px; height: 6px;
+            background: transparent; border: 1px solid var(--primary);
+            transform: translate(-50%, -50%); box-shadow: 0 0 0 1px #fff;
+        }
+
+        /* =========================================
+           8. FOOTER & TOAST
+           ========================================= */
+        footer {
+            margin-top: auto; padding: 30px; text-align: center;
+            border-top: 1px solid var(--border); background: #020202;
+            color: #555; font-size: 12px; font-family: 'JetBrains Mono';
+        }
+
+        #toast {
+            position: fixed; bottom: 80px; left: 50%; transform: translate(-50%, 50px);
+            background: #fff; color: #000; padding: 12px 30px; border-radius: 40px;
+            font-weight: 800; font-family: 'JetBrains Mono'; font-size: 13px;
+            opacity: 0; transition: 0.4s var(--ease); z-index: 999;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+        #toast.active { transform: translate(-50%, 0); opacity: 1; }
+
+        /* TUTORIAL OVERLAY */
+        .tutorial-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 50%; pointer-events: none; transition: opacity 0.5s;
+        }
+        .hand-anim { font-size: 30px; color: #fff; animation: tap 1.5s infinite; margin-bottom: 5px; }
+        .tut-msg { font-size: 10px; font-weight: 700; background: #000; padding: 3px 8px; border: 1px solid var(--primary); }
+
+        @keyframes tap { 0%,100%{transform:scale(1);} 50%{transform:scale(0.8);} }
+        @keyframes slideUp { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .panel-view { grid-template-columns: 1fr; }
+            .col-left { margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+    <div class="vignette"></div>
+
+    <header>
+        <div class="brand">
+            <i class="fas fa-biohazard"></i>
+            <div>COLOUR <span>PICKER</span></div>
+        </div>
+        <div class="sys-status">PRO</div>
+    </header>
+
+    <div class="nav-dock">
+        <div class="nav-item active" onclick="switchTab('wheel', this)">
+            <i class="fas fa-circle-notch"></i> MANUAL
+        </div>
+        <div class="nav-item" onclick="switchTab('image', this)">
+            <i class="fas fa-camera"></i> IMAGE INTEL
+        </div>
+    </div>
+
+    <div class="engine-wrapper">
+        
+        <div id="wheel" class="panel-view active">
+            
+            <div class="col-left">
+                <div class="wheel-box" id="wheelBox">
+                    <canvas id="wheelCanvas" width="260" height="260"></canvas>
+                    <div class="wheel-cursor" id="cursor"></div>
+                    <div class="tutorial-overlay" id="tut">
+                        <i class="fas fa-hand-point-up hand-anim"></i>
+                        <div class="tut-msg">DRAG TO PICK</div>
+                    </div>
+                </div>
+
+                <div class="preview-strip">
+                    <div class="preview-color" id="previewBg">
+                        <span id="previewText">#FF0033</span>
+                    </div>
+                </div>
+
+                <div class="slider-wrap">
+                    <div class="slider-head"><span>BRIGHTNESS</span> <span id="vVal">100%</span></div>
+                    <input type="range" id="slV" min="0" max="100" value="100">
+                </div>
+                <div class="slider-wrap">
+                    <div class="slider-head"><span>ALPHA</span> <span id="aVal">100%</span></div>
+                    <input type="range" id="slA" min="0" max="100" value="100">
+                </div>
+                
+                <div style="margin-top:20px; border-top:1px solid #333; padding-top:20px;">
+                    <div class="slider-head"><span>SAVED HISTORY</span> <span style="cursor:pointer; color:var(--primary);" onclick="clearHist()">CLEAR</span></div>
+                    <div class="history-bar" id="historyBar">
+                        <div style="font-size:11px; color:#444;">No colors yet...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-right">
+                
+                <div class="section-title"><i class="fas fa-database"></i> COLOR DATA MATRIX</div>
+                <div class="data-grid">
+                    <div class="info-card" onclick="copy('outHex')">
+                        <div class="lbl">HEX</div> <div class="val" id="outHex">#FF0033</div>
+                        <i class="fas fa-copy copy-btn"></i>
+                    </div>
+                    <div class="info-card" onclick="copy('outRgb')">
+                        <div class="lbl">RGB</div> <div class="val" id="outRgb">255, 0, 51</div>
+                        <i class="fas fa-copy copy-btn"></i>
+                    </div>
+                    <div class="info-card" onclick="copy('outHsl')">
+                        <div class="lbl">HSL</div> <div class="val" id="outHsl">348, 100%, 50%</div>
+                        <i class="fas fa-copy copy-btn"></i>
+                    </div>
+                    <div class="info-card" onclick="copy('outCmyk')">
+                        <div class="lbl">CMYK</div> <div class="val" id="outCmyk">0, 100, 80, 0</div>
+                        <i class="fas fa-copy copy-btn"></i>
+                    </div>
+                </div>
+
+                <div class="section-title" style="margin-top:20px;"><i class="fas fa-swatchbook"></i> AUTO HARMONIES</div>
+                <div class="harmony-row" id="harmonyGrid"></div>
+
+                <div class="section-title"><i class="fas fa-code"></i> EXPORT</div>
+                <div class="info-card" onclick="copyCSS()">
+                    <div class="lbl">CSS VARIABLE</div>
+                    <div class="val" id="cssVar" style="font-size:12px; color:#aaa;">--color: #FF0033;</div>
+                    <i class="fas fa-code copy-btn"></i>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="image" class="panel-view single-col">
+            <div class="col-left" style="width:100%;">
+                <div class="upload-area" onclick="document.getElementById('fileIn').click()">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3 style="letter-spacing:1px; color:#fff;">UPLOAD IMAGE</h3>
+                    <p style="font-size:12px; color:#666;">High Precision Pixel Scanner</p>
+                    <input type="file" id="fileIn" hidden accept="image/*">
+                </div>
+
+                <div class="image-stage" id="imgStage">
+                    <img id="targetImg" src="">
+                    <div class="loupe" id="loupe">
+                        <div class="loupe-cross"></div>
+                    </div>
+                </div>
+
+                <div id="imgResult" style="display:none; margin-top:30px;">
+                    <div class="section-title">PIXEL DATA</div>
+                    <div class="data-grid">
+                        <div class="info-card" style="background:var(--primary); border:none; display:flex; justify-content:center; align-items:center;">
+                            <div id="imgPreviewText" style="font-weight:800; font-family:'JetBrains Mono'; color:#000;">#000000</div>
+                        </div>
+                        <div class="info-card" onclick="copy('imgHex')">
+                            <div class="lbl">HEX</div> <div class="val" id="imgHex">...</div> <i class="fas fa-copy copy-btn"></i>
+                        </div>
+                        <div class="info-card" onclick="copy('imgRgb')">
+                            <div class="lbl">RGB</div> <div class="val" id="imgRgb">...</div> <i class="fas fa-copy copy-btn"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast"><i class="fas fa-check-circle"></i> COPIED TO CLIPBOARD</div>
+
+    <footer>
+        &copy; 2026 - Rights Reserved : Bangladesh Cyber Troops<br>
+        <span style="color:#333;">System Developed by TROOPS IT SOLUTIONS</span>
+    </footer>
+
+    <canvas id="pCanvas" style="display:none;"></canvas>
+
+    <script>
+        // ==========================================
+        // 1. PARTICLE BACKGROUND SYSTEM
+        // ==========================================
+        const pc = document.getElementById('particle-canvas');
+        const pctx = pc.getContext('2d');
+        let pw, ph, particles = [];
+
+        const initParticles = () => {
+            pw = pc.width = window.innerWidth;
+            ph = pc.height = window.innerHeight;
+            particles = [];
+            for(let i=0; i<60; i++) {
+                particles.push({
+                    x: Math.random() * pw, y: Math.random() * ph,
+                    s: Math.random() * 2, v: Math.random() * 0.5 + 0.1
+                });
+            }
+        };
+        window.onresize = initParticles;
+        initParticles();
+
+        const animateParticles = () => {
+            pctx.clearRect(0,0,pw,ph);
+            pctx.fillStyle = '#ff0033';
+            particles.forEach(p => {
+                p.y -= p.v;
+                if(p.y < 0) p.y = ph;
+                pctx.globalAlpha = (Math.sin(p.y * 0.01) + 1) / 4;
+                pctx.beginPath(); pctx.arc(p.x, p.y, p.s, 0, Math.PI*2); pctx.fill();
+            });
+            requestAnimationFrame(animateParticles);
+        };
+        animateParticles();
+
+        // ==========================================
+        // 2. COLOR ENGINE
+        // ==========================================
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const wheelBox = document.getElementById('wheelBox');
+        const cursor = document.getElementById('cursor');
+        const tut = document.getElementById('tut');
+        
+        let width = 260, height = 260, cx = 130, cy = 130, rad = 130;
+        let h = 0, s = 0, v = 100, a = 1;
+        let isDrag = false;
+        let history = JSON.parse(localStorage.getItem('bctColors')) || [];
+
+        // Draw Wheel
+        function drawWheel() {
+            ctx.clearRect(0,0,width,height);
+            for(let i=0; i<360; i++) {
+                ctx.beginPath(); ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, rad, (i-0.6)*(Math.PI/180), (i+1.6)*(Math.PI/180));
+                ctx.fillStyle = `hsl(${i}, 100%, 50%)`; ctx.fill();
+            }
+            const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+            g.addColorStop(0, 'white'); g.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI*2); ctx.fill();
+        }
+        drawWheel();
+
+        // Handle Wheel Input
+        function updateWheel(x, y) {
+            tut.style.opacity = '0'; // Dismiss tutorial
+            const dx = x - cx; const dy = y - cy;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            
+            let ang = Math.atan2(dy, dx) * (180/Math.PI);
+            if(ang < 0) ang += 360;
+            
+            let sat = (dist/rad)*100;
+            if(sat > 100) sat = 100;
+
+            const fDist = Math.min(dist, rad);
+            const rAng = ang * (Math.PI/180);
+            
+            cursor.style.left = (cx + fDist * Math.cos(rAng)) + 'px';
+            cursor.style.top = (cy + fDist * Math.sin(rAng)) + 'px';
+
+            h = ang; s = sat;
+            updateUI();
+        }
+
+        function handleInput(e) {
+            e.preventDefault();
+            const r = canvas.getBoundingClientRect();
+            let cX = e.touches ? e.touches[0].clientX : e.clientX;
+            let cY = e.touches ? e.touches[0].clientY : e.clientY;
+            // Scale fix
+            let x = (cX - r.left) * (width/r.width);
+            let y = (cY - r.top) * (height/r.height);
+            updateWheel(x, y);
+        }
+
+        wheelBox.addEventListener('mousedown', e => { isDrag=true; handleInput(e); });
+        window.addEventListener('mousemove', e => { if(isDrag) handleInput(e); });
+        window.addEventListener('mouseup', () => { if(isDrag) saveHistory(); isDrag=false; });
+        
+        wheelBox.addEventListener('touchstart', e => { isDrag=true; handleInput(e); }, {passive:false});
+        window.addEventListener('touchmove', e => { if(isDrag) handleInput(e); }, {passive:false});
+        window.addEventListener('touchend', () => { if(isDrag) saveHistory(); isDrag=false; });
+
+        // Sliders
+        document.getElementById('slV').addEventListener('input', e => { v = parseInt(e.target.value); document.getElementById('vVal').innerText=v+'%'; updateUI(); });
+        document.getElementById('slA').addEventListener('input', e => { a = parseInt(e.target.value)/100; document.getElementById('aVal').innerText=Math.round(a*100)+'%'; updateUI(); });
+
+        // Main Update Logic
+        function updateUI() {
+            const rgb = hsvToRgb(h,s,v);
+            const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+            const hsl = hsvToHsl(h,s,v);
+            const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
+
+            // Preview
+            const prev = document.getElementById('previewBg');
+            const txt = document.getElementById('previewText');
+            prev.style.backgroundColor = `rgba(${rgb.r},${rgb.g},${rgb.b},${a})`;
+            prev.style.boxShadow = `0 0 30px ${hex}`;
+            txt.innerText = hex.toUpperCase();
+            txt.style.color = (v > 60 && s < 40) ? '#000' : '#fff';
+            cursor.style.backgroundColor = hex;
+
+            // Data
+            document.getElementById('outHex').innerText = hex.toUpperCase();
+            document.getElementById('outRgb').innerText = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+            document.getElementById('outHsl').innerText = `${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%`;
+            document.getElementById('outCmyk').innerText = `${cmyk.c}, ${cmyk.m}, ${cmyk.y}, ${cmyk.k}`;
+            document.getElementById('cssVar').innerText = `--color: ${hex.toUpperCase()};`;
+
+            // Harmonies
+            renderHarmonies(hsl);
+        }
+
+        // ==========================================
+        // 3. IMAGE TOOL (ZOOM SCOUTER)
+        // ==========================================
+        const fileIn = document.getElementById('fileIn');
+        const img = document.getElementById('targetImg');
+        const imgStage = document.getElementById('imgStage');
+        const loupe = document.getElementById('loupe');
+        const pCanvas = document.getElementById('pCanvas');
+        const pCtx = pCanvas.getContext('2d');
+
+        fileIn.addEventListener('change', e => {
+            const f = e.target.files[0];
+            if(f) {
+                const r = new FileReader();
+                r.onload = evt => {
+                    img.src = evt.target.result;
+                    imgStage.style.display = 'block';
+                    document.querySelector('.upload-area').style.display = 'none';
+                    img.onload = () => {
+                        pCanvas.width = img.naturalWidth;
+                        pCanvas.height = img.naturalHeight;
+                        pCtx.drawImage(img, 0, 0);
+                    }
+                };
+                r.readAsDataURL(f);
+            }
+        });
+
+        const pickImg = (e) => {
+            if(!img.src) return;
+            loupe.style.display = 'block';
+            
+            const r = img.getBoundingClientRect();
+            let cX = e.touches ? e.touches[0].clientX : e.clientX;
+            let cY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            let x = cX - r.left;
+            let y = cY - r.top;
+
+            // Move Loupe
+            loupe.style.left = (x - 50) + 'px';
+            loupe.style.top = (y - 50) + 'px';
+
+            const sx = img.naturalWidth / r.width;
+            const sy = img.naturalHeight / r.height;
+            
+            // Boundary checks
+            x = Math.max(0, Math.min(x, r.width));
+            y = Math.max(0, Math.min(y, r.height));
+
+            // Background Zoom Effect
+            loupe.style.backgroundImage = `url(${img.src})`;
+            loupe.style.backgroundRepeat = 'no-repeat';
+            loupe.style.backgroundSize = `${r.width * 2}px ${r.height * 2}px`;
+            loupe.style.backgroundPosition = `-${x * 2 - 50}px -${y * 2 - 50}px`;
+
+            // Data Pick
+            const d = pCtx.getImageData(Math.floor(x*sx), Math.floor(y*sy), 1, 1).data;
+            const hex = rgbToHex(d[0], d[1], d[2]).toUpperCase();
+
+            loupe.style.borderColor = hex;
+            document.getElementById('imgResult').style.display = 'block';
+            document.getElementById('imgPreviewText').innerText = hex;
+            document.getElementById('imgPreviewText').parentElement.style.background = hex;
+            document.getElementById('imgHex').innerText = hex;
+            document.getElementById('imgRgb').innerText = `${d[0]}, ${d[1]}, ${d[2]}`;
+        };
+
+        imgStage.addEventListener('mousemove', pickImg);
+        imgStage.addEventListener('touchmove', e => { e.preventDefault(); pickImg(e); }, {passive:false});
+        imgStage.addEventListener('mouseleave', () => loupe.style.display='none');
+
+        // ==========================================
+        // 4. UTILS & MATH
+        // ==========================================
+        function hsvToRgb(h,s,v){ s/=100; v/=100; let f=(n,k=(n+h/60)%6)=>v-v*s*Math.max(Math.min(k,4-k,1),0); return {r:Math.round(f(5)*255),g:Math.round(f(3)*255),b:Math.round(f(1)*255)}; }
+        function rgbToHex(r,g,b){ return "#" + ((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
+        function hsvToHsl(h,s,v){ s/=100; v/=100; const l=(2-s)*v/2; if(l!=0){if(l==1)s=0; else if(l<0.5)s=s*v/(l*2); else s=s*v/(2-l*2);} return {h, s:s*100, l:l*100}; }
+        function hslToHex(h,s,l){ l/=100; const a=s*Math.min(l,1-l)/100; const f=n=>{const k=(n+h/30)%12; const color=l-a*Math.max(Math.min(k-3,9-k,1),-1); return Math.round(255*color).toString(16).padStart(2,'0');}; return `#${f(0)}${f(8)}${f(4)}`; }
+        function rgbToCmyk(r,g,b){ let c=1-(r/255), m=1-(g/255), y=1-(b/255), k=Math.min(c,Math.min(m,y)); return {c:Math.round(((c-k)/(1-k)||0)*100), m:Math.round(((m-k)/(1-k)||0)*100), y:Math.round(((y-k)/(1-k)||0)*100), k:Math.round(k*100)}; }
+
+        function switchTab(id, btn) {
+            document.querySelectorAll('.panel-view').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function copy(id) {
+            navigator.clipboard.writeText(document.getElementById(id).innerText);
+            const t = document.getElementById('toast');
+            t.classList.add('active');
+            setTimeout(() => t.classList.remove('active'), 2000);
+        }
+        function copyCSS() { copy('cssVar'); }
+
+        function renderHarmonies(hsl) {
+            const row = document.getElementById('harmonyGrid');
+            row.innerHTML = '';
+            const steps = [0, 180, 120, 240, 30, -30];
+            steps.forEach(d => {
+                let nh = (hsl.h + d) % 360; if(nh<0) nh+=360;
+                let hex = hslToHex(nh, hsl.s, hsl.l).toUpperCase();
+                let box = document.createElement('div');
+                box.className = 'harmony-box';
+                box.style.backgroundColor = hex;
+                box.innerHTML = `<div class="h-tag">${hex}</div>`;
+                box.onclick = () => { navigator.clipboard.writeText(hex); document.getElementById('toast').classList.add('active'); setTimeout(()=>document.getElementById('toast').classList.remove('active'), 2000); };
+                row.appendChild(box);
+            });
+        }
+
+        function saveHistory() {
+            const hex = document.getElementById('outHex').innerText;
+            if(history.includes(hex)) return;
+            history.unshift(hex);
+            if(history.length > 8) history.pop();
+            localStorage.setItem('bctColors', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const bar = document.getElementById('historyBar');
+            if(history.length === 0) return;
+            bar.innerHTML = '';
+            history.forEach(hex => {
+                let dot = document.createElement('div');
+                dot.className = 'hist-dot';
+                dot.style.background = hex;
+                dot.onclick = () => { navigator.clipboard.writeText(hex); document.getElementById('toast').classList.add('active'); setTimeout(()=>document.getElementById('toast').classList.remove('active'), 2000); };
+                bar.appendChild(dot);
+            });
+        }
+        
+        function clearHist() {
+            history = []; localStorage.removeItem('bctColors');
+            document.getElementById('historyBar').innerHTML = '<div style="font-size:11px; color:#444;">No colors yet...</div>';
+        }
+
+        // Init
+        updateWheel(cx + 80, cy);
+        renderHistory();
+
+    </script>
+</body>
+</html>

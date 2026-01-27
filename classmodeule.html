@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BCT MODULE | AL HARAS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           1. SYSTEM CORE & VARIABLES
+           ========================================= */
+        :root {
+            --bg-void: #020000;
+            --bg-panel: #0a0000;
+            
+            --neon-red: #ff0022;
+            --neon-dark: #8a0012;
+            --neon-glow: 0 0 15px rgba(255, 0, 34, 0.6), 0 0 30px rgba(255, 0, 34, 0.2);
+            --border-glow: 0 0 5px rgba(255, 0, 34, 0.5);
+            
+            --text-main: #ffffff;
+            --text-dim: #ffcccc;
+            
+            --font-head: 'Orbitron', sans-serif;
+            --font-sub: 'Rajdhani', sans-serif;
+            --font-code: 'Share Tech Mono', monospace;
+            
+            --card-bg: rgba(20, 0, 5, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-void);
+            color: var(--text-main);
+            font-family: var(--font-sub);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* SCROLLBAR CUSTOMIZATION */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-red); }
+
+        /* =========================================
+           2. BACKGROUND FX (MATRIX)
+           ========================================= */
+        #matrix-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            z-index: -1;
+            opacity: 0.2;
+            width: 100%;
+            height: 100%;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(255, 0, 34, 0.1) 50%, rgba(0,0,0,0) 100%);
+            opacity: 0.1;
+            position: fixed;
+            bottom: 100%;
+            animation: scanline 10s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanline {
+            0% { bottom: 100%; }
+            100% { bottom: -100%; }
+        }
+
+        /* =========================================
+           3. MAIN CONTAINER (NARROW FOR MOBILE)
+           ========================================= */
+        .cyber-wrapper {
+            width: 100%;
+            max-width: 480px; /* STRICT MOBILE WIDTH */
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            min-height: 100vh;
+            border-left: 1px solid rgba(255, 0, 34, 0.2);
+            border-right: 1px solid rgba(255, 0, 34, 0.2);
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            padding-bottom: 50px;
+        }
+
+        /* =========================================
+           4. HEADER & IDENTITY
+           ========================================= */
+        .cyber-header {
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--neon-red);
+            position: relative;
+            background: linear-gradient(180deg, rgba(20,0,0,1) 0%, rgba(40,0,0,0.8) 100%);
+            box-shadow: var(--neon-glow);
+        }
+
+        .cyber-header::before {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0; width: 100%; height: 2px;
+            background: var(--neon-red);
+            box-shadow: 0 0 10px var(--neon-red);
+        }
+
+        .bct-logo {
+            font-family: var(--font-head);
+            font-size: 2.2rem;
+            color: white;
+            text-shadow: 0 0 10px var(--neon-red);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .bct-logo span { color: var(--neon-red); }
+
+        .section-info {
+            border: 1px solid var(--neon-red);
+            background: rgba(255, 0, 34, 0.1);
+            padding: 10px;
+            margin-top: 15px;
+            position: relative;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            padding: 2px 0;
+        }
+
+        .highlight { color: var(--neon-red); font-weight: bold; text-transform: uppercase; }
+
+        /* =========================================
+           5. SEARCH BAR
+           ========================================= */
+        .search-container {
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(0,0,0,0.9);
+            border-bottom: 1px solid #333;
+        }
+
+        .cyber-input-group {
+            position: relative;
+        }
+
+        .cyber-input {
+            width: 100%;
+            background: #050505;
+            border: 1px solid #444;
+            padding: 12px 15px 12px 40px;
+            color: var(--neon-red);
+            font-family: var(--font-code);
+            font-size: 1rem;
+            transition: 0.3s;
+            border-radius: 4px;
+        }
+
+        .cyber-input:focus {
+            outline: none;
+            border-color: var(--neon-red);
+            box-shadow: var(--border-glow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            transition: 0.3s;
+        }
+
+        .cyber-input:focus + .search-icon { color: var(--neon-red); }
+
+        /* =========================================
+           6. MODULE LIST
+           ========================================= */
+        .module-list {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            border-left: 3px solid #333;
+            border-bottom: 1px solid #222;
+            padding: 15px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        /* Tech Decoration on Card */
+        .module-card::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 20px; height: 20px;
+            background: linear-gradient(135deg, transparent 50%, rgba(255,0,34,0.1) 50%);
+        }
+
+        .module-card:hover {
+            border-left-color: var(--neon-red);
+            background: linear-gradient(90deg, rgba(255,0,34,0.05) 0%, transparent 100%);
+            transform: translateX(5px);
+            box-shadow: -5px 0 15px rgba(255, 0, 34, 0.1);
+        }
+
+        .mod-cat {
+            font-family: var(--font-code);
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .module-card:hover .mod-cat { color: var(--neon-red); }
+
+        .mod-title {
+            font-family: var(--font-sub);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ddd;
+            line-height: 1.3;
+        }
+
+        .module-card:hover .mod-title { color: white; text-shadow: 0 0 5px var(--neon-red); }
+
+        .status-dot {
+            width: 6px; height: 6px;
+            background: #333;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .module-card:hover .status-dot { background: var(--neon-red); box-shadow: 0 0 5px var(--neon-red); }
+
+        /* =========================================
+           7. FOOTER
+           ========================================= */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--neon-red);
+            background: #000;
+            margin-top: 20px;
+        }
+        
+        .footer p {
+            font-family: var(--font-code);
+            font-size: 0.7rem;
+            color: #555;
+        }
+
+        /* =========================================
+           8. PRELOADER (HACKER STYLE)
+           ========================================= */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-code);
+        }
+
+        .loader-text { color: var(--neon-red); font-size: 1.2rem; animation: blink 0.5s infinite; }
+        .loader-bar { width: 200px; height: 2px; background: #333; margin-top: 10px; position: relative; overflow: hidden; }
+        .loader-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--neon-red); animation: load 2s ease-in-out forwards; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="loader-text">INITIALIZING AL HARAS MODULE...</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+    </div>
+
+    <canvas id="matrix-canvas"></canvas>
+    <div class="scanline"></div>
+
+    <div class="cyber-wrapper">
+        
+        <header class="cyber-header">
+            <div class="bct-logo">TEAM <span>BCT</span></div>
+            <div style="font-size: 0.8rem; letter-spacing: 3px; color: #888;">CLASS MODULE</div>
+            
+            <div class="section-info">
+                <div class="info-row">
+                    <span>UNIT:</span>
+                    <span class="highlight">AL HARAS</span>
+                </div>
+                <div style="width:100%; height:1px; background:rgba(255,0,34,0.3); margin:5px 0;"></div>
+                <div class="info-row">
+                    <span>SESSION:</span>
+                    <span class="highlight">2026-2027</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <div class="cyber-input-group">
+                <input type="text" class="cyber-input" id="searchInput" placeholder="SEARCH CLASS NAME..." onkeyup="filterModules()">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </div>
+        </div>
+
+        <div class="module-list" id="moduleList">
+            </div>
+
+        <div class="footer">
+            <p>All Right Reserved : 2026 - Bangladesh Cyber Troops</p>
+            <p style="margin-top:5px; color:#333;">ID: BCT-OFFICIAL-ARMY's</p>
+        </div>
+
+    </div>
+
+    <script>
+        // 1. DATA SOURCE
+        const syllabus = [
+            { cat: "FACEBOOK SECURITY", title: "Facebook Unlimited Account Create" },
+            { cat: "FACEBOOK SECURITY", title: "Facebook Account Full Security" },
+            { cat: "DEVICE SECURITY", title: "Full Device Security Setup" },
+            { cat: "BASIC REPORTING", title: "Normal Facebook Reports" },
+            { cat: "BASIC REPORTING", title: "Normal Instagram Reports" },
+            { cat: "BASIC REPORTING", title: "Normal YouTube Reports" },
+            { cat: "BASIC REPORTING", title: "Normal TikTok Reports" },
+            { cat: "BASIC REPORTING", title: "Normal Messenger Reports" },
+            { cat: "BASIC REPORTING", title: "Normal Whatsapp Reports" },
+            { cat: "BASIC REPORTING", title: "Normal X / Twitter Reports" },
+            { cat: "BASIC REPORTING", title: "Telegram Group / Channel Report" },
+            { cat: "LEGAL ACTION", title: "Facebook / Instagram Defamation Report" },
+            { cat: "LEGAL ACTION", title: "Facebook / Instagram Legal Removal Request" },
+            { cat: "LEGAL ACTION", title: "Facebook / Instagram Privacy Violation Report" },
+            { cat: "LEGAL ACTION", title: "Blogspot / Blogger Site Report" },
+            { cat: "LEGAL ACTION", title: "Tiktok Privacy Report" },
+            { cat: "LEGAL ACTION", title: "Tiktok Underage Report" },
+            { cat: "LEGAL ACTION", title: "Pinterest Legal Removal" },
+            { cat: "IDENTITY", title: "Facebook Impostor Report" },
+            { cat: "IDENTITY", title: "Tiktok Impostor Report" },
+            { cat: "ADVANCED", title: "Facebook Marco Civil Report" },
+            { cat: "ADVANCED", title: "Facebook IDPA Report" },
+            { cat: "ADVANCED", title: "Facebook Remembering Report" },
+            { cat: "DMCA SETUP", title: "Set Up Blogger Site for DMCA" },
+            { cat: "COPYRIGHT STRIKE", title: "Facebook to Facebook Copyright" },
+            { cat: "COPYRIGHT STRIKE", title: "Facebook to Instagram Copyright" },
+            { cat: "COPYRIGHT STRIKE", title: "Whatsaap Copyright" },
+            { cat: "COPYRIGHT STRIKE", title: "Pinterest Copyright" },
+            { cat: "COPYRIGHT STRIKE", title: "Tik Tok Copyright" },
+            { cat: "COPYRIGHT STRIKE", title: "Youtube Copyright" },
+            { cat: "COPYRIGHT STRIKE", title: "Reddit Copyright" },
+            { cat: "COPYRIGHT STRIKE", title: "X/Twitter Copyright" },
+            { cat: "COPYRIGHT STRIKE", title: "Snapchat Copyright" },
+            { cat: "COPYRIGHT STRIKE", title: "LinkedIn Copyright" },
+            { cat: "COPYRIGHT STRIKE", title: "Spotify Copyright" },
+            { cat: "GLOBAL TAKEDOWN", title: "Apkpure DMCA" },
+            { cat: "GLOBAL TAKEDOWN", title: "APK Combo DMCA" },
+            { cat: "GLOBAL TAKEDOWN", title: "Scribd DMCA" },
+            { cat: "GLOBAL TAKEDOWN", title: "Good Reads DMCA" },
+            { cat: "GLOBAL TAKEDOWN", title: "Freepik DMCA" },
+            { cat: "GLOBAL TAKEDOWN", title: "Dreamstime DMCA" },
+            { cat: "GLOBAL TAKEDOWN", title: "Victor Stock DMCA" },
+            { cat: "GLOBAL TAKEDOWN", title: "Imgur DMCA" },
+            { cat: "GLOBAL TAKEDOWN", title: "Fiverr Copyright" },
+            { cat: "GLOBAL TAKEDOWN", title: "Google Drive Copyright" },
+            { cat: "ABUSE", title: "Fishing / 18+ Website Abuse Report" },
+            { cat: "FINANCIAL", title: "Bkash Account Ban" },
+            { cat: "HUMANITARIAN", title: "StopNCII Harassment Case Report" },
+            { cat: "RECOVERY", title: "Facebook Suspended Account Recovery" },
+            { cat: "RECOVERY", title: "Facebook Locked Account Recovery" },
+            { cat: "RECOVERY", title: "WhatsApp Banned Account Recovery" },
+            { cat: "RECOVERY", title: "Tik Tok Account Recovery" },
+            { cat: "TRICKS", title: "Facebook Two-Factor Bypass" },
+            { cat: "TRICKS", title: "Facebook Unlimited Date of Birth Change" },
+            { cat: "TRICKS", title: "Facebook Name Change Before 60 Days" },
+            { cat: "TRICKS", title: "Facebook Fake Copyright Restore" },
+            { cat: "RECOVERY", title: "Instagram Suspended Account Recovery" },
+            { cat: "ASSETS", title: "NID Card Making Tutorial" }
+        ];
+
+        // 2. RENDER LOGIC
+        const listContainer = document.getElementById('moduleList');
+
+        function renderList(data) {
+            listContainer.innerHTML = '';
+            data.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'module-card';
+                // Staggered Animation
+                card.style.animation = `slideUp 0.5s ease forwards ${index * 0.03}s`;
+                card.style.opacity = '0'; // Initial state for animation
+
+                card.innerHTML = `
+                    <div class="mod-cat">
+                        <span class="status-dot"></span> ${item.cat}
+                    </div>
+                    <div class="mod-title">${item.title}</div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        // Add Keyframe dynamically
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `
+            @keyframes slideUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Initial Render
+        renderList(syllabus);
+
+        // 3. FILTER LOGIC
+        function filterModules() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = syllabus.filter(item => 
+                item.title.toLowerCase().includes(query) || 
+                item.cat.toLowerCase().includes(query)
+            );
+            renderList(filtered);
+        }
+
+        // 4. PRELOADER REMOVAL
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').style.display = 'none';
+            }, 2200);
+        });
+
+        // 5. RED MATRIX RAIN (Customized)
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const nums = '01';
+        const alphabet = katakana + latin + nums;
+
+        const fontSize = 14;
+        const columns = canvas.width/fontSize;
+
+        const rainDrops = [];
+        for( let x = 0; x < columns; x++ ) {
+            rainDrops[x] = 1;
+        }
+
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#ff0022'; // NEON RED TEXT
+            ctx.font = fontSize + 'px monospace';
+
+            for(let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i*fontSize, rainDrops[i]*fontSize);
+
+                if(rainDrops[i]*fontSize > canvas.height && Math.random() > 0.975){
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+
+        setInterval(draw, 30);
+
+        // Resize fix
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+    </script>
+</body>
+</html>

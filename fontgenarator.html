@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BCT FONT GENERATOR | ELITE EDITION</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- CORE VARIABLES --- */
+        :root {
+            --primary: #ff0033; /* Cyber Red */
+            --primary-dim: rgba(255, 0, 51, 0.1);
+            --primary-glow: rgba(255, 0, 51, 0.6);
+            --bg-dark: #020202;
+            --panel-bg: rgba(15, 15, 15, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --glass: blur(15px);
+            --ease: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* --- RESET & BASE --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        ::selection { background: var(--primary); color: #000; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- BACKGROUND FX --- */
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; pointer-events: none; }
+        .vignette {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at center, transparent 0%, #000 90%);
+            pointer-events: none;
+        }
+
+        /* --- HEADER SECTION --- */
+        header {
+            padding: 25px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(0,0,0,0.8);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: var(--glass);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .brand-logo {
+            font-size: 26px; font-weight: 800; letter-spacing: 2px;
+            text-transform: uppercase; display: flex; align-items: center; gap: 12px;
+            color: #fff;
+        }
+        .brand-logo i { color: var(--primary); filter: drop-shadow(0 0 10px var(--primary)); }
+        .brand-logo span { color: var(--primary); }
+
+        .status-badge {
+            font-family: 'JetBrains Mono'; font-size: 10px; 
+            padding: 5px 10px; border: 1px solid var(--primary); 
+            color: var(--primary); border-radius: 4px;
+            box-shadow: 0 0 10px var(--primary-dim);
+            animation: pulse 2s infinite;
+        }
+
+        /* --- INPUT HERO SECTION --- */
+        .hero-input {
+            padding: 50px 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative;
+        }
+
+        .input-container {
+            width: 100%; max-width: 800px; position: relative;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 5px;
+            transition: 0.4s var(--ease);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .input-container:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--primary-dim);
+            transform: translateY(-2px);
+        }
+
+        #mainInput {
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 20px 25px;
+            font-size: 22px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            text-align: center;
+        }
+        #mainInput::placeholder { color: #444; text-transform: uppercase; letter-spacing: 2px; font-weight: 500; }
+
+        .input-actions {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            display: flex; gap: 10px;
+        }
+
+        .icon-btn {
+            width: 35px; height: 35px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .icon-btn:hover { background: var(--primary); color: #000; border-color: var(--primary); }
+        .icon-btn.hidden { display: none; }
+
+        /* --- OUTPUT GRID --- */
+        .results-area {
+            flex: 1; padding: 0 20px 60px;
+            width: 100%; max-width: 1200px; margin: 0 auto;
+        }
+
+        .grid-system {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .font-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s var(--ease);
+            display: flex; flex-direction: column;
+            opacity: 0; animation: fadeUp 0.5s forwards;
+        }
+
+        .font-card:hover {
+            border-color: var(--primary);
+            background: rgba(20,20,20,0.9);
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        .font-card:hover::after { opacity: 1; }
+
+        /* Card Glow Effect */
+        .font-card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0; transition: 0.3s;
+        }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .style-label {
+            font-size: 11px; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1px;
+            background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px;
+        }
+
+        .copy-trigger {
+            background: transparent; border: none; color: var(--text-muted);
+            cursor: pointer; transition: 0.2s; font-size: 16px;
+        }
+        .copy-trigger:hover { color: var(--primary); transform: scale(1.1); }
+
+        .text-output {
+            font-size: 18px; line-height: 1.5; color: #fff;
+            word-break: break-word; min-height: 28px;
+        }
+
+        /* --- TOAST NOTIFICATION --- */
+        .toast-container {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--primary); color: #000;
+            padding: 12px 30px; border-radius: 50px;
+            font-weight: 700; font-family: 'Rajdhani'; letter-spacing: 1px;
+            box-shadow: 0 10px 30px var(--primary-glow);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000; opacity: 0; display: flex; align-items: center; gap: 10px;
+        }
+        .toast-container.active { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* --- FOOTER --- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 30px; text-align: center;
+            background: #000; color: #444; font-size: 12px;
+            font-family: 'JetBrains Mono';
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .brand-logo { font-size: 20px; }
+            .hero-input { padding: 30px 15px; }
+            #mainInput { font-size: 18px; padding: 15px; }
+            .grid-system { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+    <div class="vignette"></div>
+
+    <header>
+        <div class="brand-logo">
+            <i class="fas fa-shield-virus"></i>
+            <div>BCT <span>TEXT DESIGN</span></div>
+        </div>
+        <div class="status-badge">Pro</div>
+    </header>
+
+    <div class="hero-input">
+        <div class="input-container">
+            <input type="text" id="mainInput" placeholder="Enter Text Here..." autocomplete="off">
+            <div class="input-actions">
+                <div class="icon-btn hidden" id="clearBtn" onclick="resetApp()"><i class="fas fa-times"></i></div>
+            </div>
+        </div>
+        <div style="margin-top:15px; font-size:12px; color:#555; letter-spacing:1px;">INSTANT ENCRYPTION PREVIEW</div>
+    </div>
+
+    <div class="results-area">
+        <div class="grid-system" id="outputGrid">
+            </div>
+    </div>
+
+    <div class="toast-container" id="toast">
+        <i class="fas fa-check-circle"></i> COPIED TO CLIPBOARD
+    </div>
+
+    <footer>
+        &copy; 2026 - Rights Reserved : Bangladesh Cyber Troops
+Developer: Troops IT Solution
+    </footer>
+
+    <script>
+        // --- MATRIX BACKGROUND LOGIC ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.onresize = resize;
+        resize();
+
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+        const drops = [];
+        const fontSize = 14;
+        const columns = width / fontSize;
+
+        for(let i=0; i<columns; i++) drops[i] = 1;
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = '#ff0033'; // Red Color
+            ctx.font = fontSize + 'px monospace';
+
+            for(let i=0; i<drops.length; i++) {
+                const text = chars[Math.floor(Math.random()*chars.length)];
+                ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+                if(drops[i]*fontSize > height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        // --- FONT MAPPINGS (EXPANDED & UNIQUE) ---
+        // Using string mapping to ensure compatibility
+        
+        const fonts = [
+            {
+                name: "Script",
+                map: "𝒶𝒷𝒸𝒹𝑒𝒻𝑔𝒽𝒾𝒿𝓀𝓁𝓂𝓃𝑜𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏𝒜𝐵𝒞𝒟𝐸𝐹𝒢𝐻𝐼𝒥𝒦𝐿𝑀𝒩𝒪𝒫𝒬𝑅𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵"
+            },
+            {
+                name: "Bold Script",
+                map: "𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝓩"
+            },
+            {
+                name: "Fraktur",
+                map: "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ"
+            },
+            {
+                name: "Bold Fraktur",
+                map: "𝖆𝖇𝖈𝖉𝖊𝖋𝖌𝖍𝖎𝖏𝖐𝖑𝖒𝖓𝖔𝖕𝖖𝖗𝖘𝖙𝖚𝖛𝖜𝖝𝖞𝖟𝕬𝕭𝕮𝕯𝕰𝕱𝕲𝕳𝕴𝕵𝕶𝕷𝕸𝕹𝕺𝕻𝕼𝕽𝕾𝕿𝖀𝖁𝖂𝖃𝖄𝖅"
+            },
+            {
+                name: "Double Struck",
+                map: "𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ"
+            },
+            {
+                name: "Sans Serif",
+                map: "𝖺𝖻𝖼𝖽𝖾𝖿𝗀𝗁𝗂𝗃𝗄𝗅𝗆𝗇𝗈𝗉𝗊𝗋𝗌𝗍𝗎𝗏𝗐𝗑𝗒𝗓𝖠𝖡𝖢𝖣𝖤𝖥𝖦𝖧𝖨𝖩𝖪𝖫𝖬𝖭𝖮𝖯𝖰𝖱𝖲𝖳𝖴𝖵𝖶𝖷𝖸𝖹"
+            },
+            {
+                name: "Bold Sans",
+                map: "𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭"
+            },
+            {
+                name: "Italic Bold",
+                map: "𝙖𝙗𝙘𝙙𝙚𝙛𝙜𝙝𝙞𝙟𝙠𝙡𝙢𝙣𝙤𝙥𝙦𝙧𝙨𝙩𝙪𝙫𝙬𝙭𝙮𝙯𝘼𝘽𝘾𝘿𝙀𝙁𝙂𝙃𝙄𝙅𝙆𝙇𝙈𝙉𝙊𝙋𝙌𝙍𝙎𝙏𝙐𝙑𝙒𝙓𝙔𝙕"
+            },
+            {
+                name: "Monospace",
+                map: "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉"
+            },
+            {
+                name: "Wide Text",
+                map: "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ"
+            },
+            {
+                name: "Small Caps",
+                map: "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ"
+            },
+            {
+                name: "Bubbles",
+                map: "ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ"
+            },
+            {
+                name: "Bubbles Black",
+                map: "🅐🅑🅒🅓🅔🅕🅖🅗🅘🅙🅚🅛🅜🅝🅞🅟🅠🅡🅢🅣🅤🅥🅦🅧🅨🅩🅐🅑🅒🅓🅔🅕🅖🅗🅘🅙🅚🅛🅜🅝🅞🅟🅠🅡🅢🅣🅤🅥🅦🅧🅨🅩"
+            },
+            {
+                name: "Squares",
+                map: "🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃🅄🅅🅆🅇🅈🅉🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃🅄🅅🅆🅇🅈🅉"
+            },
+            {
+                name: "Squares Black",
+                map: "🅰🅱🅲🅳🅴🅵🅶🅷🅸🅹🅺🅻🅼🅽🅾🅿🆀🆁🆂🆃🆄🆅🆆🆇🆈🆉🅰🅱🅲🅳🅴🅵🅶🅷🅸🅹🅺🅻🅼🅽🅾🅿🆀🆁🆂🆃🆄🆅🆆🆇🆈🆉"
+            }
+        ];
+
+        const normalChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const specialMapping = {
+            'flip': {
+                'a': 'ɐ', 'b': 'q', 'c': 'ɔ', 'd': 'p', 'e': 'ǝ', 'f': 'ɟ', 'g': 'ƃ', 'h': 'ɥ', 'i': 'ᴉ', 'j': 'ɾ', 'k': 'ʞ', 'l': 'l', 'm': 'ɯ', 'n': 'u', 'o': 'o', 'p': 'd', 'q': 'b', 'r': 'ɹ', 's': 's', 't': 'ʇ', 'u': 'n', 'v': 'ʌ', 'w': 'ʍ', 'x': 'x', 'y': 'ʎ', 'z': 'z',
+                'A': '∀', 'B': 'q', 'C': 'Ɔ', 'D': 'p', 'E': 'Ǝ', 'F': 'Ⅎ', 'G': 'פ', 'H': 'H', 'I': 'I', 'J': 'ſ', 'K': 'ʞ', 'L': '˥', 'M': 'W', 'N': 'N', 'O': 'O', 'P': 'd', 'Q': 'b', 'R': 'R', 'S': 'S', 'T': '┴', 'U': '∩', 'V': 'Λ', 'W': 'M', 'X': 'X', 'Y': '⅄', 'Z': 'Z'
+            }
+        };
+
+        const inputEl = document.getElementById('mainInput');
+        const gridEl = document.getElementById('outputGrid');
+        const clearBtn = document.getElementById('clearBtn');
+        const toast = document.getElementById('toast');
+
+        // --- APP LOGIC ---
+
+        function init() {
+            // Default State: "Preview Text"
+            updateGrid("Preview Text");
+        }
+
+        inputEl.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if(val.length > 0) {
+                updateGrid(val);
+                clearBtn.classList.remove('hidden');
+            } else {
+                updateGrid("Preview Text");
+                clearBtn.classList.add('hidden');
+            }
+        });
+
+        function resetApp() {
+            inputEl.value = '';
+            inputEl.focus();
+            updateGrid("Preview Text");
+            clearBtn.classList.add('hidden');
+        }
+
+        function updateGrid(text) {
+            gridEl.innerHTML = '';
+            let index = 0;
+
+            // Standard Fonts
+            fonts.forEach(font => {
+                let converted = "";
+                for(let char of text) {
+                    const i = normalChars.indexOf(char);
+                    // Safe logic for unicode pairs
+                    if(i !== -1) {
+                         // Check if map is string or array
+                         // We used strings in 'fonts' array which are surrogate pairs in JS
+                         // Just taking the mapped char by index is tricky with JS strings for surrogates
+                         // So we convert map string to array first
+                         const mapArr = Array.from(font.map);
+                         converted += mapArr[i] || char;
+                    } else {
+                        converted += char;
+                    }
+                }
+                createCard(font.name, converted, index++);
+            });
+
+            // Upside Down (Special Logic)
+            let flipped = text.split('').map(c => specialMapping.flip[c] || c).reverse().join('');
+            createCard("Upside Down", flipped, index++);
+
+            // Strikethrough
+            let strike = text.split('').map(c => c + '\u0336').join('');
+            createCard("Strikethrough", strike, index++);
+        }
+
+        function createCard(label, text, index) {
+            const div = document.createElement('div');
+            div.className = 'font-card';
+            div.style.animationDelay = `${index * 0.05}s`;
+            
+            div.innerHTML = `
+                <div class="card-header">
+                    <span class="style-label">${label}</span>
+                    <button class="copy-trigger" onclick="copyText(this)">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+                <div class="text-output">${text}</div>
+            `;
+            gridEl.appendChild(div);
+        }
+
+        function copyText(btn) {
+            const text = btn.parentElement.nextElementSibling.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+                
+                // Visual feedback on button
+                const icon = btn.querySelector('i');
+                icon.className = 'fas fa-check';
+                icon.style.color = 'var(--primary)';
+                
+                setTimeout(() => {
+                    icon.className = 'far fa-copy';
+                    icon.style.color = '';
+                }, 1500);
+            });
+        }
+
+        function showToast() {
+            toast.classList.add('active');
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 2000);
+        }
+
+        // Initialize
+        init();
+
+    </script>
+</body>
+</html>

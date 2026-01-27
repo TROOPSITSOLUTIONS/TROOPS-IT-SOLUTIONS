@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TITAN RECON | BCT</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           CORE SYSTEM (SLIM & POWERFUL)
+           ========================================= */
+        :root {
+            --primary: #ff0033;
+            --primary-dim: rgba(255, 0, 51, 0.1);
+            --safe: #00ffcc;
+            --safe-dim: rgba(0, 255, 204, 0.1);
+            --warning: #ffcc00;
+            --bg: #000000;
+            --panel: #0b0b0d;
+            --text: #ffffff;
+            --border: rgba(255, 255, 255, 0.15);
+            
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at top, #151515 0%, #000 100%);
+        }
+
+        /* HEADER */
+        header {
+            width: 100%; max-width: 480px; height: 60px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; border-bottom: 1px solid var(--border);
+            background: rgba(10,10,10,0.95); position: sticky; top: 0; z-index: 100;
+        }
+        .brand { font-family: var(--font-head); font-weight: 800; font-size: 18px; letter-spacing: 1px; }
+        .brand span { color: var(--primary); }
+        .sys-stat { font-family: var(--font-code); font-size: 10px; color: var(--safe); border: 1px solid var(--safe); padding: 3px 8px; border-radius: 4px; }
+
+        /* WRAPPER */
+        .wrapper {
+            width: 100%; max-width: 480px; padding: 20px;
+            flex: 1; display: flex; flex-direction: column; gap: 20px;
+        }
+
+        /* TAB SWITCHER */
+        .tabs {
+            display: flex; background: #111; padding: 5px; border-radius: 8px; border: 1px solid var(--border);
+        }
+        .tab-btn {
+            flex: 1; padding: 10px; border: none; background: transparent;
+            color: #666; font-family: var(--font-head); font-weight: 700; font-size: 12px;
+            cursor: pointer; border-radius: 6px; transition: 0.3s;
+        }
+        .tab-btn.active { background: var(--primary-dim); color: var(--primary); border: 1px solid var(--primary); }
+
+        /* SCAN PANEL */
+        .scan-panel {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 12px; padding: 25px 20px; text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; overflow: hidden;
+        }
+        .scan-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: scan 2s infinite linear;
+        }
+
+        /* INPUTS */
+        .input-group { position: relative; margin: 20px 0; }
+        .cyber-input {
+            width: 100%; background: #050505; border: 1px solid #333;
+            padding: 16px 16px 16px 45px; color: #fff; font-size: 14px;
+            font-family: var(--font-code); border-radius: 8px; transition: 0.3s;
+        }
+        .cyber-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-dim); }
+        .icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
+
+        /* FILE DROP */
+        .file-drop {
+            border: 2px dashed #333; padding: 30px; border-radius: 8px; cursor: pointer;
+            background: rgba(255,255,255,0.01); display: none; transition: 0.3s;
+        }
+        .file-drop:hover { border-color: var(--primary); background: var(--primary-dim); }
+        .file-info { font-size: 10px; color: #666; margin-top: 5px; font-family: var(--font-code); }
+
+        .btn-scan {
+            width: 100%; padding: 14px; background: var(--primary);
+            color: #fff; border: none; font-family: var(--font-head);
+            font-weight: 700; font-size: 14px; letter-spacing: 2px;
+            cursor: pointer; clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%);
+            transition: 0.3s;
+        }
+        .btn-scan:hover { box-shadow: 0 0 20px var(--primary-glow); transform: translateY(-2px); }
+
+        /* RESULTS GRID */
+        .result-area { display: none; animation: slideUp 0.4s ease-out; }
+        
+        .card-title {
+            font-family: var(--font-head); font-size: 12px; color: var(--safe);
+            margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px;
+            display: flex; justify-content: space-between;
+        }
+
+        .data-grid { display: grid; gap: 10px; margin-bottom: 20px; }
+        .data-row {
+            background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; border-left: 2px solid #333;
+        }
+        .d-label { color: #888; font-weight: 600; font-size: 10px; }
+        .d-val { font-family: var(--font-code); color: #ddd; text-align: right; max-width: 65%; word-break: break-all; }
+
+        /* RISK METER */
+        .risk-box {
+            background: #111; padding: 15px; border-radius: 8px; border: 1px solid var(--border);
+            text-align: center; margin-bottom: 20px;
+        }
+        .risk-score { font-family: var(--font-head); font-size: 32px; font-weight: 900; line-height: 1; }
+        .risk-text { font-size: 10px; color: #666; letter-spacing: 2px; margin-top: 5px; }
+        
+        .safe-color { color: var(--safe); text-shadow: 0 0 10px var(--safe); }
+        .danger-color { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        /* LOADER */
+        .loader {
+            display: none; margin: 20px auto; width: 30px; height: 30px;
+            border: 3px solid #333; border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #555;
+        }
+
+        footer strong {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scan { 0%{top:0} 100%{top:100%} }
+        @keyframes spin { 100%{transform:rotate(360deg)} }
+        @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand"> LINK & FILE <span> SCANNER </span></div>
+        <div class="sys-stat">PRO</div>
+    </header>
+
+    <div class="wrapper">
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('url')"><i class="fas fa-globe"></i> URL INTEL</button>
+            <button class="tab-btn" onclick="switchTab('file')"><i class="fas fa-file-code"></i> FILE HASH</button>
+        </div>
+
+        <div class="scan-panel">
+            <div class="scan-line"></div>
+            
+            <div id="urlSection">
+                <h2 style="font-family:var(--font-head); font-size:18px; color:#fff;">TARGET ACQUISITION</h2>
+                <p style="color:#888; font-size:11px; margin-bottom:15px; font-family:var(--font-code);">DEEP SCAN VIA MULTI-VECTOR APIs</p>
+                <div class="input-group">
+                    <i class="fas fa-link icon"></i>
+                    <input type="text" id="urlInput" class="cyber-input" placeholder="https://example.com">
+                </div>
+            </div>
+
+            <div id="fileSection" class="file-drop" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-microchip" style="font-size:30px; color:var(--primary);"></i>
+                <h3 style="font-family:var(--font-head); margin:10px 0; font-size:14px;">UPLOAD BINARY</h3>
+                <p class="file-info">SHA-256 HASH CALCULATION</p>
+                <input type="file" id="fileInput" hidden onchange="handleFile(this)">
+                <div id="fileName" style="color:var(--safe); font-size:12px; margin-top:5px;"></div>
+            </div>
+
+            <button class="btn-scan" onclick="initiateScan()">
+                <i class="fas fa-radar"></i> EXECUTE SCAN
+            </button>
+
+            <div class="loader" id="loader"></div>
+        </div>
+
+        <div class="result-area" id="resultArea">
+            
+            <div class="risk-box" id="riskBox">
+                <div class="risk-score" id="scoreVal">0%</div>
+                <div class="risk-text" id="scoreText">CALCULATING RISK...</div>
+            </div>
+
+            <div id="urlResults">
+                <div class="card-title"><span><i class="fas fa-server"></i> SERVER RECONNAISSANCE</span> <span>IP-API</span></div>
+                <div class="data-grid">
+                    <div class="data-row">
+                        <span class="d-label">HOSTING IP</span>
+                        <span class="d-val" id="srvIp">---</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="d-label">ISP / ORG</span>
+                        <span class="d-val" id="srvIsp">---</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="d-label">GEO LOCATION</span>
+                        <span class="d-val" id="srvLoc">---</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="d-label">TIMEZONE</span>
+                        <span class="d-val" id="srvTz">---</span>
+                    </div>
+                </div>
+
+                <div class="card-title"><span><i class="fas fa-network-wired"></i> DNS ENUMERATION</span> <span>GOOGLE DNS</span></div>
+                <div class="data-grid">
+                    <div class="data-row">
+                        <span class="d-label">STATUS</span>
+                        <span class="d-val" id="dnsStatus">Checking...</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="d-label">A RECORDS</span>
+                        <span class="d-val" id="dnsA">Scanning...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="fileResults" style="display:none;">
+                <div class="card-title"><span><i class="fas fa-fingerprint"></i> CRYPTOGRAPHIC ANALYSIS</span></div>
+                <div class="data-grid">
+                    <div class="data-row">
+                        <span class="d-label">FILE NAME</span>
+                        <span class="d-val" id="fName">---</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="d-label">SIZE</span>
+                        <span class="d-val" id="fSize">---</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="d-label">TYPE</span>
+                        <span class="d-val" id="fType">---</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="d-label">SHA-256 HASH</span>
+                        <span class="d-val" id="fHash" style="font-size:10px;">---</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+  <footer>
+        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
+    </footer>
+
+    <script>
+        let currentTab = 'url';
+        let fileObj = null;
+
+        // TAB SWITCHER
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if(tab === 'url') {
+                document.getElementById('urlSection').style.display = 'block';
+                document.getElementById('fileSection').style.display = 'none';
+                document.getElementById('urlResults').style.display = 'block';
+                document.getElementById('fileResults').style.display = 'none';
+            } else {
+                document.getElementById('urlSection').style.display = 'none';
+                document.getElementById('fileSection').style.display = 'block';
+                document.getElementById('urlResults').style.display = 'none';
+                document.getElementById('fileResults').style.display = 'block';
+            }
+            document.getElementById('resultArea').style.display = 'none';
+        }
+
+        // FILE HANDLER
+        async function handleFile(input) {
+            fileObj = input.files[0];
+            if(fileObj) {
+                document.getElementById('fileName').innerText = `SELECTED: ${fileObj.name}`;
+            }
+        }
+
+        // MAIN SCAN FUNCTION
+        async function initiateScan() {
+            const loader = document.getElementById('loader');
+            const resultArea = document.getElementById('resultArea');
+            
+            loader.style.display = 'block';
+            resultArea.style.display = 'none';
+
+            if(currentTab === 'url') {
+                await scanUrl();
+            } else {
+                await scanFile();
+            }
+        }
+
+        // URL SCAN LOGIC (MULTI-API)
+        async function scanUrl() {
+            const input = document.getElementById('urlInput').value;
+            if(!input) { alert("Enter a URL!"); document.getElementById('loader').style.display='none'; return; }
+
+            let domain = '';
+            try {
+                const url = new URL(input.startsWith('http') ? input : 'http://' + input);
+                domain = url.hostname;
+            } catch(e) { alert("Invalid URL"); return; }
+
+            // 1. IP-API (Geolocation)
+            try {
+                const ipRes = await fetch(`http://ip-api.com/json/${domain}?fields=status,country,isp,query,org,timezone`);
+                const ipData = await ipRes.json();
+                
+                if(ipData.status === 'success') {
+                    document.getElementById('srvIp').innerText = ipData.query;
+                    document.getElementById('srvIsp').innerText = ipData.isp;
+                    document.getElementById('srvLoc').innerText = ipData.country;
+                    document.getElementById('srvTz').innerText = ipData.timezone;
+                } else {
+                    document.getElementById('srvIp').innerText = "Protected / Hidden";
+                }
+            } catch(e) { console.log(e); }
+
+            // 2. GOOGLE DNS API (Network Recon)
+            try {
+                const dnsRes = await fetch(`https://dns.google/resolve?name=${domain}&type=A`);
+                const dnsData = await dnsRes.json();
+                
+                document.getElementById('dnsStatus').innerText = dnsData.Status === 0 ? "RESOLVED (Active)" : "NXDOMAIN (Down)";
+                document.getElementById('dnsStatus').style.color = dnsData.Status === 0 ? "var(--safe)" : "var(--primary)";
+                
+                if(dnsData.Answer) {
+                    const ips = dnsData.Answer.map(a => a.data).join(', ');
+                    document.getElementById('dnsA').innerText = ips;
+                } else {
+                    document.getElementById('dnsA').innerText = "No A Records";
+                }
+            } catch(e) { console.log(e); }
+
+            // 3. HEURISTIC RISK CALCULATION
+            calculateRisk(domain, input);
+            
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'block';
+        }
+
+        // RISK ALGORITHM
+        function calculateRisk(domain, fullUrl) {
+            let score = 0;
+            const susTLDs = ['.xyz', '.top', '.club', '.tk', '.ml', '.ga', '.cf', '.cn'];
+            const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+
+            if(ipRegex.test(domain)) score += 40; // IP as domain
+            if(susTLDs.some(tld => domain.endsWith(tld))) score += 25; // Suspicious TLD
+            if(domain.split('.').length > 3) score += 15; // Too many subdomains
+            if(fullUrl.includes('@')) score += 50; // Phishing char
+            if(domain.length > 30) score += 10; // Long domain
+
+            updateScoreUI(score);
+        }
+
+        // FILE SCAN LOGIC
+        async function scanFile() {
+            if(!fileObj) { alert("Upload a file!"); document.getElementById('loader').style.display='none'; return; }
+
+            // Calculate Hash
+            const buffer = await fileObj.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            // Display Data
+            document.getElementById('fName').innerText = fileObj.name;
+            document.getElementById('fSize').innerText = (fileObj.size / 1024).toFixed(2) + " KB";
+            document.getElementById('fType').innerText = fileObj.type || "Unknown Binary";
+            document.getElementById('fHash').innerText = hashHex;
+
+            // Heuristic File Risk
+            let score = 0;
+            const ext = fileObj.name.split('.').pop().toLowerCase();
+            if(['exe', 'bat', 'vbs', 'cmd', 'sh', 'scr'].includes(ext)) score += 70;
+            if(['zip', 'rar', '7z'].includes(ext)) score += 20;
+            if(fileObj.size < 2048 && score > 0) score += 20; // Small executable = suspicious
+
+            updateScoreUI(score);
+
+            // Simulation Delay
+            await new Promise(r => setTimeout(r, 1000));
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'block';
+        }
+
+        function updateScoreUI(score) {
+            const scoreVal = document.getElementById('scoreVal');
+            const scoreText = document.getElementById('scoreText');
+            const box = document.getElementById('riskBox');
+
+            if(score > 100) score = 99;
+            
+            if(score >= 50) {
+                scoreVal.innerText = "HIGH RISK";
+                scoreVal.className = "risk-score danger-color";
+                scoreText.innerText = `THREAT SCORE: ${score}%`;
+                box.style.borderColor = "var(--primary)";
+            } else if (score >= 20) {
+                scoreVal.innerText = "SUSPICIOUS";
+                scoreVal.className = "risk-score";
+                scoreVal.style.color = "var(--warning)";
+                scoreText.innerText = `THREAT SCORE: ${score}%`;
+                box.style.borderColor = "var(--warning)";
+            } else {
+                scoreVal.innerText = "SAFE";
+                scoreVal.className = "risk-score safe-color";
+                scoreText.innerText = "NO THREATS DETECTED";
+                box.style.borderColor = "var(--safe)";
+            }
+        }
+    </script>
+
+</body>
+</html>

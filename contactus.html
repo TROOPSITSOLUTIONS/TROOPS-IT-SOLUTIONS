@@ -1,0 +1,405 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONTACT US | TEAM BCT</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary-red: #ff0033;
+            --deep-red: #99001f;
+            --bg-black: #050505;
+            --panel-bg: rgba(15, 15, 15, 0.95);
+            --glow-effect: 0 0 15px rgba(255, 0, 51, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(255, 0, 51, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 51, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* --- HEADER SECTION --- */
+        .cyber-header {
+            padding: 60px 20px 40px;
+            text-align: center;
+            background: radial-gradient(circle, rgba(255, 0, 51, 0.1) 0%, transparent 70%);
+        }
+
+        .main-title {
+            font-family: 'Michroma', sans-serif;
+            font-size: clamp(2rem, 8vw, 4rem); /* Responsive font size */
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 10px;
+            color: #fff;
+            text-shadow: var(--glow-effect);
+            margin-bottom: 10px;
+        }
+
+        .sub-tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(0.7rem, 2vw, 1rem);
+            color: var(--primary-red);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .deco-line {
+            height: 2px;
+            width: 100px;
+            background: var(--primary-red);
+            margin: 15px auto;
+            box-shadow: var(--glow-effect);
+        }
+
+        /* --- LAYOUT --- */
+        .wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .wrapper { grid-template-columns: 1fr; }
+            .cyber-header { padding: 40px 10px; }
+        }
+
+        /* --- CONTACT CARDS --- */
+        .contact-card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 0, 51, 0.2);
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: #fff;
+            transition: 0.3s;
+            border-left: 4px solid var(--primary-red);
+        }
+
+        .contact-card:hover {
+            border-color: var(--primary-red);
+            transform: translateX(5px);
+            box-shadow: var(--glow-effect);
+            background: rgba(255, 0, 51, 0.05);
+        }
+
+        .contact-card i {
+            font-size: 1.5rem;
+            color: var(--primary-red);
+            width: 30px;
+            text-align: center;
+        }
+
+        .card-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .card-info p {
+            font-size: 0.95rem;
+            word-break: break-all;
+        }
+
+        /* --- FORM PANEL --- */
+        .form-panel {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: clamp(20px, 5vw, 40px);
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .form-panel::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 20px; height: 20px;
+            border-top: 2px solid var(--primary-red);
+            border-left: 2px solid var(--primary-red);
+        }
+
+        h2.form-title {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #222;
+            padding-bottom: 10px;
+            color: #eee;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--primary-red);
+            display: block;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        input, textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            padding: 12px 15px;
+            color: #fff;
+            font-family: 'JetBrains Mono', sans-serif;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary-red);
+            background: rgba(255, 0, 51, 0.02);
+        }
+
+        .send-btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 2px solid var(--primary-red);
+            color: var(--primary-red);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.4s;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .send-btn:hover {
+            background: var(--primary-red);
+            color: #fff;
+            box-shadow: var(--glow-effect);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #555;
+        }
+
+        footer strong { color: var(--primary-red); }
+
+        /* Animation */
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="cyber-header fade-in">
+        <div class="main-title">TEAM BCT</div>
+        <div class="deco-line"></div>
+        <div class="sub-tagline">BANGLADESH CYBER TROOPS</div>
+        <p style="margin-top: 10px; font-size: 0.6rem; color: #444;">[ SECURE COMMUNICATION INTERFACE V3.1 ]</p>
+    </header>
+
+    <div class="wrapper fade-in">
+        <!-- Contact Cards -->
+        <aside>
+            <a href="mailto:bct.org@hotmail.com" class="contact-card">
+                <i class="fa-solid fa-envelope"></i>
+                <div class="card-info">
+                    <h3>Direct Mail</h3>
+                    <p>bct.org@hotmail.com</p>
+                </div>
+            </a>
+
+            <a href="https://wa.me/966541368607" target="_blank" class="contact-card" style="border-left-color: #25D366;">
+                <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
+                <div class="card-info">
+                    <h3>WhatsApp</h3>
+                    <p>+966 54 136 8607</p>
+                </div>
+            </a>
+
+            <a href="https://t.me/bct_muslims" target="_blank" class="contact-card" style="border-left-color: #0088cc;">
+                <i class="fa-brands fa-telegram" style="color: #0088cc;"></i>
+                <div class="card-info">
+                    <h3>Telegram Ops</h3>
+                    <p>@TeamBCT_Official</p>
+                </div>
+            </a>
+            
+            <a href="https://www.facebook.com/bct.404" target="_blank" class="contact-card" style="border-left-color: #0088cc;">
+                <i class="fa-brands fa-facebook-f" style="color: #0088cc;"></i>
+                <div class="card-info">
+                    <h3>Facebook Ops</h3>
+                    <p>@bct_404</p>
+                </div>
+            </a>
+        </aside>
+
+        <!-- Form -->
+        <main class="form-panel">
+            <h2 class="form-title"><span style="color: var(--primary-red);">//</span> SEND ENCRYPTED DATA</h2>
+            
+            <form id="contactForm">
+                <div class="form-group">
+                    <label>Operator Alias</label>
+                    <input type="text" id="name" placeholder="আপনার নাম..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Communication Frequency (Email)</label>
+                    <input type="email" id="email" placeholder="email@secure.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Incident Subject</label>
+                    <input type="text" id="subject" placeholder="বিষয়..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Message Content</label>
+                    <textarea id="message" rows="4" placeholder="আপনার বার্তাটি লিখুন..." required></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn" class="send-btn">SEND MESSAGE</button>
+            </form>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
+    </footer>
+
+<script>
+    // --- CONFIGURATION ---
+    const JSONBIN_BIN_ID = '696476b4ae596e708fd6109e'; 
+    const JSONBIN_API_KEY = '$2a$10$W3F/lL9fpvVCbE36DDYofO7ag7DAYtj/6m8EYbQmal26SJndRQD8a'; 
+
+    const contactForm = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        submitBtn.disabled = true;
+        submitBtn.innerText = "TRANSMITTING...";
+
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const subject = document.getElementById('subject').value;
+        const message = document.getElementById('message').value;
+
+        try {
+            // ১. JSONBin থেকে তথ্য আনা
+            const binResponse = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_API_KEY }
+            });
+
+            if (!binResponse.ok) throw new Error('JSONBin Fetch Failed');
+            
+            const credentials = await binResponse.json();
+            
+            // ডাটা নাম চেক (bot_token না থাকলে শুধু token চেক করবে)
+            const bot_token = credentials.record.bot_token || credentials.record.token;
+            const chat_id = credentials.record.chat_id || credentials.record.id;
+
+            if (!bot_token || !chat_id) {
+                console.error("Credentials Missing in JSONBin:", credentials.record);
+                throw new Error('Bot Token or Chat ID not found in JSONBin');
+            }
+
+            // ২. মেসেজ ফরমেট (Markdown সরিয়ে সাধারণ টেক্সট করা হয়েছে যাতে এরর না আসে)
+            const telegramMsg = `🚀 Contact Message\n` +
+                                `------------------------\n` +
+                                `👤 Name: ${name}\n` +
+                                `📧 Email: ${email}\n` +
+                                `📝 Subject: ${subject}\n` +
+                                `💬 Message: ${message}\n` +
+                                `------------------------\n` +
+                                `📡 Sent from BCT Interface`;
+
+            // ৩. টেলিগ্রামে পাঠানো
+            const teleResponse = await fetch(`https://api.telegram.org/bot${bot_token}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chat_id,
+                    text: telegramMsg
+                    // parse_mode বাদ দেওয়া হয়েছে ১০০% গ্যারান্টিড ডেলিভারির জন্য
+                })
+            });
+
+            if (teleResponse.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'SUCCESSFUL',
+                    text: 'আপনার তথ্য সফলভাবে পাঠানো হয়েছে!',
+                    background: '#0a0a0a',
+                    color: '#fff',
+                    confirmButtonColor: '#ff0033'
+                });
+                contactForm.reset();
+            } else {
+                const errData = await teleResponse.json();
+                console.error("Telegram Error:", errData);
+                throw new Error('Telegram API Error');
+            }
+
+        } catch (error) {
+            console.error("Transmission Error:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'TRANSMISSION FAILED',
+                text: 'সার্ভারে সমস্যা হচ্ছে। অনুগ্রহ করে আপনার JSONBin credentials চেক করুন।',
+                background: '#0a0a0a',
+                color: '#fff',
+                confirmButtonColor: '#ff0033'
+            });
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "SEND MESSAGE";
+        }
+    });
+</script>
+</body>
+</html>
