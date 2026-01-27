@@ -2,534 +2,450 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bangladesh Cyber Troops | Troops IT Solutions</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Our Courses | BCT</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* --- CSS VARIABLES & RESET --- */
+        /* ==========================================================================
+           1. CORE SYSTEM CONFIGURATION (DARK MILITARY THEME)
+           ========================================================================== */
         :root {
-            --primary-red: #ff0000;
-            --dark-red: #8b0000;
-            --bg-black: #0a0a0a;
-            --card-bg: #151515;
-            --text-white: #ffffff;
-            --text-gray: #cccccc;
-            --transition: all 0.3s ease;
-            --glow: 0 0 15px rgba(255, 0, 0, 0.7);
+            --primary: #ff0033;
+            --primary-dark: #8a001c;
+            --primary-glow: rgba(255, 0, 51, 0.6);
+            --primary-dim: rgba(255, 0, 51, 0.1);
+            
+            --accent: #ffffff;
+            --accent-dim: rgba(255, 255, 255, 0.5);
+            
+            --bg-void: #000000;
+            --bg-panel: #08080a;
+            --bg-card: rgba(15, 15, 15, 0.85);
+            
+            --border: rgba(255, 255, 255, 0.1);
+            --border-active: rgba(255, 0, 51, 0.5);
+            
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            scroll-behavior: smooth;
-        }
+        /* RESET */
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-void); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-black);
-            color: var(--text-white);
-            line-height: 1.6;
+            background-color: var(--bg-void);
+            color: var(--accent);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center;
             overflow-x: hidden;
+            font-size: 16px;
         }
 
-        h1, h2, h3, .brand-name {
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        /* ==========================================================================
+           2. VISUAL FX LAYERS
+           ========================================================================== */
+        #canvas-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; opacity: 0.3; pointer-events: none;
         }
-
-        ul { list-style: none; }
-        a { text-decoration: none; color: inherit; }
-
-        /* --- REUSABLE COMPONENTS --- */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .section-padding { padding: 80px 0; }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 50px;
-            font-size: 2.5rem;
-            color: var(--primary-red);
-            text-shadow: var(--glow);
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: var(--transition);
-            display: inline-block;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .btn-red {
-            background: var(--primary-red);
-            color: white;
-            box-shadow: var(--glow);
-        }
-
-        .btn-red:hover {
-            background: var(--dark-red);
-            transform: translateY(-3px);
-            box-shadow: 0 0 25px rgba(255, 0, 0, 1);
-        }
-
-        .btn-outline {
-            border: 2px solid var(--primary-red);
-            color: var(--primary-red);
-            background: transparent;
-        }
-
-        .btn-outline:hover {
-            background: var(--primary-red);
-            color: white;
-        }
-
-        /* --- NAVBAR --- */
-        nav {
-            height: 80px;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--dark-red);
-        }
-
-        nav .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
-  .logo {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--primary-red);
-    white-space: nowrap;        /* 🔑 one line */
-    overflow: hidden;
-    text-overflow: ellipsis;    /* extreme small screen এ safe */
-    max-width: 100%;
-}
-        /* --- HERO SECTION --- */
-        #hero {
-            height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2070') center/cover;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding-top: 80px;
-        }
-
-        .hero h1 {
-    font-size: clamp(1.6rem, 5vw, 3rem);
-    color: var(--primary-red);
-    white-space: nowrap;        /* 🔑 one line */
-    overflow: hidden;
-    text-overflow: ellipsis;    /* ultra small screen safe */
-    letter-spacing: 1px;
-}
-        .hero-content p { font-size: 1.2rem; color: var(--text-gray); margin-bottom: 30px; }
-        .hero-btns { display: flex; gap: 20px; justify-content: center; }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-
-
-        .course-card {
-            background: var(--card-bg);
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 20px;
-            transition: var(--transition);
-            text-align: center;
-        }
-
-        .course-card:hover {
-            border-color: var(--primary-red);
-            transform: scale(1.03);
-            box-shadow: var(--glow);
-        }
-
-        .course-card i { font-size: 3rem; color: var(--primary-red); margin-bottom: 20px; }
-        .course-card h3 { margin-bottom: 10px; font-size: 1.2rem; }
-        .course-info { display: flex; justify-content: space-between; margin: 20px 0; color: var(--text-gray); font-size: 0.9rem; }
-        .price { color: var(--primary-red); font-weight: bold; font-size: 1.2rem; }
-
-        /* --- WHY CHOOSE US --- */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            text-align: center;
-        }
-        .feature-item i { font-size: 2.5rem; color: var(--primary-red); margin-bottom: 15px; }
-
         
-
-        /* --- FAQ SECTION --- */
-        .faq-container { max-width: 800px; margin: 0 auto; }
-        .faq-item { background: var(--card-bg); margin-bottom: 10px; border-radius: 5px; overflow: hidden; }
-        .faq-header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            font-weight: bold;
-            transition: var(--transition);
+        .grid-overlay {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background: 
+                linear-gradient(rgba(255, 0, 51, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 51, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
-        .faq-header:hover { background: #222; }
-        .faq-body { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; color: var(--text-gray); }
-        .faq-item.active .faq-body { padding: 20px; max-height: 200px; border-top: 1px solid #333; }
 
-        /* --- CONTACT SECTION --- */
-        .contact-content { max-width: 600px; margin: 0 auto; background: var(--card-bg); padding: 40px; border-radius: 10px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            background: #000;
-            border: 1px solid #333;
-            color: white;
-            border-radius: 5px;
+        .vignette {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background: radial-gradient(circle at center, transparent 30%, #000 100%);
         }
-        .form-group input:focus { border-color: var(--primary-red); outline: none; }
 
-        /* --- MODAL / POPUP --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
+        /* ==========================================================================
+           3. PRELOADER (SYSTEM BOOT)
+           ========================================================================== */
+        .boot-screen {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease;
         }
-        .modal-content {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 500px;
-            border: 2px solid var(--primary-red);
-            box-shadow: var(--glow);
-            transform: scale(0.7);
-            transition: 0.3s ease;
+        .boot-logo {
+            font-family: var(--font-head); font-size: 40px; font-weight: 900;
+            color: var(--primary); letter-spacing: 5px; margin-bottom: 20px;
+            animation: glitch 1s infinite alternate;
         }
-        .modal-overlay.active { display: flex; }
-        .modal-overlay.active .modal-content { transform: scale(1); }
-        .modal-content i { font-size: 4rem; color: var(--primary-red); margin-bottom: 20px; }
-        .modal-content h2 { margin-bottom: 15px; }
+        .loading-bar {
+            width: 200px; height: 2px; background: #222; position: relative; overflow: hidden;
+        }
+        .loading-progress {
+            position: absolute; left: 0; top: 0; height: 100%; width: 0%;
+            background: var(--primary); box-shadow: 0 0 10px var(--primary);
+            animation: load 2s ease-in-out forwards;
+        }
+        .boot-text {
+            margin-top: 10px; font-family: var(--font-code); font-size: 10px; color: #666;
+        }
 
-        /* --- FOOTER --- */
+        /* ==========================================================================
+           4. LAYOUT CONTAINER (MOBILE SLIM PROFILE)
+           ========================================================================== */
+        .wrapper {
+            width: 100%; max-width: 500px; 
+            margin: 0 auto; padding: 0 0 40px 0;
+            position: relative; z-index: 10;
+        }
+
+        /* HEADER */
+        .top-bar {
+            padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;
+        }
+        .brand {
+            font-family: var(--font-head); font-weight: 800; font-size: 18px; 
+            letter-spacing: 1px; color: #fff; display: flex; align-items: center; gap: 8px;
+        }
+        .brand i { color: var(--primary); font-size: 20px; }
+        .status-badge {
+            font-family: var(--font-code); font-size: 10px; color: var(--primary);
+            border: 1px solid var(--primary); padding: 4px 8px; border-radius: 4px;
+            background: rgba(255,0,51,0.05); animation: pulse 2s infinite;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            text-align: center; padding: 40px 20px; position: relative; overflow: hidden;
+        }
+        .hero-glitch {
+            font-family: var(--font-head); font-size: 42px; font-weight: 900;
+            line-height: 1; text-transform: uppercase; margin-bottom: 10px;
+            position: relative; display: inline-block;
+        }
+        .hero-glitch::before, .hero-glitch::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .hero-glitch::before {
+            left: 2px; text-shadow: -1px 0 red; clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+        .hero-glitch::after {
+            left: -2px; text-shadow: -1px 0 blue; clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+        
+        .hero-sub {
+            font-size: 14px; color: #aaa; font-family: var(--font-code);
+            letter-spacing: 1px; margin-bottom: 20px;
+        }
+        .unit-badge {
+            display: inline-block; background: #111; border: 1px solid var(--border);
+            padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 700;
+            color: var(--primary); margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,0,51,0.1);
+        }
+
+        /* ==========================================================================
+           5. CONTENT CARDS
+           ========================================================================== */
+        .content-area { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
+
+        .info-card {
+            background: linear-gradient(145deg, #0a0a0c, #050505);
+            border: 1px solid var(--border); border-left: 3px solid var(--primary);
+            border-radius: 12px; padding: 25px; position: relative;
+            transform-style: preserve-3d; transition: transform 0.1s;
+        }
+        
+        .card-header {
+            display: flex; align-items: center; gap: 15px; margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;
+        }
+        .card-icon {
+            width: 40px; height: 40px; background: rgba(255,0,51,0.1);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: var(--primary); border: 1px solid var(--primary-dim);
+        }
+        .card-title {
+            font-family: var(--font-head); font-size: 16px; font-weight: 700; color: #fff;
+        }
+
+        .feature-list { list-style: none; }
+        .feature-list li {
+            display: flex; align-items: center; gap: 10px; font-size: 13px;
+            color: #ccc; margin-bottom: 10px; font-family: var(--font-body);
+        }
+        .feature-list li i { color: var(--primary); font-size: 10px; }
+
+        /* ==========================================================================
+           6. ACTION BUTTONS (THE MAIN ATTRACTION)
+           ========================================================================== */
+        .action-section {
+            margin-top: 30px; display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .cyber-btn {
+            position: relative; width: 100%; padding: 22px;
+            background: transparent; border: 1px solid var(--primary);
+            color: var(--primary); font-family: var(--font-head); font-weight: 800;
+            font-size: 16px; letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; overflow: hidden; transition: 0.3s;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+            text-decoration: none;
+        }
+
+        .cyber-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,0,51,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .cyber-btn:hover {
+            background: var(--primary); color: #000; box-shadow: 0 0 30px var(--primary-glow);
+            text-shadow: none; transform: scale(1.02); border-color: var(--primary);
+        }
+        .cyber-btn:hover::before { left: 100%; }
+
+        /* Button Variants */
+        .btn-module {
+            border-color: #fff; color: #fff;
+        }
+        .btn-module:hover {
+            background: #fff; color: #000; box-shadow: 0 0 30px rgba(255,255,255,0.4);
+        }
+
+        .btn-join {
+            background: rgba(255,0,51,0.1); animation: btnPulse 2s infinite;
+        }
+
+        /* ==========================================================================
+           7. FOOTER & EXTRAS
+           ========================================================================== */
+        .stats-row {
+            display: flex; justify-content: space-between; margin-top: 30px;
+            background: #111; padding: 15px; border-radius: 8px; border: 1px solid #222;
+        }
+        .stat-item { text-align: center; }
+        .stat-val { font-family: var(--font-head); font-size: 20px; font-weight: 700; color: #fff; }
+        .stat-lbl { font-size: 10px; color: #666; font-family: var(--font-code); }
+
+        /* FOOTER */
         footer {
-            background: #000;
-            padding: 50px 0 20px;
-            border-top: 1px solid var(--dark-red);
             text-align: center;
-        }
-        .social-icons { margin: 20px 0; display: flex; justify-content: center; gap: 20px; }
-        .social-icons a { font-size: 1.5rem; transition: var(--transition); }
-        .social-icons a:hover { color: var(--primary-red); transform: translateY(-5px); }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
-            .hero-content h1 { font-size: 2.5rem; }
-            .about-grid { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
-            .section-title { font-size: 2rem; }
+            padding: 30px 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #555;
         }
 
-        /* Ripple Effect */
-        .ripple {
-            position: relative;
-            overflow: hidden;
+        footer strong {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+        /* ANIMATIONS */
+        @keyframes load { 0%{width:0%} 100%{width:100%} }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        @keyframes btnPulse { 0%,100%{box-shadow: 0 0 10px var(--primary-dim);} 50%{box-shadow: 0 0 25px var(--primary-glow);} }
+        
+        @keyframes glitch-anim {
+            0% { clip: rect(30px, 9999px, 10px, 0); }
+            100% { clip: rect(10px, 9999px, 40px, 0); }
         }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(60px, 9999px, 90px, 0); }
+            100% { clip: rect(40px, 9999px, 70px, 0); }
+        }
+
     </style>
 </head>
 <body>
 
-    <!-- Navigation -->
-    <nav id="navbar">
-        <div class="container">
-            <div class="logo">BANGLADESH CYBER TROOPS</div>
-            <ul class="nav-links">
-                <li><a href="#hero">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#courses">Courses</a></li>
-                <li><a href="#faq">FAQ</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+    <canvas id="canvas-bg"></canvas>
+    <div class="grid-overlay"></div>
+    <div class="vignette"></div>
 
-    <!-- Hero Section -->
-    <section id="hero">
-        <div class="hero-content container">
-            <h4>Bangladesh Cyber Troops</h4>
-            <p>Powered by <strong>Troops IT Solutions</strong></p>
-            <div class="hero-btns">
-                <a href="#courses" class="btn btn-red">View Courses</a>
-                <button class="btn btn-outline enroll-btn">Enroll Now</button>
+    <div class="wrapper">
+        
+        <div class="top-bar">
+            <div class="brand">
+                <i class="fas fa-shield-alt"></i> TEAM BCT
             </div>
+            <div class="status-badge">RECRUITING</div>
         </div>
-    </section>
 
-    
+        <div class="hero">
+            <div class="unit-badge">AL HARAS UNIT OF BCT </div>
+            <h1 class="hero-glitch" data-text="FREE BATCH - 11">FREE <br>
+BATCH - 11</h1>
+            <h2 style="font-family:var(--font-head); font-weight:700; color:#fff; font-size:24px; margin-bottom:10px;">CYBER FIGHTER RECRUITMENT</h2>
+            <p class="hero-sub">Reporting & Recovery Skills Learning</p>
+        </div>
 
-    <!-- Why Choose Us -->
-    <section id="features" class="section-padding">
-        <div class="container">
-            <h2 class="section-title">Why Choose Us</h2>
-            <div class="features-grid">
-                <div class="feature-item">
-                    <i class="fas fa-user-shield"></i>
-                    <h3>Expert Mentors</h3>
-                    <p>Learn from industry veterans.</p>
+        <div class="content-area">
+            
+            <div class="info-card" id="card1">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-flag"></i></div>
+                    <div class="card-title">TAKEDOWN OPS</div>
                 </div>
-                <div class="feature-item">
-                    <i class="fas fa-laptop-code"></i>
-                    <h3>Practical Training</h3>
-                    <p>Real-world lab environments.</p>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-certificate"></i>
-                    <h3>Certificate</h3>
-                    <p>Get recognized globally.</p>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-headset"></i>
-                    <h3>Lifetime Support</h3>
-                    <p>We guide you forever.</p>
-                </div>
+                <ul class="feature-list">
+                    <li><i class="fas fa-square"></i> Advanced Content Reporting</li>
+                    <li><i class="fas fa-square"></i> Mass Report Automation Logic</li>
+                    <li><i class="fas fa-square"></i> ID & Impersonation Removal</li>
+                    <li><i class="fas fa-square"></i> Legal Takedown Protocols</li>
+                </ul>
             </div>
-        </div>
-    </section>
 
-    <!-- Courses Section -->
-    <section id="courses" class="section-padding">
-        <div class="container">
-            <h2 class="section-title">Our Courses</h2>
-            <div class="course-grid">
-                <!-- Course 1 -->
-                <div class="course-card">
-                    <i class="fas fa-user-secret"></i>
-                    <h3>Ethical Hacking (Basic)</h3>
-                    <p>Master the basics of penetration testing and network security.</p>
-                    <div class="course-info">
-                        <span><i class="far fa-clock"></i> 3 Months</span>
-                        <span class="price">৳ 5,000</span>
-                    </div>
-                    <button class="btn btn-red enroll-btn" style="width:100%;">Enroll Now</button>
+            <div class="info-card" id="card2">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-user-shield"></i></div>
+                    <div class="card-title">RECOVERY INTEL</div>
                 </div>
-                <!-- Course 2 -->
-                <div class="course-card">
-                    <i class="fas fa-code"></i>
-                    <h3>Python for Hackers</h3>
-                    <p>Build custom security tools and automate attacks using Python.</p>
-                    <div class="course-info">
-                        <span><i class="far fa-clock"></i> 2 Months</span>
-                        <span class="price">৳ 4,000</span>
-                    </div>
-                    <button class="btn btn-red enroll-btn" style="width:100%;">Enroll Now</button>
+                <ul class="feature-list">
+                    <li><i class="fas fa-square"></i> Hacked Account Retrieval</li>
+                    <li><i class="fas fa-square"></i> 2FA Bypass Prevention</li>
+                    <li><i class="fas fa-square"></i> Disabled ID Recovery</li>
+                    <li><i class="fas fa-square"></i> Social Engineering Defense</li>
+                </ul>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-val">FREE</div>
+                    <div class="stat-lbl">COST</div>
                 </div>
-                <!-- Course 3 -->
-                <div class="course-card">
-                    <i class="fas fa-shield-virus"></i>
-                    <h3>Cyber Defense Specialist</h3>
-                    <p>Advanced techniques to defend infrastructure from cyber threats.</p>
-                    <div class="course-info">
-                        <span><i class="far fa-clock"></i> 4 Months</span>
-                        <span class="price">৳ 8,000</span>
-                    </div>
-                    <button class="btn btn-red enroll-btn" style="width:100%;">Enroll Now</button>
+                <div class="stat-item">
+                    <div class="stat-val">100%</div>
+                    <div class="stat-lbl">ONLINE</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val">LIFETIME</div>
+                    <div class="stat-lbl">ACCESS</div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    
-    
-    <!-- FAQ Section -->
-    <section id="faq" class="section-padding">
-        <div class="container">
-            <h2 class="section-title">Frequently Asked Questions</h2>
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-header">What is the requirement for joining? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-body">Just a basic understanding of computers and a passion for learning security.</div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-header">Do you provide certificates? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-body">Yes, upon successful completion and exam, you will receive a professional certificate.</div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-header">Is this for beginners? <i class="fas fa-chevron-down"></i></div>
-                    <div class="faq-body">Yes, we have courses ranging from basic to advanced levels.</div>
-                </div>
-            </div>
-        </div>
-    </section>
+            <div class="action-section">
+                
+                <a href="https://bct-module-al-haras-unit.netlify.app/" target="_blank" class="cyber-btn btn-module">
+                    <i class="fas fa-book-dead"></i> ACCESS MODULES
+                </a>
 
-    <!-- Contact Section -->
-    <section id="contact" class="section-padding">
-        <div class="container">
-            <h2 class="section-title">Contact Us</h2>
-            <div class="contact-content">
-                <form id="contactForm">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" id="name" required placeholder="Your Name">
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="email" required placeholder="Your Email">
-                    </div>
-                    <div class="form-group">
-                        <label>Message</label>
-                        <textarea id="message" rows="5" required placeholder="How can we help?"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-red" style="width:100%;">Send Message</button>
-                </form>
-                <div id="formSuccess" style="display:none; color: #00ff00; text-align:center; margin-top:20px;">
-                    <i class="fas fa-check-circle"></i> Message sent successfully!
-                </div>
-            </div>
-        </div>
-    </section>
+                <a href="https://forms.gle/5Jy9wffPjMkEdCud9" target="_blank" class="cyber-btn btn-join">
+                    <i class="fas fa-file-signature"></i> JOINING FORM
+                </a>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <h3 class="brand-name" style="color: var(--primary-red);">Bangladesh Cyber Troops</h3>
-            <p>A Unit of Troops IT Solutions</p>
-            <div class="social-icons">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
             </div>
-            <p>&copy; 2026 Bangladesh Cyber Troops – All Rights Reserved</p>
+
+            <div style="text-align:center; margin-top:20px; font-size:12px; color:#666; font-family:var(--font-code);">
+                ⚠ LIMITED SEATS AVAILABLE FOR THIS BATCH
+            </div>
+
         </div>
+
+        <footer>
+        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
     </footer>
-
-    <!-- Enrollment Modal -->
-    <div class="modal-overlay" id="enrollModal">
-        <div class="modal-content">
-            <i class="fas fa-tools"></i>
-            <h2>🚧 Enrollment Coming Soon</h2>
-            <p>We are preparing something powerful. Stay connected with Bangladesh Cyber Troops.</p>
-            <br>
-            <button class="btn btn-red" id="closeModal">Close</button>
-        </div>
     </div>
 
-    <!-- JAVASCRIPT -->
     <script>
-        // 1. Navbar Scroll Effect
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                nav.style.background = 'rgba(0, 0, 0, 0.95)';
-                nav.style.boxShadow = '0 5px 20px rgba(0,0,0,0.5)';
-            } else {
-                nav.style.background = 'rgba(0, 0, 0, 0.9)';
-                nav.style.boxShadow = 'none';
+        // 1. BOOT SCREEN LOGIC
+        setTimeout(() => {
+            const boot = document.getElementById('bootScreen');
+            boot.style.opacity = '0';
+            setTimeout(() => boot.style.display = 'none', 500);
+        }, 2200);
+
+        // 2. PARTICLE BACKGROUND
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let w, h, particles = [];
+
+        const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+                this.size = Math.random() * 1.5;
             }
-        });
-
-        // 2. Enrollment Modal Logic
-        const enrollBtns = document.querySelectorAll('.enroll-btn');
-        const modal = document.getElementById('enrollModal');
-        const closeModal = document.getElementById('closeModal');
-
-        enrollBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                modal.classList.add('active');
-            });
-        });
-
-        closeModal.addEventListener('click', () => {
-            modal.classList.remove('active');
-        });
-
-        // Close modal on click outside
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x < 0 || this.x > w) this.vx *= -1;
+                if(this.y < 0 || this.y > h) this.vy *= -1;
             }
-        });
+            draw() {
+                ctx.fillStyle = '#ff0033';
+                ctx.globalAlpha = 0.4;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
 
-        // 3. FAQ Accordion Logic
-        const faqItems = document.querySelectorAll('.faq-item');
-        faqItems.forEach(item => {
-            item.querySelector('.faq-header').addEventListener('click', () => {
-                item.classList.toggle('active');
-                // Close other items
-                faqItems.forEach(otherItem => {
-                    if (otherItem !== item) {
-                        otherItem.classList.remove('active');
+        for(let i=0; i<60; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, w, h);
+            particles.forEach(p => { p.update(); p.draw(); });
+            
+            // Connect lines
+            particles.forEach((a, i) => {
+                particles.slice(i + 1).forEach(b => {
+                    const dist = Math.hypot(a.x - b.x, a.y - b.y);
+                    if (dist < 100) {
+                        ctx.strokeStyle = `rgba(255, 0, 51, ${1 - dist/100})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y);
+                        ctx.lineTo(b.x, b.y);
+                        ctx.stroke();
                     }
                 });
             });
-        });
+            requestAnimationFrame(animate);
+        }
+        animate();
 
-        // 4. Contact Form Validation & Fake Success Message
-        const contactForm = document.getElementById('contactForm');
-        const formSuccess = document.getElementById('formSuccess');
-
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Basic validation check
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-
-            if (name && email && message) {
-                contactForm.style.display = 'none';
-                formSuccess.style.display = 'block';
+        // 3. 3D TILT EFFECT FOR CARDS
+        const cards = document.querySelectorAll('.info-card');
+        
+        document.addEventListener('mousemove', (e) => {
+            if(window.innerWidth > 768) {
+                const x = (window.innerWidth / 2 - e.pageX) / 25;
+                const y = (window.innerHeight / 2 - e.pageY) / 25;
                 
-                // Reset form for later
-                setTimeout(() => {
-                    formSuccess.style.display = 'none';
-                    contactForm.style.display = 'block';
-                    contactForm.reset();
-                }, 5000);
+                cards.forEach(card => {
+                    card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+                });
             }
         });
-
-        // 5. Smooth Scroll for Navigation Links
-        document.querySelectorAll('nav a').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                document.querySelector(targetId).scrollIntoView({
-                    behavior: 'smooth'
-                });
+        
+        // Mobile Gyroscope Tilt (Optional/Advanced)
+        window.addEventListener("deviceorientation", (e) => {
+            const x = e.gamma / 5; // Left/Right
+            const y = e.beta / 5;  // Front/Back
+            cards.forEach(card => {
+                card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
             });
         });
+
     </script>
 </body>
 </html>
