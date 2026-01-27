@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ABOUT BCT </title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ==========================================================================
+           1. CORE SYSTEM VARIABLES (THEME CONFIGURATION)
+           ========================================================================== */
+        :root {
+            /* COLOR PALETTE */
+            --primary: #ff0033;
+            --primary-dim: rgba(255, 0, 51, 0.1);
+            --primary-glow: rgba(255, 0, 51, 0.6);
+            --secondary: #00f7ff; /* Cyan accent for contrast */
+            
+            --bg-void: #020202;
+            --bg-glass: rgba(10, 10, 10, 0.7);
+            
+            --border: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(255, 0, 51, 0.5);
+            
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
+            
+            /* TYPOGRAPHY */
+            --font-head: 'Orbitron', sans-serif; /* Unique Sci-Fi Font */
+            --font-body: 'Rajdhani', sans-serif;
+            --font-code: 'Share Tech Mono', monospace;
+            
+            --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        /* RESET & BASE */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-void); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        body {
+            background-color: var(--bg-void);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* ==========================================================================
+           2. DYNAMIC BACKGROUND (HOLOGRAPHIC GRID)
+           ========================================================================== */
+        #holo-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; opacity: 0.3; pointer-events: none;
+        }
+        
+        .vignette {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background: radial-gradient(circle at center, transparent 0%, #000 120%);
+        }
+
+        /* Decorative Side Lines (Mobile Friendly) */
+        .side-line {
+            position: fixed; top: 0; bottom: 0; width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--border), transparent);
+            z-index: -1;
+        }
+        .sl-left { left: 20px; }
+        .sl-right { right: 20px; }
+
+        /* ==========================================================================
+           3. CONTAINER & LAYOUT (MOBILE OPTIMIZED)
+           ========================================================================== */
+        /* This constrains width for better mobile reading */
+        .wrapper {
+            max-width: 800px; margin: 0 auto; padding: 60px 25px;
+            position: relative; z-index: 10;
+        }
+
+        /* ==========================================================================
+           4. HERO SECTION (TYPOGRAPHY FOCUSED)
+           ========================================================================== */
+        .hero-head {
+            text-align: center; margin-bottom: 80px; position: relative;
+        }
+        
+        .sys-badge {
+            display: inline-block; padding: 4px 12px; border: 1px solid var(--primary);
+            color: var(--primary); font-family: var(--font-code); font-size: 10px;
+            letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase;
+            background: rgba(255,0,51,0.05); box-shadow: 0 0 15px var(--primary-dim);
+        }
+
+        .hero-title {
+            font-family: var(--font-head); font-weight: 900; 
+            font-size: clamp(2.5rem, 8vw, 5rem); /* Responsive Font */
+            line-height: 1.1; text-transform: uppercase; color: #fff;
+            margin-bottom: 20px; letter-spacing: 2px;
+            text-shadow: 0 0 30px rgba(255,255,255,0.1);
+        }
+        
+        .hero-title span { 
+            color: transparent; -webkit-text-stroke: 1px var(--primary);
+            position: relative; display: inline-block;
+        }
+        
+        /* Glitch Effect on Text */
+        .glitch { position: relative; }
+        .glitch::before, .glitch::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .glitch::before { left: 2px; text-shadow: -1px 0 red; clip: rect(24px, 550px, 90px, 0); animation: glitch-anim-2 3s infinite linear alternate-reverse; }
+        .glitch::after { left: -2px; text-shadow: -1px 0 cyan; clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2.5s infinite linear alternate-reverse; }
+
+        .hero-desc {
+            font-size: 1.1rem; color: var(--text-muted); line-height: 1.8;
+            max-width: 600px; margin: 0 auto; font-weight: 500;
+        }
+
+        /* ==========================================================================
+           5. IDENTITY CARDS (HOLOGRAPHIC GLASS)
+           ========================================================================== */
+        .identity-stack {
+            display: flex; flex-direction: column; gap: 30px; margin-bottom: 100px;
+        }
+
+        .holo-card {
+            background: linear-gradient(145deg, rgba(20,20,20,0.6), rgba(5,5,5,0.8));
+            border: 1px solid var(--border); border-left: 2px solid var(--primary);
+            padding: 30px; border-radius: 4px; position: relative; overflow: hidden;
+            backdrop-filter: blur(10px); transition: 0.4s var(--ease-out);
+            clip-path: polygon(
+                0 0, 100% 0, 100% calc(100% - 20px), 
+                calc(100% - 20px) 100%, 0 100%
+            );
+        }
+        
+        .holo-card:hover {
+            transform: translateX(10px); border-color: var(--primary);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        .hc-header {
+            display: flex; align-items: center; gap: 15px; margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;
+        }
+        
+        .hc-icon {
+            font-size: 24px; color: var(--primary); text-shadow: 0 0 10px var(--primary);
+        }
+        
+        .hc-title {
+            font-family: var(--font-head); font-size: 20px; font-weight: 700;
+            color: #fff; letter-spacing: 1px;
+        }
+
+        .hc-body {
+            font-size: 15px; color: #ccc; text-align: justify;
+        }
+
+        /* TROOPS IT SPECIAL STYLE */
+        .it-card { border-left-color: var(--secondary); }
+        .it-card .hc-icon { color: var(--secondary); text-shadow: 0 0 10px var(--secondary); }
+        .it-card:hover { border-color: var(--secondary); }
+
+        /* ==========================================================================
+           6. TIMELINE (VERTICAL HUD)
+           ========================================================================== */
+        .section-separator {
+            text-align: center; margin-bottom: 60px; position: relative;
+        }
+        .sep-title {
+            font-family: var(--font-head); font-size: 32px; font-weight: 800;
+            color: #fff; text-transform: uppercase; letter-spacing: 4px;
+        }
+        .sep-sub {
+            font-family: var(--font-code); color: var(--primary); font-size: 12px;
+            letter-spacing: 2px; margin-top: 5px; display: block;
+        }
+
+        .timeline {
+            position: relative; padding-left: 30px; margin-bottom: 100px;
+        }
+        /* Vertical Line */
+        .timeline::before {
+            content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 2px;
+            background: linear-gradient(to bottom, var(--primary), transparent);
+        }
+
+        .tl-item {
+            position: relative; margin-bottom: 50px; opacity: 0; transform: translateX(-20px);
+            transition: 0.6s var(--ease-out);
+        }
+        .tl-item.visible { opacity: 1; transform: translateX(0); }
+
+        /* Dot */
+        .tl-item::before {
+            content: ''; position: absolute; left: -36px; top: 5px; width: 14px; height: 14px;
+            background: #000; border: 2px solid var(--primary); border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary); z-index: 2;
+        }
+
+        .tl-date {
+            font-family: var(--font-code); color: var(--primary); font-size: 14px;
+            font-weight: 700; margin-bottom: 5px; display: block;
+        }
+        
+        .tl-head {
+            font-family: var(--font-head); font-size: 22px; color: #fff; margin-bottom: 10px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        
+        .tl-desc { font-size: 15px; color: #999; line-height: 1.6; }
+
+        /* ==========================================================================
+           7. MISSION & STATS
+           ========================================================================== */
+        .vision-box {
+            text-align: center; padding: 60px 20px; position: relative;
+            background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+            margin-bottom: 50px;
+        }
+        .vision-box::before, .vision-box::after {
+            content: ''; position: absolute; width: 20px; height: 20px;
+            border: 2px solid var(--primary); transition: 0.3s;
+        }
+        .vision-box::before { top: 0; left: 0; border-right: none; border-bottom: none; }
+        .vision-box::after { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+        .vision-text {
+            font-family: var(--font-head); font-size: 24px; color: #fff;
+            max-width: 600px; margin: 0 auto 40px; line-height: 1.4;
+        }
+        .vision-text span { color: var(--primary); }
+
+        .stats-row {
+            display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
+        }
+        .stat-col { text-align: center; min-width: 120px; }
+        .stat-val {
+            font-family: var(--font-head); font-size: 3rem; font-weight: 800;
+            color: #fff; display: block; line-height: 1; text-shadow: 0 0 20px rgba(255,0,51,0.4);
+        }
+        .stat-lbl {
+            font-family: var(--font-code); font-size: 10px; color: #666;
+            margin-top: 5px; display: block; letter-spacing: 1px;
+        }
+
+        /* ==========================================================================
+           8. ANIMATIONS
+           ========================================================================== */
+        @keyframes glitch-anim {
+            0% { clip: rect(30px, 9999px, 10px, 0); transform: skew(0.6deg); }
+            50% { clip: rect(50px, 9999px, 80px, 0); transform: skew(-0.6deg); }
+            100% { clip: rect(10px, 9999px, 40px, 0); transform: skew(0.2deg); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(60px, 9999px, 90px, 0); transform: skew(-0.6deg); }
+            50% { clip: rect(10px, 9999px, 30px, 0); transform: skew(0.6deg); }
+            100% { clip: rect(40px, 9999px, 70px, 0); transform: skew(-0.2deg); }
+        }
+
+        /* RESPONSIVE TWEAKS */
+        @media (max-width: 600px) {
+            .wrapper { padding: 40px 20px; }
+            .hero-title { font-size: 3rem; }
+            .side-line { display: none; }
+            .timeline { margin-left: 10px; }
+        }
+        .osman-hadi {
+    color: var(--primary);
+    font-weight: 700;
+    text-shadow: 0 0 12px var(--primary-glow);
+    letter-spacing: 1px;
+}
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #555;
+        }
+
+        footer strong {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+    </style>
+</head>
+<body>
+
+    <canvas id="holo-canvas"></canvas>
+    <div class="vignette"></div>
+    
+    <div class="side-line sl-left"></div>
+    <div class="side-line sl-right"></div>
+
+    <div class="wrapper">
+        
+        <div class="hero-head">
+            <span class="sys-badge">ESTABLISHED 2024</span>
+            <h1 class="hero-title">
+                WE ARE <span class="glitch" data-text="TEAM BCT">TEAM BCT</span>
+            </h1>
+            <p class="hero-desc">
+                The digital sentinels of the nation. Operating in the shadows to ensure the light of truth remains unextinguished.
+            </p>
+        </div>
+
+        <div class="identity-stack">
+            <div class="holo-card">
+                <div class="hc-header">
+                    <i class="fas fa-shield-halved hc-icon"></i>
+                    <div class="hc-title">BCT's CORE</div>
+                </div>
+                <div class="hc-body">
+                    <p><strong>Bangladesh Cyber Troops</strong> is not merely a group; it is a firewall. We stand against atheism, gambling syndicates, fascist propaganda, and anti-state narratives. Our operations are precise, ethical, and devastating to those who threaten our sovereignty.</p>
+                </div>
+            </div>
+
+            <div class="holo-card it-card">
+                <div class="hc-header">
+                    <i class="fas fa-code-branch hc-icon"></i>
+                    <div class="hc-title">TROOPS IT SOLUTION</div>
+                </div>
+                <div class="hc-body">
+                    <p>The commercial arm of our operations. We provide elite-level web development, cybersecurity auditing, and digital infrastructure services at affordable rates. Building the future while protecting the present.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-separator">
+            <span class="sep-title">LEGACY</span>
+            <span class="sep-sub">PROTOCOL HISTORY</span>
+        </div>
+
+        <div class="timeline">
+            <div class="tl-item">
+                <span class="tl-date">09 SEPTEMBER 2024</span>
+                <h3 class="tl-head">THE INCEPTION</h3>
+                <p class="tl-desc">Team BCT began its journey with only 11 dedicated members. Amidst chaos and uncertainty, we formed a brotherhood to protect our digital borders.</p>
+            </div>
+
+            <div class="tl-item">
+                <span class="tl-date">MAY 2025</span>
+                <h3 class="tl-head">FIRST BOLD STATEMENT</h3>
+                <p class="tl-desc">We earned the public's trust by removing a blasphemous video against Prophet Muhammad (PBUH) from the channel of atheist Imran Bashir. A victory for faith.</p>
+            </div>
+
+            <div class="tl-item">
+                <span class="tl-date">2025 - PRESENT</span>
+                <h3 class="tl-head">DOMINANCE</h3>
+                <p class="tl-desc">Neutralized 50,000+ hostile accounts including gambling rings and anti-state propaganda machines. Launched counter-measures against cyber aggression from India & Israel.</p>
+            </div>
+
+            <div class="tl-item">
+                <span class="tl-date">BEYOND CYBER</span>
+                <h3 class="tl-head">SOCIAL JUSTICE</h3>
+                <p class="tl-desc">Raised voice for martyr <span class="osman-hadi">Osman Hadi</span> against fascism. We actively participate in humanitarian aid and social reforms beyond the screen.</p>
+            </div>
+        </div>
+
+        <div class="vision-box">
+            <p class="vision-text">
+                "Our goal is a <span>Virtual Utopia</span>. Where Allah's law prevails, truth is amplified, and the people find a digital friend in BCT."
+            </p>
+
+            <div class="stats-row">
+                <div class="stat-col">
+                    <span class="stat-val" data-target="50000">0</span>
+                    <span class="stat-lbl">TAKEDOWNS</span>
+                </div>
+                <div class="stat-col">
+                    <span class="stat-val" data-target="100">0</span>
+                    <span class="stat-lbl">SUCCESS RATE %</span>
+                </div>
+                <div class="stat-col">
+                    <span class="stat-val" data-target="24">0</span>
+                    <span class="stat-lbl">/7 SURVEILLANCE</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+<footer>
+        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
+    </footer>
+
+    <script>
+        // 1. HOLO BACKGROUND
+        const canvas = document.getElementById('holo-canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, p = [];
+
+        const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 1.5;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x < 0 || this.x > w) this.vx *= -1;
+                if(this.y < 0 || this.y > h) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = '#ff0033';
+                ctx.globalAlpha = 0.3;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for(let i=0; i<50; i++) p.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, w, h);
+            p.forEach(part => {
+                part.update();
+                part.draw();
+                // Connect lines
+                p.forEach(p2 => {
+                    let dx = part.x - p2.x;
+                    let dy = part.y - p2.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if(dist < 100) {
+                        ctx.strokeStyle = `rgba(255, 0, 51, ${1 - dist/100})`;
+                        ctx.lineWidth = 0.2;
+                        ctx.beginPath();
+                        ctx.moveTo(part.x, part.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 2. SCROLL REVEAL
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Start counters if stats visible
+                    if(entry.target.classList.contains('vision-box')) startCounters();
+                }
+            });
+        }, {threshold: 0.1});
+
+        document.querySelectorAll('.tl-item').forEach(el => observer.observe(el));
+        observer.observe(document.querySelector('.vision-box'));
+
+        // 3. STATS COUNTER
+        let counted = false;
+        function startCounters() {
+            if(counted) return;
+            counted = true;
+            document.querySelectorAll('.stat-val').forEach(num => {
+                let start = 0;
+                let end = parseInt(num.getAttribute('data-target'));
+                let duration = 2000;
+                let step = Math.ceil(end / (duration / 20));
+                
+                let timer = setInterval(() => {
+                    start += step;
+                    if(start >= end) {
+                        num.innerText = end + (end > 100 ? "+" : "");
+                        clearInterval(timer);
+                    } else {
+                        num.innerText = start;
+                    }
+                }, 20);
+            });
+        }
+    </script>
+</body>
+</html>
