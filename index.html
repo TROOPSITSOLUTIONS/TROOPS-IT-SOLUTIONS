@@ -281,88 +281,6 @@
 }
 
 
-/* ===== MODERN AUTH MODAL ===== */
-.auth-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.92);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-}
-
-.auth-box {
-    width: 360px;
-    background: linear-gradient(180deg, #0a0a0a, #050505);
-    border: 1px solid var(--primary);
-    padding: 30px;
-    box-shadow: 0 0 40px var(--primary-glow);
-    font-family: 'Orbitron', sans-serif;
-    animation: fadeUp 0.4s ease;
-}
-
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.auth-box h2 {
-    color: var(--primary);
-    text-align: center;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
-    font-size: 18px;
-}
-
-.auth-box input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 12px;
-    background: #000;
-    border: 1px solid #333;
-    color: #fff;
-    font-family: 'JetBrains Mono';
-}
-
-.auth-box input:focus {
-    border-color: var(--primary);
-}
-
-.auth-box button {
-    width: 100%;
-    padding: 12px;
-    background: var(--primary);
-    color: #000;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 5px;
-}
-
-.switch-text {
-    text-align: center;
-    font-size: 12px;
-    color: #777;
-    margin-top: 15px;
-}
-
-.switch-text span {
-    color: var(--primary);
-    cursor: pointer;
-}
-
-.cancel {
-    text-align: center;
-    font-size: 11px;
-    color: #555;
-    margin-top: 12px;
-    cursor: pointer;
-}
-
-.signup-only {
-    display: none;
-}
 
     </style>
     <!--Start of Tawk.to Script-->
@@ -540,7 +458,7 @@ s0.parentNode.insertBefore(s1,s0);
                     </div>
                     <div class="mega-grid">
                         ${section.tools.map(tool => `
-                        <a href="${tool.url}" class="tech-card tool-link">
+                        <a href="${tool.url}" class="tech-card">
                                 <div class="card-header">
                                     <i class="${tool.icon} card-icon"></i>
                                     ${tool.tag ? `<span class="card-tag ${tool.tag_class}">${tool.tag}</span>` : ''}
@@ -659,105 +577,6 @@ window.onclick = function(event) {
 
 
     </script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB_6Xw4UUO0tYeLntkeRIAsj2ZDSU_gAMA",
-  authDomain: "team-bct-login.firebaseapp.com",
-  projectId: "team-bct-login",
-  storageBucket: "team-bct-login.firebasestorage.app",
-  messagingSenderId: "200394784719",
-  appId: "1:200394784719:web:8eac65afd5340eae929cba"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-let mode = "login";
-let pendingToolURL = null;
-
-/* TOOL CLICK */
-document.addEventListener("click", (e) => {
-  const tool = e.target.closest(".tool-link");
-  if (!tool) return;
-
-  e.preventDefault();
-  pendingToolURL = tool.getAttribute("href");
-
-  if (auth.currentUser) {
-    window.location.href = pendingToolURL;
-  } else {
-    openAuth();
-  }
-});
-
-/* SWITCH MODE */
-window.switchAuth = function(type) {
-  mode = type;
-  document.getElementById("authTitle").innerText =
-    type === "signup" ? "CREATE ACCOUNT" : "LOGIN REQUIRED";
-
-  document.querySelectorAll(".signup-only").forEach(el => {
-    el.style.display = type === "signup" ? "block" : "none";
-  });
-
-  document.getElementById("authActionBtn").innerText =
-    type === "signup" ? "SIGN UP" : "LOGIN";
-};
-
-/* ACTION */
-document.getElementById("authActionBtn").onclick = () => {
-  const emailOrPhone = authEmailPhone.value;
-  const pass = authPassword.value;
-
-  if (mode === "login") {
-    signInWithEmailAndPassword(auth, emailOrPhone, pass)
-      .then(() => {
-        closeAuth();
-        window.location.href = pendingToolURL;
-      })
-      .catch(err => alert(err.message));
-  } else {
-    createUserWithEmailAndPassword(auth, emailOrPhone, pass)
-      .then(() => {
-        closeAuth();
-        window.location.href = pendingToolURL;
-      })
-      .catch(err => alert(err.message));
-  }
-};
-
-window.openAuth = () => authOverlay.style.display = "flex";
-window.closeAuth = () => authOverlay.style.display = "none";
-</script>
-<!-- ADVANCED AUTH MODAL -->
-<div class="auth-overlay" id="authOverlay">
-  <div class="auth-box">
-
-    <h2 id="authTitle">LOGIN REQUIRED</h2>
-
-    <!-- SIGNUP EXTRA FIELDS -->
-    <input type="text" id="authName" placeholder="Full Name" class="signup-only">
-    <input type="text" id="authPhone" placeholder="Phone Number" class="signup-only">
-
-    <!-- COMMON -->
-    <input type="text" id="authEmailPhone" placeholder="Email or Phone">
-    <input type="password" id="authPassword" placeholder="Password">
-
-    <button id="authActionBtn">LOGIN</button>
-
-    <p class="switch-text">
-      No account? <span onclick="switchAuth('signup')">Create one</span>
-    </p>
-
-    <p class="cancel" onclick="closeAuth()">Cancel</p>
-  </div>
-</div>
 </body>
 </html>
