@@ -280,7 +280,9 @@
     text-shadow: 0 0 10px var(--primary-glow);
 }
 
-
+.clickable-slide {
+    cursor: pointer;
+}
 
     </style>
     <!--Start of Tawk.to Script-->
@@ -329,7 +331,7 @@ s0.parentNode.insertBefore(s1,s0);
             <a href="https://about-us-bct.vercel.app/" class="nav-link"><span>01.</span> About Us</a>
             <a href="https://meetourteambct.netlify.app/" class="nav-link"><span>02.</span> Meet The Team</a>
             <a href="https://our-servicess.netlify.app/" class="nav-link"><span>03.</span> Our Services</a>
-            <a href="courses.html" class="nav-link"><span>04.</span> Courses</a>
+            <a href="https://bct-courses.vercel.app/" class="nav-link"><span>04.</span> Courses</a>
             <a href="https://noteablework.netlify.app/" class="nav-link"><span>05.</span> Notable Works</a>
             <a href="https://bct-contact-us.netlify.app/" class="nav-link" style="color:var(--primary);"><span>06.</span> Contact</a>
         </div>
@@ -345,7 +347,11 @@ s0.parentNode.insertBefore(s1,s0);
   <div class="banner-frame">
     <div class="banner-slider" id="bannerSlider">
         <img src="https://d.top4top.io/p_3662nzvpq0.jpg" alt="Bangladesh Cyber Troops">
-        <img src="https://c.top4top.io/p_3663jsg8w0.png" alt="Bangladesh Cyber Troops">
+        <img 
+  src="osmanhadi.jpeg"
+  alt="Osman Hadi"
+  class="clickable-slide"
+  data-link="osmanhadiarchive.html">
         <img src="https://l.top4top.io/p_3663q7p9i0.png" alt="Bangladesh Cyber Troops">
     </div>
 </div>
@@ -577,6 +583,15 @@ window.onclick = function(event) {
 
 
     </script>
-
+<script>
+document.querySelectorAll('.clickable-slide').forEach(img => {
+    img.addEventListener('click', () => {
+        const link = img.getAttribute('data-link');
+        if (link) {
+            window.open(link, '_blank');
+        }
+    });
+});
+</script>
 </body>
 </html>
