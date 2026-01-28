@@ -200,14 +200,21 @@
         }
         .toast-container.active { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        /* --- FOOTER --- */
+        /* --- 6. FOOTER --- */
+   
         footer {
-            border-top: 1px solid var(--border);
-            padding: 30px; text-align: center;
-            background: #000; color: #444; font-size: 12px;
-            font-family: 'JetBrains Mono';
+            text-align: center;
+            padding: 30px 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #555;
         }
 
+        footer strong {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
         /* --- ANIMATIONS --- */
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -253,11 +260,9 @@
         <i class="fas fa-check-circle"></i> COPIED TO CLIPBOARD
     </div>
 
-    <footer>
-        &copy; 2026 - Rights Reserved : Bangladesh Cyber Troops
-Developer: Troops IT Solution
+<footer>
+        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | <br>DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
     </footer>
-
     <script>
         // --- MATRIX BACKGROUND LOGIC ---
         const canvas = document.getElementById('bg-canvas');
