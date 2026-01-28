@@ -1,36 +1,25 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCT-MAIL | BCT Intelligence Protocol</title>
+    <title>BCT-MAIL | Secure Terminal Identity</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
+                        termGreen: '#00ff41',
                         bctRed: '#ff0000',
-                        bctDark: '#050505',
-                        bctGray: '#121212',
-                        bctAccent: '#330000'
+                        termBg: '#050505',
+                        termPanel: '#0d0d0d'
                     },
                     fontFamily: {
                         mono: ['"JetBrains Mono"', 'monospace'],
                         display: ['"Rajdhani"', 'sans-serif']
-                    },
-                    animation: {
-                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'scan': 'scan 2s linear infinite'
-                    },
-                    keyframes: {
-                        scan: {
-                            '0%': { transform: 'translateY(-100%)' },
-                            '100%': { transform: 'translateY(100%)' }
-                        }
                     }
                 }
             }
@@ -38,166 +27,266 @@
     </script>
     <style>
         body {
-            background-color: #000;
-            color: #e5e5e5;
-            background-image: radial-gradient(circle at center, #1a0000 0%, #000000 100%);
-            font-family: 'Rajdhani', sans-serif;
-        }
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #660000; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #ff0000; }
-
-        .glass-panel {
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid #333;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
-        }
-        
-        .neon-border:focus-within {
-            border-color: #ff0000;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+            background-color: #020202;
+            color: #d1d1d1;
+            font-family: 'JetBrains Mono', monospace;
+            background-image: radial-gradient(circle at 50% 50%, #1a0505 0%, #020202 100%);
         }
 
-        .stat-card {
-            background: linear-gradient(145deg, #0a0a0a, #111);
-            border-left: 3px solid #333;
-            transition: all 0.3s ease;
+        .terminal-border {
+            border: 1px solid #222;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.05);
         }
-        .stat-card:hover {
-            border-left-color: #ff0000;
-            transform: translateY(-2px);
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 999;
+            background: linear-gradient(0deg, rgba(255, 0, 0, 0) 0%, rgba(255, 0, 0, 0.03) 50%, rgba(255, 0, 0, 0) 100%);
+            opacity: 0.1;
+            position: fixed;
+            pointer-events: none;
+            animation: scan 6s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: -100px; }
+            100% { top: 100%; }
         }
 
         .mail-item {
-            border-bottom: 1px solid #1a1a1a;
+            border-bottom: 1px solid #111;
             transition: all 0.2s;
+            background: rgba(10, 10, 10, 0.4);
         }
+
         .mail-item:hover {
             background: rgba(255, 0, 0, 0.05);
-            border-left: 4px solid #ff0000;
+            border-left: 3px solid #ff0000;
         }
+
+        /* Message Body Wrapper - Dark Background */
+        .email-body-wrapper {
+            position: relative;
+            width: 100%;
+            overflow-x: hidden;
+            background: #0d0d0d; /* Changed from white to Dark */
+            border-radius: 4px;
+            border: 1px solid #222;
+        }
+
+        iframe {
+            width: 100%;
+            min-height: 500px;
+            border: none;
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ff0000; }
+        
+        /* --- MINI FOOTER --- */
+.mini-footer {
+    text-align: center;
+    padding: 20px 12px;
+    font-family: 'Orbitron', 'Rajdhani', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    color: #555;
+    background: #020202;
+    border-top: 1px solid rgba(255, 0, 0, 0.15);
+}
+
+.mini-footer strong {
+    color: #ff0000;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+}
     </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-red-900 selection:text-white">
+<body class="min-h-screen flex flex-col">
+    <div class="scanline"></div>
 
-    <!-- Nav - Text Detector Style -->
-    <nav class="border-b border-red-900/30 bg-black/90 sticky top-0 z-50 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-envelope-shield text-3xl text-red-600 animate-pulse"></i>
-                    <div>
-                        <h1 class="text-2xl font-bold tracking-wider text-white">BCT <span class="text-red-600">MAIL</span></h1>
-                        <p class="text-[10px] text-gray-500 font-mono tracking-[0.2em] uppercase">BCT encrypted communication</p>
+    <!-- Header -->
+    <header class="p-4 border-b border-red-900/30 bg-black/95 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <div class="w-12 h-12 bg-red-600/10 border border-red-600/50 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-envelope-open-text text-red-600 text-2xl"></i>
                     </div>
+                    <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-black animate-pulse"></span>
                 </div>
-                <div class="hidden md:flex space-x-4">
-                    <span class="px-3 py-1 rounded border border-red-900/50 text-xs text-red-500 font-mono bg-red-900/10">
-                        <i class="fa-solid fa-shield-halved mr-1"></i> SECURE ENCRYPTED
-                    </span>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tighter text-white font-display">BCT <span class="text-red-600">MAIL</span></h1>
+                    <p class="text-[9px] text-zinc-500 uppercase tracking-[0.3em] font-mono">Encrypted Data Protocol v4.5</p>
+                </div>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-6">
+                <div class="text-right">
+                    <p class="text-[10px] text-zinc-600 uppercase font-bold">Server_Status</p>
+                    <p class="text-xs text-termGreen font-mono">STABLE // ENCRYPTED</p>
+                </div>
+                <div class="h-10 w-[1px] bg-zinc-800"></div>
+                <div class="text-right">
+                    <p class="text-[10px] text-zinc-600 uppercase font-bold">Node_Location</p>
+                    <p class="text-xs text-red-500 font-mono">BD_TROOPS_CORE</p>
                 </div>
             </div>
         </div>
-    </nav>
+    </header>
 
     <main class="flex-grow container mx-auto px-4 py-8 max-w-5xl">
         
-        <!-- Address Section -->
-        <div class="glass-panel rounded-xl p-6 mb-8 relative overflow-hidden group">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-600 to-transparent"></div>
-            
-            <div class="flex flex-col md:flex-row items-center gap-4">
-                <div class="flex-grow w-full relative">
-                    <label class="text-[10px] font-mono text-red-500 mb-1 block">VIRTUAL_IDENTITY_HASH</label>
-                    <input id="email-address" type="text" readonly value="Generating..." 
-                        class="w-full bg-black/50 border border-gray-800 rounded-lg py-4 px-6 text-xl font-mono font-bold text-white focus:outline-none border-l-4 border-l-red-600">
+        <!-- Identity Box -->
+        <section class="bg-termPanel terminal-border rounded-xl p-6 mb-8 relative overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div class="lg:col-span-3">
+                    <label class="text-[10px] text-red-500 mb-2 block font-bold uppercase tracking-widest">
+                        <i class="fa-solid fa-id-badge mr-2"></i> Assigned_Identity_Address
+                    </label>
+                    <input id="email-address" type="text" readonly value="establishing_connection..." 
+                        class="w-full bg-black/50 border border-zinc-800 rounded-lg px-4 py-4 font-mono text-xl text-termGreen focus:outline-none border-l-4 border-l-red-600 transition-all">
                 </div>
-                
-                <div class="flex gap-2 w-full md:w-auto self-end">
-                    <button onclick="copyToClipboard()" class="flex-1 md:flex-none px-6 py-4 bg-red-900/20 hover:bg-red-600 text-white rounded-lg font-bold flex items-center justify-center gap-2 border border-red-600/50 transition-all">
-                        <i class="fa-solid fa-copy"></i> COPY
+                <div class="flex gap-2 items-end">
+                    <button onclick="copyToClipboard()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-4 rounded-lg transition-all font-bold text-sm uppercase shadow-lg shadow-red-900/20">
+                        <i class="fa-solid fa-copy mr-2"></i> Copy
                     </button>
-                    <button onclick="getNewEmail()" class="px-6 py-4 bg-gray-900 hover:bg-gray-800 text-red-500 rounded-lg border border-gray-700 transition-all">
+                    <button onclick="getNewEmail()" class="px-6 bg-zinc-900 hover:bg-zinc-800 text-red-500 border border-zinc-700 py-4 rounded-lg transition-all" title="New Identity">
                         <i class="fa-solid fa-rotate"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="mt-4 flex items-center justify-between border-t border-gray-800 pt-4">
-                <div class="flex items-center gap-3">
-                    <span class="w-2 h-2 bg-red-600 rounded-full animate-ping"></span>
-                    <span id="timer" class="font-mono text-red-500 font-bold">10:00</span>
-                    <button onclick="extendTimer()" class="text-[10px] font-mono text-gray-500 hover:text-red-400 uppercase tracking-tighter underline">
-                        [ Extend Protocol ]
+            <div class="mt-6 flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-zinc-800/50">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-zinc-500 font-mono">TTL:</span>
+                        <span id="timer" class="text-red-500 font-bold font-mono text-xl">10:00</span>
+                    </div>
+                    <button onclick="extendTimer()" class="text-[10px] text-zinc-400 hover:text-white border border-zinc-800 px-3 py-1 rounded bg-zinc-900/50 transition-colors uppercase">
+                        [ REFRESH_SESSION ]
                     </button>
                 </div>
-                <div class="text-[10px] font-mono text-gray-600 uppercase">Status: <span class="text-green-500">Active Polling</span></div>
+                <div class="text-[10px] font-mono text-zinc-600 italic">
+                    <span class="animate-pulse">●</span> Auto-syncing with BCT_CORES...
+                </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Inbox View -->
-        <div id="main-view" class="glass-panel rounded-xl overflow-hidden">
-            <div class="bg-red-900/10 px-6 py-3 border-b border-red-900/30 flex justify-between items-center">
-                <h3 class="font-bold text-sm tracking-widest uppercase"><i class="fa-solid fa-inbox mr-2"></i> DATA_INBOUND</h3>
-                <span id="mail-count" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-mono">0</span>
+        <!-- Main Terminal View -->
+        <div id="main-view" class="bg-termPanel terminal-border rounded-xl overflow-hidden shadow-2xl">
+            <div class="bg-black/60 px-5 py-3 flex justify-between items-center border-b border-zinc-800">
+                <div class="flex items-center gap-3">
+                    <span class="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.2em]">Data_Inbound_Stream</span>
+                </div>
+                <span id="mail-count" class="bg-red-600/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-bold font-mono border border-red-600/20">PACKETS: 0</span>
             </div>
 
-            <div id="inbox-list" class="min-h-[400px]">
-                <!-- Empty State -->
-                <div id="empty-inbox" class="flex flex-col items-center justify-center py-20 opacity-30">
-                    <i class="fa-solid fa-tower-broadcast text-6xl mb-4"></i>
-                    <p class="font-mono text-sm uppercase tracking-widest">Waiting for encrypted packets...</p>
+            <div id="inbox-list" class="min-h-[400px] max-h-[600px] overflow-y-auto">
+                <div id="empty-inbox" class="flex flex-col items-center justify-center py-32">
+                    <i class="fa-solid fa-wifi text-zinc-800 text-2xl mb-4 animate-pulse"></i>
+                    <p class="font-mono text-xs uppercase tracking-[0.3em] text-zinc-600">Waiting for data packets...</p>
                 </div>
             </div>
         </div>
 
-        <!-- Detail View -->
-        <div id="email-view" class="hidden glass-panel rounded-xl overflow-hidden animate-fade-in">
-            <div class="p-4 border-b border-gray-800 flex items-center justify-between bg-black/40">
-                <button onclick="closeEmail()" class="text-xs font-mono text-gray-400 hover:text-red-500 transition-colors">
-                    <i class="fa-solid fa-chevron-left mr-2"></i> BACK_TO_TERMINAL
+        <!-- Mail Reader -->
+        <div id="email-view" class="hidden bg-termPanel terminal-border rounded-xl overflow-hidden">
+            <div class="p-4 bg-black border-b border-zinc-800 flex items-center justify-between">
+                <button onclick="closeEmail()" class="text-xs font-mono text-red-500 hover:text-white transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-chevron-left"></i> EXIT_TO_TERMINAL
                 </button>
+                <div class="flex gap-4">
+                    <span class="text-[10px] text-zinc-600 font-mono uppercase">Status: <span class="text-green-500">Decrypted</span></span>
+                </div>
             </div>
-            <div class="p-6">
-                <h2 id="view-subject" class="text-2xl font-bold text-white mb-4">...</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-6">
-                    <div class="stat-card p-2 text-xs">
-                        <span class="text-gray-500 uppercase block text-[10px]">Source</span>
-                        <span id="view-from" class="text-red-400 font-mono">...</span>
-                    </div>
-                    <div class="stat-card p-2 text-xs">
-                        <span class="text-gray-500 uppercase block text-[10px]">Timestamp</span>
-                        <span id="view-date" class="text-gray-300 font-mono">...</span>
+            
+            <div class="p-4 md:p-8">
+                <div class="mb-8 border-b border-zinc-800 pb-6">
+                    <h2 id="view-subject" class="text-xl md:text-3xl font-bold text-white mb-4 leading-tight font-display">...</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-black/40 p-3 rounded border border-zinc-800/50">
+                            <p class="text-[9px] text-zinc-500 uppercase font-bold mb-1">Source_Entity</p>
+                            <p id="view-from" class="text-termGreen font-mono text-sm truncate">...</p>
+                        </div>
+                        <div class="bg-black/40 p-3 rounded border border-zinc-800/50">
+                            <p class="text-[9px] text-zinc-500 uppercase font-bold mb-1">Arrival_Time</p>
+                            <p id="view-date" class="text-zinc-300 font-mono text-sm">...</p>
+                        </div>
                     </div>
                 </div>
-                <div id="view-body" class="bg-gray-900/30 rounded border border-gray-800 p-4 min-h-[300px]">
-                    <!-- Mail content -->
+
+                <div class="email-body-wrapper terminal-border">
+                    <div id="view-body-container">
+                        <!-- Content via Iframe with Dark Styling -->
+                    </div>
                 </div>
             </div>
         </div>
 
     </main>
 
-    <footer class="p-6 text-center border-t border-red-900/20">
-        <p class="text-[10px] text-gray-600 font-mono uppercase tracking-[0.3em]">
-            2026 - Bangladesh Cyber Troops <br>
-            Powered by: <span class="text-red-900">Troops IT Solution</span>
-        </p>
-    </footer>
+    <!-- Original Footer (Restored) -->
+    <footer class="bg-black border-t border-red-900/20 pt-12 pb-6 mt-auto">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-envelope-open-text text-red-600"></i>
+                        <span class="text-xl font-bold text-white font-display uppercase tracking-wider">BCT MAIL</span>
+                    </div>
+                    <p class="text-zinc-500 text-xs leading-relaxed font-mono">
+                        Providing secure, anonymous, and encrypted temporary communication protocols for cyber professionals.
+                    </p>
+                    <div class="flex gap-4 text-zinc-400">
+                        <a href="https://t.me/bct_muslims" class="hover:text-red-500 transition-colors"><i class="fa-brands fa-telegram"></i></a>
+                        <a href="https://github.com/MR-D4RK-OFFICIAL" class="hover:text-red-500 transition-colors"><i class="fa-brands fa-github"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=61586091802176" class="hover:text-red-500 transition-colors"><i class="fa-brands fa-facebook"></i></a>
+                    </div>
+                </div>
 
-    <!-- Toast Notification -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-[100] font-mono text-xs"></div>
+                <div class="space-y-4">
+                    <h4 class="text-white text-xs font-bold uppercase tracking-[0.2em] border-b border-red-900/30 pb-2">Technical_Specs</h4>
+                    <ul class="text-zinc-500 text-[11px] font-mono space-y-2">
+                        <li><span class="text-red-900 mr-2">>></span> Protocol: Mail.tm API</li>
+                        <li><span class="text-red-900 mr-2">>></span> Encryption: End-to-End</li>
+                        <li><span class="text-red-900 mr-2">>></span> Retention: 24 Hours</li>
+                        <li><span class="text-red-900 mr-2">>></span> Stability: 99.9% Up</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-white text-xs font-bold uppercase tracking-[0.2em] border-b border-red-900/30 pb-2">Developer_Hub</h4>
+                    <p class="text-zinc-500 text-[11px] font-mono">
+                        Powered and Maintained by: <br>
+                        <span class="text-zinc-200 font-bold block mt-2 text-sm uppercase">Troops IT Solutions</span>
+                    </p>
+                    <div class="pt-2">
+                        <span class="bg-red-600/10 text-red-500 text-[9px] px-2 py-1 border border-red-600/20 rounded">AUTHORIZED ACCESS ONLY</span>
+                    </div>
+                </div>
+            </div>
+
+       </footer>
+       <footer class="mini-footer">
+    <p>
+        © 2026 <strong>BANGLADESH CYBER TROOPS</strong> |
+        <br>DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong>
+    </p>
+</footer>
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[100] space-y-2"></div>
 
     <script type="module">
         const API_URL = 'https://api.mail.tm';
         
         let state = {
-            email: localStorage.getItem('rm_email') || '',
-            token: localStorage.getItem('rm_token') || '',
-            messages: JSON.parse(localStorage.getItem('rm_messages')) || [],
+            email: localStorage.getItem('bct_email_v4') || '',
+            token: localStorage.getItem('bct_token_v4') || '',
+            messages: JSON.parse(localStorage.getItem('bct_messages_v4')) || [],
             timeLeft: 600,
             timerInterval: null,
             pollingInterval: null
@@ -205,23 +294,16 @@
 
         async function init() {
             if (state.email && state.token) {
-                updateUI();
-                startPolling();
-                startTimer();
-                renderInbox();
-            } else {
-                await getNewEmail(true);
-            }
+                updateUI(); startPolling(); startTimer(); renderInbox();
+            } else { await getNewEmail(true); }
         }
 
         async function getNewEmail(silent = false) {
             try {
-                if(!silent) showToast("PROTOCOL_INIT: CREATING_IDENTITY", "info");
-                
                 const domains = await fetch(`${API_URL}/domains`).then(r => r.json());
                 const domain = domains['hydra:member'][0].domain;
-                const address = `${Math.random().toString(36).substring(2, 10)}@${domain}`;
-                const password = 'pass-' + Math.random().toString(36).substring(2, 8);
+                const address = `${Math.random().toString(36).substring(2, 12)}@${domain}`;
+                const password = Math.random().toString(36);
 
                 await fetch(`${API_URL}/accounts`, {
                     method: 'POST',
@@ -240,17 +322,10 @@
                 state.messages = [];
                 state.timeLeft = 600;
 
-                saveState();
-                updateUI();
-                startPolling();
-                startTimer();
-                renderInbox();
-                
-                if(!silent) showToast("IDENTITY_CONFIRMED: READY", "success");
+                saveState(); updateUI(); startPolling(); startTimer(); renderInbox();
+                if(!silent) showToast("NEW_IDENTITY_ASSIGNED", "success");
                 closeEmail();
-            } catch (e) {
-                showToast("CORE_ERROR: CONNECTION_FAILED", "error");
-            }
+            } catch (e) { showToast("CORE_ERROR: CONNECTION_TIMEOUT", "error"); }
         }
 
         async function checkInbox() {
@@ -261,21 +336,9 @@
                 });
                 if (res.status === 401) return getNewEmail(true);
                 const data = await res.json();
-                const remoteMessages = data['hydra:member'];
-
-                if (remoteMessages.length > state.messages.length) {
-                    showToast("NEW_DATA_PACKET_RECEIVED", "success");
-                }
-
-                const merged = [...remoteMessages];
-                state.messages.forEach(oldMsg => {
-                    if(!merged.find(m => m.id === oldMsg.id)) merged.push(oldMsg);
-                });
-
-                state.messages = merged.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-                saveState();
-                renderInbox();
-            } catch (e) { console.log("Polling..."); }
+                state.messages = data['hydra:member'].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+                saveState(); renderInbox();
+            } catch (e) { console.log("Link busy..."); }
         }
 
         async function openEmail(id) {
@@ -285,52 +348,74 @@
                     headers: { 'Authorization': `Bearer ${state.token}` }
                 }).then(r => r.json());
 
-                document.getElementById('view-subject').innerText = mail.subject || '(NO_SUBJECT)';
+                document.getElementById('view-subject').innerText = mail.subject || 'ENCRYPTED_DATA_STREAM';
                 document.getElementById('view-from').innerText = mail.from.address;
                 document.getElementById('view-date').innerText = new Date(mail.createdAt).toLocaleString();
                 
-                const body = document.getElementById('view-body');
-                body.innerHTML = `<iframe id="mail-frame" class="w-full min-h-[500px] border-none bg-white rounded"></iframe>`;
-                const doc = document.getElementById('mail-frame').contentDocument;
+                const container = document.getElementById('view-body-container');
+                container.innerHTML = `<iframe id="mail-frame"></iframe>`;
+                
+                const frame = document.getElementById('mail-frame');
+                const doc = frame.contentDocument || frame.contentWindow.document;
+                
+                // --- Dark Theme & Responsive Styles for Iframe Content ---
+                const responsiveMeta = '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+                const darkStyle = `
+                    <style>
+                        body { 
+                            background-color: #0d0d0d; 
+                            color: #d1d1d1; 
+                            font-family: sans-serif; 
+                            margin: 15px; 
+                            line-height: 1.6;
+                            word-wrap: break-word;
+                            overflow-x: hidden;
+                        }
+                        * { max-width: 100% !important; box-sizing: border-box !important; }
+                        img { max-width: 100% !important; height: auto !important; border-radius: 4px; }
+                        pre { background: #000; padding: 10px; border: 1px solid #222; color: #00ff41; white-space: pre-wrap; }
+                        a { color: #ff0000; text-decoration: underline; }
+                    </style>`;
+                
                 doc.open();
-                doc.write(mail.html || mail.intro);
+                doc.write(responsiveMeta + darkStyle + (mail.html || `<pre>${mail.intro}</pre>`));
                 doc.close();
+
+                // Auto-adjust height based on content
+                frame.onload = () => {
+                    frame.style.height = (doc.body.scrollHeight + 50) + 'px';
+                };
 
                 document.getElementById('main-view').classList.add('hidden');
                 document.getElementById('email-view').classList.remove('hidden');
                 window.scrollTo(0,0);
-            } catch (e) {
-                showToast("DECRYPTION_FAILED", "error");
-            }
+            } catch (e) { showToast("DECRYPTION_FAILURE", "error"); }
         }
 
         function renderInbox() {
             const list = document.getElementById('inbox-list');
             const empty = document.getElementById('empty-inbox');
-            document.getElementById('mail-count').innerText = state.messages.length;
+            document.getElementById('mail-count').innerText = `PACKETS: ${state.messages.length}`;
 
             if (state.messages.length === 0) {
                 empty.classList.remove('hidden');
+                list.innerHTML = ''; list.appendChild(empty);
                 return;
             }
 
             empty.classList.add('hidden');
             list.innerHTML = '';
-
-            state.messages.forEach(msg => {
+            state.messages.forEach((msg) => {
                 const div = document.createElement('div');
-                div.className = "mail-item p-4 flex items-center justify-between cursor-pointer group";
+                div.className = "mail-item p-4 cursor-pointer flex items-center justify-between gap-4";
                 div.onclick = () => openEmail(msg.id);
                 div.innerHTML = `
-                    <div class="flex items-center gap-4 overflow-hidden">
-                        <i class="fa-solid fa-envelope text-red-900 group-hover:text-red-500 transition-colors"></i>
-                        <div class="overflow-hidden">
-                            <h4 class="font-bold text-gray-200 truncate text-sm uppercase tracking-wider">${msg.subject || 'UNTITLED_PACKET'}</h4>
-                            <p class="text-[10px] text-gray-500 font-mono truncate">${msg.from.address}</p>
-                        </div>
+                    <div class="flex-grow overflow-hidden">
+                        <h4 class="font-bold text-sm text-zinc-100 truncate font-mono uppercase">${msg.subject || 'DATA_STREAM'}</h4>
+                        <p class="text-[10px] text-zinc-500 font-mono truncate">FROM: ${msg.from.address}</p>
                     </div>
-                    <div class="text-right ml-4 shrink-0">
-                        <span class="text-[10px] font-mono text-gray-600">${new Date(msg.createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                    <div class="text-[10px] font-mono text-zinc-600 shrink-0">
+                        ${new Date(msg.createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
                     </div>
                 `;
                 list.appendChild(div);
@@ -338,19 +423,16 @@
         }
 
         function saveState() {
-            localStorage.setItem('rm_email', state.email);
-            localStorage.setItem('rm_token', state.token);
-            localStorage.setItem('rm_messages', JSON.stringify(state.messages));
+            localStorage.setItem('bct_email_v4', state.email);
+            localStorage.setItem('bct_token_v4', state.token);
+            localStorage.setItem('bct_messages_v4', JSON.stringify(state.messages));
         }
 
-        function updateUI() {
-            document.getElementById('email-address').value = state.email;
-        }
+        function updateUI() { document.getElementById('email-address').value = state.email; }
 
         function startPolling() {
             if(state.pollingInterval) clearInterval(state.pollingInterval);
-            checkInbox();
-            state.pollingInterval = setInterval(checkInbox, 8000);
+            checkInbox(); state.pollingInterval = setInterval(checkInbox, 8000);
         }
 
         function startTimer() {
@@ -367,25 +449,18 @@
         function showToast(msg, type) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const bg = type === 'error' ? 'bg-red-600' : 'bg-zinc-900';
-            toast.className = `${bg} text-white px-4 py-2 border border-red-900/50 mb-2 animate-bounce-in shadow-xl`;
-            toast.innerHTML = `<i class="fa-solid fa-terminal mr-2"></i> ${msg}`;
+            toast.className = `bg-black border-l-4 ${type==='error'?'border-red-600':'border-termGreen'} text-white px-4 py-3 shadow-2xl font-mono text-[10px]`;
+            toast.innerHTML = `LOG: ${msg}`;
             container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
+            setTimeout(() => { toast.remove(); }, 4000);
         }
 
         window.copyToClipboard = () => {
             navigator.clipboard.writeText(state.email);
-            showToast("DATA_COPIED_TO_CLIPBOARD", "success");
+            showToast("COPIED_TO_CLIPBOARD", "success");
         };
         window.getNewEmail = () => getNewEmail();
-        window.extendTimer = () => {
-            state.timeLeft += 600;
-            showToast("PROTOCOL_EXTENDED", "success");
-        };
+        window.extendTimer = () => { state.timeLeft += 600; showToast("SESSION_EXTENDED", "success"); };
         window.closeEmail = () => {
             document.getElementById('main-view').classList.remove('hidden');
             document.getElementById('email-view').classList.add('hidden');
