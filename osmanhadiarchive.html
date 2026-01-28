@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OSMAN HADI | THE ETERNAL REVOLUTION</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@300;400;500;600&family=Cinzel:wght@500;700&family=Noto+Serif+Bengali:wght@500;700&family=Orbitron:wght@500;700&family=Rajdhani:wght@400;500;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* ==========================================================================
+           1. CONFIGURATION
+           ========================================================================== */
+        :root {
+            --color-blood: #ff0f0f;         
+            --color-blood-dark: #4a0000;    
+            --color-gold: #c5a028;          
+            --color-void: #000000;          
+            --color-panel: #0a0a0a;         
+            --color-border: #222;        
+            
+            --color-text-main: #e0e0e0;
+            --color-text-mute: #999;
+            
+            --font-head-eng: 'Orbitron', sans-serif;
+            --font-body-eng: 'Rajdhani', sans-serif;
+            --font-bn-head: 'Noto Serif Bengali', serif;
+            --font-bn-body: 'Anek Bangla', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+            
+            --container-width: 1000px;
+            --section-gap: 70px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; }
+        
+        body { 
+            background-color: var(--color-void); 
+            color: var(--color-text-main); 
+            font-family: var(--font-bn-body); 
+            font-size: 16px; 
+            line-height: 1.6; 
+            overflow-x: hidden; 
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--color-void); }
+        ::-webkit-scrollbar-thumb { background: var(--color-blood); border-radius: 10px; }
+
+        .container { width: 100%; max-width: var(--container-width); margin: 0 auto; padding: 0 20px; }
+
+        /* ==========================================================================
+           2. BACKGROUND (ULTIMATE MARTYRDOM VIBE) - UPDATED CSS
+           ========================================================================== */
+        .bg-layer { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            z-index: -1; pointer-events: none; overflow: hidden; 
+        }
+        
+        /* Added subtle noise texture overlay */
+        .bg-layer::after {
+            content: ''; position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.04; mix-blend-mode: soft-light;
+        }
+
+        /* Deeper, richer base gradient indicating blood/fire from below */
+        .bg-base {
+            width: 100%; height: 100%; position: absolute;
+            background: 
+                radial-gradient(circle at 50% 100%, rgba(139, 0, 0, 0.4) 0%, transparent 60%),
+                linear-gradient(to top, #2a0000 0%, #050000 50%, #000000 100%);
+        }
+
+        /* Slower, deeper fog */
+        .bg-fog {
+            position: absolute; width: 200%; height: 200%;
+            background: url('https://www.transparenttextures.com/patterns/foggy-birds.png');
+            opacity: 0.15; animation: fogFlow 120s linear infinite;
+            background-color: rgba(100, 0, 0, 0.1);
+            background-blend-mode: overlay;
+        }
+
+        /* More dynamic embers */
+        .ember {
+            position: absolute; bottom: -20px; width: 4px; height: 4px;
+            background: #ff5e00; /* Start orange-ish */
+            border-radius: 50%;
+            opacity: 0; 
+            box-shadow: 0 0 15px #ff0f0f;
+            animation: rise 12s infinite ease-in;
+        }
+        
+        .ember:nth-child(1) { left: 15%; animation-duration: 14s; animation-delay: 0s; }
+        .ember:nth-child(2) { left: 35%; animation-duration: 18s; animation-delay: 4s; }
+        .ember:nth-child(3) { left: 55%; animation-duration: 12s; animation-delay: 2s; }
+        .ember:nth-child(4) { left: 75%; animation-duration: 16s; animation-delay: 6s; }
+        .ember:nth-child(5) { left: 95%; animation-duration: 20s; animation-delay: 1s; }
+
+        @keyframes fogFlow { 0% { transform: translate(0, 0); } 100% { transform: translate(-20%, -20%); } }
+        
+        /* Updated rise animation with color shift and wobble */
+        @keyframes rise { 
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; background: #ff8c00; } 
+            20% { opacity: 1; } 
+            50% { transform: translateY(-50vh) translateX(30px) scale(1.2); background: var(--color-blood); }
+            100% { transform: translateY(-110vh) translateX(-20px) scale(0.5); opacity: 0; background: var(--color-blood-dark); } 
+        }
+
+        /* ==========================================================================
+           3. HERO SECTION
+           ========================================================================== */
+        .hero-section {
+            min-height: 80vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 100px 20px 50px 20px;
+            position: relative;
+        }
+
+        /* Stronger Vignette Overlay for Hero */
+        .hero-section::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at center, transparent 40%, rgba(80, 0, 0, 0.4) 100%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            font-family: var(--font-head-eng); color: var(--color-blood); border: 1px solid var(--color-blood);
+            padding: 8px 20px; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px;
+            background: rgba(220, 20, 60, 0.1); box-shadow: 0 0 20px rgba(220, 20, 60, 0.2);
+            position: relative; z-index: 1;
+        }
+
+        .hero-title {
+            font-family: var(--font-bn-head); font-size: clamp(3rem, 8vw, 5rem); line-height: 1.1; font-weight: 700;
+            color: #fff; margin-bottom: 10px; text-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
+            position: relative; z-index: 1;
+        }
+
+        .hero-subtitle {
+            font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--color-gold); letter-spacing: 4px;
+            text-transform: uppercase; border-bottom: 1px solid var(--color-gold); padding-bottom: 5px; margin-bottom: 30px;
+            position: relative; z-index: 1;
+        }
+
+        .hero-quote {
+            max-width: 700px; font-size: 1.1rem; color: var(--color-text-mute); font-style: italic;
+            border-left: 3px solid var(--color-blood); padding-left: 15px; text-align: left;
+            position: relative; z-index: 1;
+        }
+
+        /* ==========================================================================
+           4. JUSTICE CLOCK (SQUARE & COMPACT FIX)
+           ========================================================================== */
+        .section-clock { padding: 40px 0; }
+
+        .j_container {
+            background: rgba(14, 14, 14, 0.95); /* Slightly more transparent */
+            border: 1px solid #222;
+            border-top: 3px solid var(--color-blood);
+            border-radius: 8px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 750px;
+            margin: 0 auto;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(255,0,0,0.1);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .j_title {
+            font-family: var(--font-bn-head); font-size: 2rem; color: #fff; margin-bottom: 5px; font-weight: 700;
+        }
+
+        .j_subtitle {
+            font-family: var(--font-bn-body); color: #777; font-size: 14px; margin-bottom: 30px;
+        }
+
+        .j_grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .j_box {
+            background: #151515;
+            border: 1px solid #252525;
+            border-radius: 5px;
+            padding: 15px 5px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .j_value {
+            font-family: var(--font-mono) !important; 
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            color: var(--color-blood);
+            font-weight: 700;
+            line-height: 1;
+            display: inline-block !important;
+            width: 100% !important; 
+            text-align: center !important;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+        }
+
+        .j_label {
+            font-family: var(--font-head-eng);
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .j_footer {
+            border-top: 1px solid #222; padding-top: 15px; font-family: var(--font-head-eng);
+            font-size: 10px; color: #555; letter-spacing: 2px;
+        }
+        .j_footer span { color: var(--color-gold); }
+
+        .btn-screenshot {
+            background: transparent; border: 1px solid var(--color-blood); color: var(--color-blood);
+            padding: 12px 30px; font-family: var(--font-head-eng); font-size: 13px; font-weight: 700;
+            letter-spacing: 1px; cursor: pointer; margin-top: 25px; transition: 0.3s;
+            display: inline-flex; align-items: center; gap: 8px; border-radius: 4px;
+        }
+        .btn-screenshot:hover { background: var(--color-blood); color: #fff; box-shadow: 0 0 25px var(--color-blood); }
+
+        /* ==========================================================================
+           5. BIOGRAPHY
+           ========================================================================== */
+        .section-bio { padding: var(--section-gap) 0; }
+        
+        .section-header { text-align: center; margin-bottom: 50px; }
+        .sh-tag { font-family: var(--font-head-eng); color: var(--color-gold); font-size: 11px; letter-spacing: 3px; display: block; margin-bottom: 8px; }
+        .sh-title { font-family: var(--font-bn-head); font-size: 2.5rem; color: #fff; font-weight: 700; }
+
+        .bio-grid { display: flex; flex-direction: column; gap: 30px; }
+        
+        .bio-card {
+            background: rgba(10, 10, 10, 0.95); border: 1px solid var(--color-border); padding: 35px;
+            border-radius: 6px; position: relative; transition: 0.3s; backdrop-filter: blur(5px);
+        }
+        .bio-card:hover { border-color: #555; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        
+        .bc-icon { font-size: 24px; margin-bottom: 15px; color: #555; }
+        .bc-title { font-family: var(--font-bn-head); font-size: 22px; color: #fff; margin-bottom: 15px; font-weight: 700; }
+        .bc-desc { color: #aaa; font-size: 16px; text-align: justify; margin-bottom: 20px; font-weight: 400; }
+
+        .bio-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+        .bio-table td { padding: 10px 0; border-bottom: 1px solid #222; color: #888; }
+        .bio-table td:first-child { color: var(--color-gold); width: 140px; font-weight: 500; font-family: var(--font-body-eng); }
+
+        /* ==========================================================================
+           6. TIMELINE
+           ========================================================================== */
+        .section-timeline { padding: var(--section-gap) 0; position: relative; }
+        
+        .timeline-line {
+            position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+            background: linear-gradient(to bottom, #222, var(--color-blood)); transform: translateX(-50%);
+        }
+
+        .tl-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .tl-dot {
+            position: absolute; left: 50%; width: 12px; height: 12px;
+            background: #111; border: 2px solid var(--color-gold); border-radius: 50%;
+            transform: translateX(-50%); z-index: 2;
+        }
+
+        .tl-content {
+            width: 45%; background: rgba(10, 10, 10, 0.95); border: 1px solid var(--color-border);
+            padding: 25px; border-radius: 6px; position: relative; backdrop-filter: blur(5px);
+        }
+        
+        .tl-row:nth-child(even) { flex-direction: row-reverse; }
+        .tl-row:nth-child(even) .tl-content { text-align: right; }
+
+        .tl-date {
+            font-family: var(--font-body-eng); color: var(--color-gold); font-size: 12px;
+            font-weight: 600; display: block; margin-bottom: 8px; letter-spacing: 1px;
+        }
+        
+        .tl-head { font-family: var(--font-bn-head); font-size: 20px; color: #fff; margin-bottom: 8px; font-weight: 700; }
+        .tl-text { color: #888; font-size: 15px; line-height: 1.5; }
+
+        /* Martyrdom Highlight */
+        .tl-martyr .tl-dot { background: var(--color-blood); border-color: var(--color-blood); box-shadow: 0 0 15px var(--color-blood); }
+        .tl-martyr .tl-content { border-color: var(--color-blood); background: rgba(220, 20, 60, 0.08); }
+
+        /* ==========================================================================
+           7. GLOBAL REACTIONS
+           ========================================================================== */
+        .section-global { padding: var(--section-gap) 0; position: relative; }
+        /* Add a dark overlay to make cards pop over the new background */
+        .section-global::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 0; }
+        .container { position: relative; z-index: 1; }
+
+        
+        .global-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        
+        .global-card {
+            background: rgba(15, 15, 15, 0.9); border: 1px solid #222; padding: 25px; border-radius: 6px; backdrop-filter: blur(5px);
+        }
+        
+        .gc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .gc-flag { font-size: 18px; color: #777; }
+        .gc-name { font-family: var(--font-head-eng); font-size: 13px; color: #fff; font-weight: 700; text-transform: uppercase; }
+        .gc-body { color: #999; font-size: 14px; font-style: italic; line-height: 1.5; }
+
+        /* QUOTES SECTION */
+        .quote-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .quote-box { background: rgba(15, 15, 15, 0.9); border: 1px solid #222; padding: 30px; border-radius: 6px; backdrop-filter: blur(5px); }
+        .q-text { font-family: var(--font-bn-head); font-size: 18px; color: #ddd; font-style: italic; margin-bottom: 15px; }
+        .q-author { font-size: 12px; color: var(--color-gold); font-weight: 600; text-transform: uppercase; }
+
+        /* FOOTER */
+        footer { background: #000; padding: 60px 0 30px 0; text-align: center; border-top: 1px solid #1f1f1f; position: relative; z-index: 1;}
+        .f-brand { font-family: var(--font-head-eng); font-size: 24px; color: #fff; font-weight: 700; margin-bottom: 15px; }
+        .f-copy { font-family: var(--font-head-eng); font-size: 10px; color: #444; letter-spacing: 2px; margin-top: 30px; }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            :root { --section-gap: 50px; }
+            .hero-title { font-size: 3rem; }
+            .j_grid { gap: 5px; }
+            .j_box { padding: 10px 0; }
+            .j_value { font-size: 24px; }
+            .timeline-line { left: 15px; }
+            .tl-row { flex-direction: column; align-items: flex-start; padding-left: 40px; margin-bottom: 40px; }
+            .tl-row:nth-child(even) { flex-direction: column; align-items: flex-start; }
+            .tl-row:nth-child(even) .tl-content { text-align: left; }
+            .tl-content { width: 100%; }
+            .tl-dot { left: 15px; }
+        }
+        .hero-image {
+    margin: 40px 0 45px;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+}
+
+.hero-image img {
+    max-width: 420px;
+    width: 100%;
+    filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.6))
+            drop-shadow(0 0 60px rgba(120, 0, 0, 0.8));
+    animation: heroFloat 6s ease-in-out infinite;
+}
+
+* --- MINI FOOTER --- */
+.mini-footer {
+    text-align: center;
+    padding: 20px 12px;
+    font-family: 'Orbitron', 'Rajdhani', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    color: #555;
+    background: #020202;
+    border-top: 1px solid rgba(255, 0, 0, 0.15);
+}
+
+.mini-footer strong {
+    color: #ff0000;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+}
+        
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer">
+        <div class="bg-base"></div>
+        <div class="bg-fog"></div>
+        <div class="ember"></div>
+        <div class="ember"></div>
+        <div class="ember"></div>
+        <div class="ember"></div>
+        <div class="ember"></div>
+    </div>
+    
+    <header class="hero-section">
+        <div class="hero-badge">SHAHEED ARCHIVE</div> <br> <br>
+        <h1 class="hero-title">শহীদ শরীফ<br>ওসমান হাদী</h1> <br> <br><br>
+        <div class="hero-subtitle">The Eternal Legend</div> <br> <br> <br>
+        
+        <div class="hero-image">
+    <img src="osmanhadiarchivepic.jpeg" alt="Shaheed Osman Hadi">
+</div>
+        
+        
+        <p class="hero-quote">"বিপ্লবীর মৃত্যু ঘরের মধ্যে হতে পারে না, তার মৃত্যু হবে রাজপথে গ্লোরির মৃত্যু।"</p>
+    </header> <br> <br>
+
+    <section class="section-clock">
+        <div class="container">
+            <div class="j_container" id="j_monitor">
+                
+                <h2 class="j_title">শহীদ ওসমান হাদি হত্যার বিচারহীনতার সময়কাল</h2>
+                <p class="j_subtitle">পল্টন ট্রাজেডি (১২ ডিসেম্বর ২০২৫) পরবর্তী অতিবাহিত সময়</p>
+
+                <div class="j_grid">
+                    <div class="j_box">
+                        <span class="j_value" id="j_days">00</span>
+                        <span class="j_label">DAYS</span>
+                    </div>
+                    <div class="j_box">
+                        <span class="j_value" id="j_hours">00</span>
+                        <span class="j_label">HOURS</span>
+                    </div>
+                    <div class="j_box">
+                        <span class="j_value" id="j_minutes">00</span>
+                        <span class="j_label">MINS</span>
+                    </div>
+                    <div class="j_box">
+                        <span class="j_value" id="j_seconds">00</span>
+                        <span class="j_label">SECS</span>
+                    </div>
+                </div>
+
+                <div class="j_footer">
+                    POWERED BY <span>BANGLADESH CYBER TROOPS</span> | WE DEMAND JUSTICE
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="btn-screenshot" onclick="takeScreenshot()">
+                    <i class="fas fa-camera"></i> SAVE EVIDENCE
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-bio">
+        <div class="container">
+            <div class="section-header">
+                <span class="sh-tag">THE BIOGRAPHY</span>
+                <h2 class="sh-title">জীবনী ও সংগ্রাম</h2>
+            </div>
+
+            <div class="bio-grid">
+                <div class="bio-card type-birth">
+                    <i class="fas fa-fingerprint bc-icon"></i>
+                    <h3 class="bc-title">জন্ম ও শিক্ষা</h3>
+                    <p class="bc-desc">
+                        ওসমান হাদি ঝালকাঠি জেলার নলছিটি উপজেলায় এক বাঙালি মুসলিম পরিবারে ১৯৯৩ সালের ৩০ জুন জন্মগ্রহণ করেন। তাঁর পিতা শরীফ আব্দুল হাদি ছিলেন একজন মাদ্রাসা শিক্ষক ও স্থানীয় ইমাম। ৬ ভাইবোনের মধ্যে হাদি সর্বকনিষ্ঠ। তিনি ঝালকাঠি এন এস কামিল মাদ্রাসা থেকে আলিম সম্পন্ন করে ঢাকা বিশ্ববিদ্যালয়ের রাষ্ট্রবিজ্ঞান বিভাগে ভর্তি হন এবং সেখান থেকে স্নাতক ও স্নাতকোত্তর সম্পন্ন করেন।
+                    </p>
+                    <table class="bio-table">
+                        <tr><td>DATE OF BIRTH</td><td>30 June 1993</td></tr>
+                        <tr><td>LOCATION</td><td>Nalchity, Jhalokati</td></tr>
+                        <tr><td>EDUCATION</td><td>Dhaka University (Political Science)</td></tr>
+                    </table>
+                </div>
+
+                <div class="bio-card type-rev">
+                    <i class="fas fa-bullhorn bc-icon"></i>
+                    <h3 class="bc-title">জুলাই বিপ্লব ও ইনকিলাব</h3>
+                    <p class="bc-desc">
+                        ২০২৪ সালের জুলাই বিপ্লবের উত্তাল দিনগুলোতে তিনি রাজধানীর রামপুরা এলাকার প্রধান সমন্বয়ক হিসেবে রাজপথে সক্রিয় নেতৃত্ব দেন। স্বৈরাচারী সরকারের পতনের পর বিপ্লবের মূল চেতনাকে সুসংহত করতে এবং জাতীয় স্বার্থ রক্ষায়, 'ইনকিলাব মঞ্চ' গড়ে তোলেন, যার মূল লক্ষ্য ছিল ভারতীয় আধিপত্যবাদ রুখে দিয়ে বাংলাদেশের "ইনসাফভিত্তিক সার্বভৌমত্ব" প্রতিষ্ঠা করা।
+                    </p>
+                    <p class="bc-desc">
+                        ২০২৬ সালের নির্বাচনের প্রস্তুতিতে ঢাকা-৮ আসনে তাঁর প্রচারণা ছিল অত্যন্ত ইউনিক ও সৃজনশীল। প্রথাগত বড় বড় জনসভার বদলে তিনি বেছে নিয়েছিলেন এলাকাভিত্তিক “চা-সিঙ্গারা” আড্ডা, যেখানে তিনি সাধারণ মানুষের কথা শুনতেন এবং তাদের পরামর্শে নির্বাচনী ইশতাহার তৈরির প্রতিশ্রুতি দিয়েছিলেন। তাঁর প্রচারণার অন্যতম আলোচিত দিক ছিল কর্মী ও সমর্থকদের মধ্যে মুড়ি-বাতাসা বিতরণ করা, যা তৃণমূলের মানুষের সাথে তাঁর গভীর সখ্যতার বহিঃপ্রকাশ ছিল। গভীর রাতে মসজিদের সামনে লিফলেট বিতরণ কিংবা সাধারণ মানুষের কাছ থেকে পাওয়া অনুদানের পাই-পাই হিসাব সামাজিক যোগাযোগ মাধ্যমে প্রকাশ করে তিনি স্বচ্ছতার এক নতুন নজির স্থাপন করেছিলেন।
+                    </p>
+                </div>
+
+                <div class="bio-card type-martyr">
+                    <i class="fas fa-star-and-crescent bc-icon" style="color:var(--color-blood)"></i>
+                    <h3 class="bc-title" style="color:var(--color-blood)">পল্টন ট্রাজেডি ও শাহাদাত</h3>
+                    <p class="bc-desc">
+                        ২০২৫ সালের ১২ই ডিসেম্বর জুমার নামাজের পর ঢাকার পল্টনে সন্ত্রাসীদের গুলিতে তিনি গুরুতর আহত হন। সাথে সাথে ঢাকা মেডিকেল কলেজ হাসপাতালে নেয়া হয়, পরিস্থিতি বুঝে সন্ধায় ঢাকার এভারকেয়ার হাসপাতালে স্থানান্তর করা হলেও অবস্থার উন্নতি হয়নি, তাই পরিবারের সম্মতি ও বাংলাদেশের অর্ন্তবর্তীকালীন সরকারের সহোযোগিতায়, এয়ার এম্বুলেন্স করে ১৫ ডিসেম্বর সিঙ্গাপুর জেনারেল হাসপাতালে নেয়া হয়। ৩ দিন চিকিৎসাধীন থাকার পর ১৮ ডিসেম্বর তিনি শাহাদাত বরণ করেন। তাঁর মৃত্যুতে সমগ্র বাংলাদেশ শোকাচ্ছন্ন হয়ে পড়ে। ২০ ডিসেম্বর জাতীয় সংসদ ভবনের দক্ষিণ প্লাজায় তাঁর জানাজা অনুষ্ঠিত হয় এবং জাতীয় কবি কাজী নজরুল ইসলামের সমাধির পাশে তাঁকে সমাহিত করা হয়।
+                    </p>
+                    <table class="bio-table">
+                        <tr><td style="color:var(--color-blood)">ATTACK</td><td>12 December 2025, Paltan</td></tr>
+                        <tr><td style="color:var(--color-blood)">MARTYRDOM</td><td>18 December 2025, Singapore</td></tr>
+                        <tr><td style="color:var(--color-blood)">BURIAL</td><td>Beside Kazi Nazrul Islam Grave</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-quotes">
+        <div class="container">
+            <div class="section-header">
+                <span class="sh-tag">PHILOSOPHY</span>
+                <h2 class="sh-title">বিপ্লবী দর্শন</h2>
+            </div>
+            <div class="quote-grid">
+                <div class="quote-box">
+                    <p class="q-text">"সবাই যখন মৃত্যুকে ভীষণ ভয় পায়, আমি তখন হাসতে হাসতে আল্লাহর কাছে ভীষণ সন্তুষ্টি নিয়ে পৌঁছাতে চাই। আমি একটা ইনসাফের হাসি নিয়ে আমার আল্লাহর কাছে পৌঁছাতে পেরেছি।"</p>
+                    <span class="q-author">শহীদ ওসমান হাদি</span>
+                </div>
+                <div class="quote-box">
+                    <p class="q-text">"মৃত্যুর ফয়সালা জমিনে নয় আসমানে হয়!"</p>
+                    <span class="q-author">শহীদ ওসমান হাদি</span>
+                </div>
+                
+                <div class="quote-box">
+                    <p class="q-text">"সীমান্ত বাঁচাতে চাইলে ঘাস খেয়ে হলেও অস্ত্র বানাও, বাংলাদেশ!"</p>
+                    <span class="q-author">শহীদ ওসমান হাদি</span>
+                </div>
+                </div>
+            </div>
+        </div> <br>
+    </section>
+
+    <section class="section-timeline">
+        <div class="container">
+            <div class="section-header">
+                <span class="sh-tag">JOURNEY</span>
+                <h2 class="sh-title">জীবন সারণী</h2>
+            </div>
+            
+    <div class="timeline-line"></div>
+
+            <div class="tl-row">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <span class="tl-date">30 JUNE 1993</span>
+                    <h3 class="tl-head">জন্ম</h3>
+                    <p class="tl-text">ঝালকাঠি জেলার নলছিটি উপজেলায় জন্মগ্রহণ। পিতা: মাওলানা আব্দুল হাদি (মাদ্রাসা শিক্ষক ও স্থানীয় ইমাম), মাতা: তাসলিমা হাদি। ছয় ভাইবোনের মধ্যে সর্বকনিষ্ঠ।</p>
+                </div>
+            </div>
+
+            <div class="tl-row">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <span class="tl-date">2010</span>
+                    <h3 class="tl-head">আলিম পাস ও ঢাবিতে ভর্তি</h3>
+                    <p class="tl-text">ঝালকাঠি এন.এস. কামিল মাদ্রাসা থেকে আলিম পরীক্ষায় উত্তীর্ণ। ঢাকা বিশ্ববিদ্যালয়ের রাষ্ট্রবিজ্ঞান বিভাগে ২০১০-২০১১ শিক্ষাবর্ষে ভর্তি।</p>
+                </div>
+            </div>
+				
+			<div class="tl-row">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <span class="tl-date">FEB 2024</span>
+                    <h3 class="tl-head">কাব্যগ্রন্থ প্রকাশ</h3>
+                    <p class="tl-text">'লাভায় লালশাক পূবের আকাশ' শিরোনামে প্রথম কাব্যগ্রন্থ প্রকাশ। প্রকাশক: দুয়ার পাবলিকেশন্স, ঢাকা।</p>
+                </div>
+            </div>
+            
+            <div class="tl-row">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <span class="tl-date">JULY 2024</span>
+                    <h3 class="tl-head">জুলাই বিপ্লব</h3>
+                    <p class="tl-text">জুলাই বিপ্লবে সক্রিয় অংশগ্রহণ। ঢাকার রামপুরা এলাকার সমন্বয়ক হিসেবে স্থানীয় সাংগঠনিক কার্যক্রম পরিচালনা।</p>
+                </div>
+            </div>
+            
+            <div class="tl-row">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <span class="tl-date">05 AUG 2024</span>
+                    <h3 class="tl-head">বিপ্লব সফল</h3>
+                    <p class="tl-text">দীর্ঘ সময়ের শেখ হাসিনা সরকারের পতন। জুলাই শহীদদের বিচার ও আওয়ামী লীগ নিষিদ্ধের দাবিতে সোচ্চার।</p>
+                </div>
+            </div>
+
+            <div class="tl-row">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <span class="tl-date">SEP 2024</span>
+                    <h3 class="tl-head">ইনকিলাব মঞ্চ</h3>
+                    <p class="tl-text">জুলাই বিপ্লবের ধারাবাহিকতায় 'ইনকিলাব মঞ্চ' প্রতিষ্ঠা। সহ-প্রতিষ্ঠাতা ও মুখপাত্র হিসেবে দায়িত্ব গ্রহণ।</p>
+                </div>
+            </div>
+            
+            <div class="tl-row">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <span class="tl-date">SEP 2025</span>
+                    <h3 class="tl-head">নির্বাচনী প্রচারণা</h3>
+                    <p class="tl-text">২০২৬ সালের জাতীয় নির্বাচনে ঢাকা-৮ আসনে স্বতন্ত্র প্রার্থী হিসেবে প্রার্থিতা ঘোষণা।</p>
+                </div>
+            </div>
+
+            <div class="tl-row tl-martyr">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <span class="tl-date" style="color:var(--color-blood)">12 DEC 2025</span>
+                    <h3 class="tl-head">সন্ত্রাসী হামলা</h3>
+                    <p class="tl-text">বিকেল ২:২৫ মিনিটে ঢাকার পল্টন এলাকায় মসজিদ থেকে বের হওয়ার পর মোটরসাইকেলে আগত দুই সন্ত্রাসীর গুলিতে মাথায় আঘাতপ্রাপ্ত।</p>
+                </div>
+            </div>
+
+            <div class="tl-row tl-martyr">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <span class="tl-date" style="color:var(--color-blood)">18 DEC 2025</span>
+                    <h3 class="tl-head">শাহাদাত বরণ</h3>
+                    <p class="tl-text">সিঙ্গাপুর জেনারেল হাসপাতালে চিকিৎসাধীন অবস্থায় শাহাদাত বরণ। বয়স হয়েছিল মাত্র ৩২ বছর।</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-global">
+        <div class="container">
+            <div class="section-header">
+                <span class="sh-tag">IMPACT</span>
+                <h2 class="sh-title">আন্তর্জাতিক প্রতিক্রিয়া</h2>
+            </div>
+            
+            <div class="global-grid">
+                <div class="global-card">
+                    <div class="gc-head">
+                        <i class="fas fa-globe gc-flag"></i>
+                        <span class="gc-name">জাতিসংঘ (UN)</span>
+                    </div>
+                    <p class="gc-body">"হাদির হত্যাকাণ্ডের ঘটনার দ্রুত, নিরপেক্ষ ও স্বচ্ছ তদন্ত এবং দায়ীদের জবাবদিহি নিশ্চিত করার আহ্বান জানাচ্ছি।"</p>
+                </div>
+
+                <div class="global-card">
+                    <div class="gc-head">
+                        <i class="fas fa-flag-usa gc-flag"></i>
+                        <span class="gc-name">যুক্তরাষ্ট্র (USA)</span>
+                    </div>
+                    <p class="gc-body">"যুক্তরাষ্ট্র দূতাবাস বাংলাদেশের জনগণের সাথে একাত্ম হয়ে তরুণ নেতার মৃত্যুতে গভীর শোক প্রকাশ করছে।"</p>
+                </div>
+
+                <div class="global-card">
+                    <div class="gc-head">
+                        <i class="fas fa-crown gc-flag"></i>
+                        <span class="gc-name">যুক্তরাজ্য (UK)</span>
+                    </div>
+                    <p class="gc-body">"তরুণ নেতার মৃত্যুতে আমরা গভীরভাবে শোকাহত। তার পরিবার ও সমর্থকদের প্রতি সমবেদনা জানাই।"</p>
+                </div>
+
+                <div class="global-card">
+                    <div class="gc-head">
+                        <i class="fas fa-star-and-crescent gc-flag"></i>
+                        <span class="gc-name">পাকিস্তান (PAK)</span>
+                    </div>
+                    <p class="gc-body">"পাকিস্তান হাই কমিশন গভীর শোক প্রকাশ করছে। আল্লাহ তাকে জান্নাতুল ফেরদৌস দান করুন।"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="f-brand">OSMAN HADI <span style="color:var(--color-blood)">LEGACY</span></div>
+            <p style="color:#666; font-style:italic;">"আমার মৃত্যুর পরে যেন এই লড়াই বন্ধ না হয়"</p>
+         
+        </div>
+    </footer>
+    <footer class="mini-footer">
+    <p>
+        © 2026 <strong>BANGLADESH CYBER TROOPS</strong> |
+        <br>DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong>
+    </p>
+</footer>
+
+    <script>
+        const attackDate = new Date("December 12, 2025 14:00:00").getTime();
+
+        const timerInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = now - attackDate;
+
+            if (distance >= 0) {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("j_days").innerText = days < 10 ? "0" + days : days;
+                document.getElementById("j_hours").innerText = hours < 10 ? "0" + hours : hours;
+                document.getElementById("j_minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+                document.getElementById("j_seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+            }
+        }, 1000);
+
+        function takeScreenshot() {
+            const element = document.getElementById("j_monitor");
+            const btn = document.querySelector(".btn-screenshot");
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GENERATING...';
+
+            html2canvas(element, { backgroundColor: "#0e0e0e", scale: 3, useCORS: true }).then(canvas => {
+                const link = document.createElement("a");
+                link.download = "Justice_For_Osman_Hadi.png";
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                btn.innerHTML = '<i class="fas fa-check"></i> SAVED';
+                setTimeout(() => btn.innerHTML = originalText, 3000);
+            });
+        }
+    </script>
+</body>
+</html>
