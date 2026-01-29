@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TOOLKIT | BCT</title>
+    <title>CONVERTER TOOLKIT | BCT</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,11 +15,12 @@
         :root {
             --primary: #ff0033;
             --primary-dim: rgba(255, 0, 51, 0.1);
+            --primary-glow: rgba(255, 0, 51, 0.4);
             --safe: #00ffcc;
-            --bg: #000000;
-            --panel: #0b0b0d;
+            --bg: #050505;
+            --panel: #0e0e10;
             --text: #ffffff;
-            --border: rgba(255, 255, 255, 0.15);
+            --border: rgba(255, 255, 255, 0.1);
             
             --font-head: 'Orbitron', sans-serif;
             --font-body: 'Rajdhani', sans-serif;
@@ -36,113 +37,108 @@
             display: flex; flex-direction: column;
             align-items: center;
             overflow-x: hidden;
-            background-image: radial-gradient(circle at top, #111 0%, #000 100%);
         }
 
         /* HEADER */
         header {
-            width: 100%; max-width: 480px; height: 60px;
+            width: 100%; max-width: 600px; height: 70px;
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 20px; border-bottom: 1px solid var(--border);
             background: rgba(10,10,10,0.95); position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(255,0,51,0.1);
         }
-        .brand { font-family: var(--font-head); font-weight: 800; font-size: 18px; letter-spacing: 1px; }
+        .brand { font-family: var(--font-head); font-weight: 800; font-size: 20px; letter-spacing: 1px; }
         .brand span { color: var(--primary); }
-        .sys-stat { font-family: var(--font-code); font-size: 10px; color: var(--safe); border: 1px solid var(--safe); padding: 3px 8px; border-radius: 4px; }
+        .sys-stat { font-family: var(--font-code); font-size: 11px; color: var(--safe); border: 1px solid var(--safe); padding: 4px 8px; border-radius: 4px; }
 
         /* WRAPPER */
         .wrapper {
-            width: 100%; max-width: 480px; padding: 20px;
+            width: 100%; max-width: 600px; padding: 20px;
             flex: 1; display: flex; flex-direction: column; position: relative;
         }
 
         /* DASHBOARD GRID */
-        .dashboard { display: block; animation: fadeIn 0.3s ease-out; }
+        .dashboard { display: block; animation: fadeIn 0.4s ease-out; padding-bottom: 50px; }
         .hidden { display: none; }
 
         .sec-title {
-            font-family: var(--font-head); font-size: 12px; color: var(--primary);
-            margin: 20px 0 10px 0; letter-spacing: 1px; border-bottom: 1px solid #222;
-            padding-bottom: 5px;
+            font-family: var(--font-head); font-size: 14px; color: var(--primary);
+            margin: 30px 0 15px 0; letter-spacing: 1px; border-bottom: 1px solid #222;
+            padding-bottom: 8px; display: flex; align-items: center; gap: 10px;
         }
 
         .tools-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
         }
 
         .tool-btn {
             background: var(--panel); border: 1px solid var(--border);
-            border-radius: 8px; padding: 15px 5px; text-align: center;
-            cursor: pointer; transition: 0.3s; position: relative; overflow: hidden;
+            border-radius: 6px; padding: 12px 5px; text-align: center;
+            cursor: pointer; transition: 0.2s; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 85px;
         }
-        .tool-btn:hover { border-color: var(--primary); background: var(--primary-dim); transform: translateY(-3px); }
-        .tool-btn i { font-size: 24px; color: #fff; margin-bottom: 8px; display: block; }
-        .tool-btn span { font-size: 10px; font-weight: 700; color: #888; font-family: var(--font-head); display: block; }
-        .tool-btn:hover i { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+        .tool-btn:hover { border-color: var(--primary); background: var(--primary-dim); transform: translateY(-2px); }
+        .tool-btn i { font-size: 22px; color: #ccc; margin-bottom: 8px; transition: 0.2s; }
+        .tool-btn span { font-size: 10px; font-weight: 700; color: #777; font-family: var(--font-head); display: block; line-height: 1.1; text-transform: uppercase; }
+        .tool-btn:hover i { color: var(--primary); }
+        .tool-btn:hover span { color: #fff; }
 
-        /* ACTIVE TOOL INTERFACE (OVERLAY) */
+        /* ACTIVE TOOL INTERFACE */
         .tool-interface {
             display: none; flex-direction: column; gap: 20px;
-            animation: slideUp 0.3s ease-out;
+            animation: slideUp 0.3s ease-out; width: 100%;
         }
         .tool-interface.active { display: flex; }
 
         .back-bar {
             display: flex; align-items: center; gap: 10px; cursor: pointer;
-            color: #888; font-size: 12px; margin-bottom: 10px;
+            color: #888; font-size: 13px; margin-bottom: 5px;
+            padding: 12px; border: 1px solid #333; border-radius: 6px; background: #080808;
+            transition: 0.3s;
         }
-        .back-bar:hover { color: var(--primary); }
+        .back-bar:hover { color: var(--primary); border-color: var(--primary); }
 
         .interface-card {
             background: var(--panel); border: 1px solid var(--border);
             border-radius: 12px; padding: 25px 20px; text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; overflow: hidden;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5); position: relative; overflow: hidden;
         }
-        .scan-line {
-            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            animation: scan 2s infinite linear;
-        }
-
+        
         /* INPUTS & UI ELEMENTS */
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-label { font-size: 10px; color: #666; font-family: var(--font-code); margin-bottom: 5px; display: block; }
+        .input-group { margin-bottom: 18px; text-align: left; }
+        .input-label { font-size: 11px; color: #888; font-family: var(--font-code); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 1px; }
         
         .cyber-input, .cyber-select {
-            width: 100%; background: #050505; border: 1px solid #333;
-            padding: 14px; color: #fff; font-size: 16px;
-            font-family: var(--font-code); border-radius: 8px; transition: 0.3s;
+            width: 100%; background: #000; border: 1px solid #333;
+            padding: 15px; color: #fff; font-size: 18px;
+            font-family: var(--font-code); border-radius: 6px; transition: 0.3s;
         }
-        .cyber-input:focus, .cyber-select:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-dim); }
+        .cyber-input:focus, .cyber-select:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-dim); outline: none; }
 
         .action-btn {
-            width: 100%; padding: 14px; background: var(--primary);
+            width: 100%; padding: 16px; background: var(--primary);
             color: #fff; border: none; font-family: var(--font-head);
             font-weight: 700; font-size: 16px; letter-spacing: 2px;
-            cursor: pointer; clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%);
-            transition: 0.3s; margin-top: 10px;
+            cursor: pointer; clip-path: polygon(4% 0, 100% 0, 100% 70%, 96% 100%, 0 100%, 0 30%);
+            transition: 0.3s; margin-top: 15px; text-transform: uppercase;
         }
-        .action-btn:hover { box-shadow: 0 0 20px var(--primary-glow); transform: translateY(-2px); }
+        .action-btn:hover { box-shadow: 0 0 25px var(--primary-glow); transform: translateY(-2px); }
 
         .result-display {
-            margin-top: 20px; background: #000; border: 1px solid #333;
+            margin-top: 25px; background: #000; border: 1px solid #333; border-left: 4px solid var(--primary);
             padding: 20px; font-family: var(--font-code); font-size: 20px;
-            color: var(--safe); word-break: break-all; border-radius: 8px;
+            color: var(--safe); word-break: break-all; border-radius: 6px;
+            min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
+        .result-sub { font-size: 13px; color: #666; margin-top: 8px; font-family: var(--font-body); }
 
-        /* CALCULATOR GRID */
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; }
-        .calc-key {
-            padding: 15px; background: #1a1a1a; border: 1px solid #333; color: #fff;
-            font-family: var(--font-head); font-weight: bold; border-radius: 6px; cursor: pointer;
-        }
-        .calc-key:active { background: var(--primary); }
-        .calc-key.op { color: var(--primary); }
-
-        /* FOOTER */
+        /* --- 6. FOOTER --- */
+   
         footer {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 15px;
             font-family: 'Orbitron', sans-serif;
             font-size: 0.65rem;
             letter-spacing: 1.5px;
@@ -150,12 +146,11 @@
         }
 
         footer strong {
-    color: var(--primary);
-    text-shadow: 0 0 10px var(--primary-glow);
+    color: #ff0000;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
 }
 
-        @keyframes scan { 0%{left:-100%} 100%{left:100%} }
-        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes fadeIn { from{opacity:0; transform: translateY(10px);} to{opacity:1; transform: translateY(0);} }
         @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
     </style>
 </head>
@@ -170,268 +165,420 @@
         
         <div id="dashboard" class="dashboard">
             
-            <div class="sec-title">CORE UTILITIES</div>
+            <div class="sec-title"><i class="fas fa-calculator"></i> GENERAL MATH</div>
             <div class="tools-grid">
-                <div class="tool-btn" onclick="openTool('calc')"><i class="fas fa-calculator"></i><span>CALCULATOR</span></div>
-                <div class="tool-btn" onclick="openTool('curr')"><i class="fas fa-coins"></i><span>CURRENCY</span></div>
-                <div class="tool-btn" onclick="openTool('age')"><i class="fas fa-birthday-cake"></i><span>AGE CALC</span></div>
-                <div class="tool-btn" onclick="openTool('bmi')"><i class="fas fa-weight"></i><span>BMI CALC</span></div>
-                <div class="tool-btn" onclick="openTool('stop')"><i class="fas fa-stopwatch"></i><span>STOPWATCH</span></div>
-                <div class="tool-btn" onclick="openTool('count')"><i class="fas fa-sort-numeric-up"></i><span>COUNTER</span></div>
+                <div class="tool-btn" onclick="loadTool('age')"><i class="fas fa-birthday-cake"></i><span>Age Calc</span></div>
+                <div class="tool-btn" onclick="loadTool('perc')"><i class="fas fa-percentage"></i><span>Percentage</span></div>
+                <div class="tool-btn" onclick="loadTool('avg')"><i class="fas fa-chart-line"></i><span>Average</span></div>
+                <div class="tool-btn" onclick="loadTool('conf')"><i class="fas fa-chart-bar"></i><span>Confidence</span></div>
+                <div class="tool-btn" onclick="loadTool('prob')"><i class="fas fa-dice"></i><span>Probability</span></div>
+                <div class="tool-btn" onclick="loadTool('n2r')"><i class="fas fa-columns"></i><span>Num 2 Roman</span></div>
+                <div class="tool-btn" onclick="loadTool('r2n')"><i class="fas fa-i-cursor"></i><span>Roman 2 Num</span></div>
             </div>
 
-            <div class="sec-title">UNIT CONVERTERS</div>
+            <div class="sec-title"><i class="fas fa-coins"></i> FINANCE</div>
             <div class="tools-grid">
-                <div class="tool-btn" onclick="openTool('len')"><i class="fas fa-ruler"></i><span>LENGTH</span></div>
-                <div class="tool-btn" onclick="openTool('wgt')"><i class="fas fa-balance-scale"></i><span>WEIGHT</span></div>
-                <div class="tool-btn" onclick="openTool('temp')"><i class="fas fa-thermometer-half"></i><span>TEMP</span></div>
-                <div class="tool-btn" onclick="openTool('stor')"><i class="fas fa-hdd"></i><span>STORAGE</span></div>
-                <div class="tool-btn" onclick="openTool('spd')"><i class="fas fa-tachometer-alt"></i><span>SPEED</span></div>
+                <div class="tool-btn" onclick="loadTool('curr')"><i class="fas fa-exchange-alt"></i><span>Currency</span></div>
+                <div class="tool-btn" onclick="loadTool('tax')"><i class="fas fa-hand-holding-usd"></i><span>Sales Tax</span></div>
+                <div class="tool-btn" onclick="loadTool('gst')"><i class="fas fa-file-invoice-dollar"></i><span>GST</span></div>
+                <div class="tool-btn" onclick="loadTool('margin')"><i class="fas fa-chart-pie"></i><span>Margin</span></div>
+                <div class="tool-btn" onclick="loadTool('loan')"><i class="fas fa-landmark"></i><span>Loan</span></div>
+                <div class="tool-btn" onclick="loadTool('ppal')"><i class="fab fa-paypal"></i><span>Paypal Fee</span></div>
+                <div class="tool-btn" onclick="loadTool('disc')"><i class="fas fa-tags"></i><span>Discount</span></div>
+                <div class="tool-btn" onclick="loadTool('cpm')"><i class="fas fa-ad"></i><span>CPM</span></div>
             </div>
 
-            <div class="sec-title">DEV & SCIENCE</div>
+            <div class="sec-title"><i class="fas fa-ruler-combined"></i> PHYSICAL UNITS</div>
             <div class="tools-grid">
-
-                <div class="tool-btn" onclick="openTool('pass')"><i class="fas fa-key"></i><span>PASS GEN</span></div>
-                <div class="tool-btn" onclick="openTool('hash')"><i class="fas fa-fingerprint"></i><span>HASH GEN</span></div>
-                <div class="tool-btn" onclick="openTool('qr')"><i class="fas fa-qrcode"></i><span>QR CODE</span></div>
-                <div class="tool-btn" onclick="openTool('ohm')"><i class="fas fa-bolt"></i><span>OHM LAW</span></div>
-                
-                <div class="tool-btn" onclick="openTool('text')"><i class="fas fa-font"></i><span>TEXT OPS</span></div>
+                <div class="tool-btn" onclick="loadTool('len')"><i class="fas fa-ruler"></i><span>Length</span></div>
+                <div class="tool-btn" onclick="loadTool('area')"><i class="fas fa-vector-square"></i><span>Area</span></div>
+                <div class="tool-btn" onclick="loadTool('wgt')"><i class="fas fa-weight-hanging"></i><span>Weight</span></div>
+                <div class="tool-btn" onclick="loadTool('vol')"><i class="fas fa-cube"></i><span>Volume</span></div>
+                <div class="tool-btn" onclick="loadTool('temp')"><i class="fas fa-thermometer-half"></i><span>Temp</span></div>
+                <div class="tool-btn" onclick="loadTool('time')"><i class="fas fa-clock"></i><span>Time</span></div>
+                <div class="tool-btn" onclick="loadTool('spd')"><i class="fas fa-tachometer-alt"></i><span>Speed</span></div>
+                <div class="tool-btn" onclick="loadTool('pace')"><i class="fas fa-running"></i><span>Pace</span></div>
+                <div class="tool-btn" onclick="loadTool('pres')"><i class="fas fa-compress-arrows-alt"></i><span>Pressure</span></div>
+                <div class="tool-btn" onclick="loadTool('torq')"><i class="fas fa-sync-alt"></i><span>Torque</span></div>
+                <div class="tool-btn" onclick="loadTool('flow')"><i class="fas fa-water"></i><span>Flow Rate</span></div>
+                <div class="tool-btn" onclick="loadTool('illu')"><i class="fas fa-sun"></i><span>Illuminance</span></div>
             </div>
 
+            <div class="sec-title"><i class="fas fa-bolt"></i> ELECTRICAL</div>
+            <div class="tools-grid">
+                <div class="tool-btn" onclick="loadTool('curr_e')"><i class="fas fa-plug"></i><span>Current</span></div>
+                <div class="tool-btn" onclick="loadTool('volt')"><i class="fas fa-bolt"></i><span>Voltage</span></div>
+                <div class="tool-btn" onclick="loadTool('pow')"><i class="fas fa-lightbulb"></i><span>Power</span></div>
+                <div class="tool-btn" onclick="loadTool('reac_p')"><i class="fas fa-project-diagram"></i><span>Reac Power</span></div>
+                <div class="tool-btn" onclick="loadTool('app_p')"><i class="fas fa-network-wired"></i><span>App Power</span></div>
+                <div class="tool-btn" onclick="loadTool('ener')"><i class="fas fa-battery-full"></i><span>Energy</span></div>
+                <div class="tool-btn" onclick="loadTool('reac_e')"><i class="fas fa-car-battery"></i><span>Reac Energy</span></div>
+                <div class="tool-btn" onclick="loadTool('freq')"><i class="fas fa-wave-square"></i><span>Frequency</span></div>
+                <div class="tool-btn" onclick="loadTool('charg')"><i class="fas fa-atom"></i><span>Charge</span></div>
+            </div>
+
+            <div class="sec-title"><i class="fas fa-code"></i> DATA & MISC</div>
+            <div class="tools-grid">
+                <div class="tool-btn" onclick="loadTool('stor')"><i class="fas fa-hdd"></i><span>Digital</span></div>
+                <div class="tool-btn" onclick="loadTool('angle')"><i class="fas fa-drafting-compass"></i><span>Angle</span></div>
+                <div class="tool-btn" onclick="loadTool('ppm')"><i class="fas fa-vial"></i><span>Parts Per</span></div>
+                <div class="tool-btn" onclick="loadTool('each')"><i class="fas fa-boxes"></i><span>Each Conv</span></div>
+                <div class="tool-btn" onclick="loadTool('n2w')"><i class="fas fa-font"></i><span>Num 2 Word</span></div>
+                <div class="tool-btn" onclick="loadTool('w2n')"><i class="fas fa-sort-numeric-down"></i><span>Word 2 Num</span></div>
+            </div>
+            
         </div>
 
         <div id="toolInterface" class="tool-interface">
             <div class="back-bar" onclick="closeTool()">
-                <i class="fas fa-chevron-left"></i> RETURN TO DASHBOARD
+                <i class="fas fa-arrow-left"></i> RETURN TO DASHBOARD
             </div>
             
             <div class="interface-card">
-                <div class="scan-line"></div>
-                <h2 id="toolTitle" style="font-family:var(--font-head); font-size:18px; color:#fff; margin-bottom:20px;">TOOL NAME</h2>
-                
-                <div id="toolContent"></div>
+                <h2 id="toolHeader" style="font-family:var(--font-head); font-size:18px; color:#fff; margin-bottom:20px; text-transform:uppercase;">TOOL</h2>
+                <div id="toolBody"></div>
             </div>
         </div>
 
     </div>
-
-    <footer>
-        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
+<footer>
+        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | <br>DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
     </footer>
+
     <script>
-        // UI LOGIC
+        // ==========================================
+        // SYSTEM CORE
+        // ==========================================
         const dashboard = document.getElementById('dashboard');
         const toolInterface = document.getElementById('toolInterface');
-        const toolTitle = document.getElementById('toolTitle');
-        const toolContent = document.getElementById('toolContent');
-        let timerInterval = null;
-
-        function openTool(toolId) {
-            dashboard.classList.add('hidden');
-            toolInterface.classList.add('active');
-            toolContent.innerHTML = '';
-            if(timerInterval) clearInterval(timerInterval);
-
-            // Router
-            switch(toolId) {
-                case 'calc': renderCalc(); break;
-                case 'curr': renderCurrency(); break;
-                case 'age': renderAge(); break;
-                case 'bmi': renderBMI(); break;
-                case 'stop': renderStopwatch(); break;
-                case 'count': renderCounter(); break;
-                case 'len': renderConverter('LENGTH', ['Meter', 'Kilometer', 'Centimeter', 'Inch', 'Foot', 'Mile']); break;
-                case 'wgt': renderConverter('WEIGHT', ['Kilogram', 'Gram', 'Pound', 'Ounce']); break;
-                case 'temp': renderConverter('TEMPERATURE', ['Celsius', 'Fahrenheit', 'Kelvin']); break;
-                case 'stor': renderConverter('STORAGE', ['Byte', 'KB', 'MB', 'GB', 'TB']); break;
-                case 'spd': renderConverter('SPEED', ['Kph', 'Mph', 'Knots', 'Mach']); break;
-                case 'time': renderTime(); break;
-                case 'ip': renderIP(); break;
-                case 'pass': renderPass(); break;
-                case 'hash': renderHash(); break;
-                case 'qr': renderQR(); break;
-                case 'ohm': renderOhm(); break;
-                case 'bin': renderBin(); break;
-                case 'text': renderText(); break;
-                case 'color': renderColor(); break;
-            }
-        }
+        const toolHeader = document.getElementById('toolHeader');
+        const toolBody = document.getElementById('toolBody');
 
         function closeTool() {
             toolInterface.classList.remove('active');
             dashboard.classList.remove('hidden');
-            if(timerInterval) clearInterval(timerInterval);
         }
 
-        // --- TOOL RENDERERS ---
+        // ==========================================
+        // RENDERER ENGINE
+        // ==========================================
+        function loadTool(id) {
+            dashboard.classList.add('hidden');
+            toolInterface.classList.add('active');
+            toolBody.innerHTML = '';
+            window.scrollTo(0,0);
 
-        // 1. CALCULATOR
-        function renderCalc() {
-            toolTitle.innerText = "SCIENTIFIC CALCULATOR";
-            toolContent.innerHTML = `
-                <div class="result-display" id="cDisp" style="text-align:right; margin-top:0;">0</div>
-                <div class="calc-grid">
-                    <button class="calc-key op" onclick="ci('C')">C</button>
-                    <button class="calc-key op" onclick="ci('/')">÷</button>
-                    <button class="calc-key op" onclick="ci('*')">×</button>
-                    <button class="calc-key op" onclick="ci('-')">-</button>
-                    <button class="calc-key" onclick="ci('7')">7</button>
-                    <button class="calc-key" onclick="ci('8')">8</button>
-                    <button class="calc-key" onclick="ci('9')">9</button>
-                    <button class="calc-key op" onclick="ci('+')">+</button>
-                    <button class="calc-key" onclick="ci('4')">4</button>
-                    <button class="calc-key" onclick="ci('5')">5</button>
-                    <button class="calc-key" onclick="ci('6')">6</button>
-                    <button class="calc-key" onclick="ci('.')">.</button>
-                    <button class="calc-key" onclick="ci('1')">1</button>
-                    <button class="calc-key" onclick="ci('2')">2</button>
-                    <button class="calc-key" onclick="ci('3')">3</button>
-                    <button class="calc-key" style="background:var(--primary)" onclick="ci('=')">=</button>
-                    <button class="calc-key" style="grid-column:span 4" onclick="ci('0')">0</button>
-                </div>
-            `;
-            let exp = "";
-            window.ci = (v) => {
-                const d = document.getElementById('cDisp');
-                if(v=='C') { exp=""; d.innerText="0"; return; }
-                if(v=='=') { try { d.innerText=eval(exp); exp=d.innerText; } catch { d.innerText="ERR"; exp=""; } return; }
-                exp+=v; d.innerText=exp;
+            // Routing
+            switch(id) {
+                // MATH
+                case 'age': renderAge(); break;
+                case 'perc': renderPerc(); break;
+                case 'avg': renderAvg(); break;
+                case 'conf': renderConf(); break;
+                case 'prob': renderProb(); break;
+                case 'n2r': renderN2R(); break;
+                case 'r2n': renderR2N(); break;
+                
+                // FINANCE
+                case 'curr': renderCurrency(); break;
+                case 'tax': renderTax(); break;
+                case 'gst': renderGST(); break;
+                case 'margin': renderMargin(); break;
+                case 'loan': renderLoan(); break;
+                case 'ppal': renderPaypal(); break;
+                case 'disc': renderDiscount(); break;
+                case 'cpm': renderCPM(); break;
+
+                // CONVERTERS (Standardized)
+                case 'len': renderConv('LENGTH', ['Meter', 'Kilometer', 'Centimeter', 'Millimeter', 'Inch', 'Foot', 'Yard', 'Mile']); break;
+                case 'area': renderConv('AREA', ['Sq Meter', 'Sq Kilometer', 'Sq Foot', 'Acre', 'Hectare']); break;
+                case 'wgt': renderConv('WEIGHT', ['Kilogram', 'Gram', 'Milligram', 'Pound', 'Ounce', 'Ton']); break;
+                case 'vol': renderConv('VOLUME', ['Liter', 'Milliliter', 'Cubic Meter', 'Gallon (US)', 'Gallon (UK)']); break;
+                case 'time': renderConv('TIME', ['Second', 'Minute', 'Hour', 'Day', 'Week', 'Year']); break;
+                case 'spd': renderConv('SPEED', ['KPH', 'MPH', 'Meter/Sec', 'Knot', 'Mach']); break;
+                case 'pace': renderConv('PACE', ['Min/Km', 'Min/Mile']); break;
+                case 'pres': renderConv('PRESSURE', ['Pascal', 'Bar', 'PSI', 'Atmosphere']); break;
+                case 'torq': renderConv('TORQUE', ['Newton-Meter', 'Foot-Pound']); break;
+                case 'flow': renderConv('FLOW RATE', ['Liters/Sec', 'Cubic M/Sec', 'Gallons/Min']); break;
+                case 'illu': renderConv('ILLUMINANCE', ['Lux', 'Foot-candle']); break;
+                case 'temp': renderTemp(); break; // Special formula
+                
+                // ELECTRICAL
+                case 'curr_e': renderConv('CURRENT', ['Ampere', 'Milliampere', 'Kiloampere']); break;
+                case 'volt': renderConv('VOLTAGE', ['Volt', 'Millivolt', 'Kilovolt']); break;
+                case 'pow': renderConv('POWER', ['Watt', 'Kilowatt', 'Megawatt', 'Horsepower']); break;
+                case 'reac_p': renderConv('REACTIVE POWER', ['VAR', 'kVAR', 'MVAR']); break;
+                case 'app_p': renderConv('APPARENT POWER', ['VA', 'kVA', 'MVA']); break;
+                case 'ener': renderConv('ENERGY', ['Joule', 'Kilojoule', 'Watt-hour', 'Kilowatt-hour']); break;
+                case 'reac_e': renderConv('REACTIVE ENERGY', ['VARh', 'kVARh']); break;
+                case 'freq': renderConv('FREQUENCY', ['Hertz', 'Kilohertz', 'Megahertz', 'Gigahertz']); break;
+                case 'charg': renderConv('CHARGE', ['Coulomb', 'MilliCoulomb', 'Ampere-Hour']); break;
+
+                // OTHERS
+                case 'stor': renderConv('DIGITAL', ['Bit', 'Byte', 'Kilobyte', 'Megabyte', 'Gigabyte', 'Terabyte']); break;
+                case 'angle': renderConv('ANGLE', ['Degree', 'Radian', 'Gradian']); break;
+                case 'ppm': renderConv('PARTS PER', ['PPM', 'PPB', 'PPT', 'Percent']); break;
+                case 'each': renderConv('EACH', ['Each', 'Dozen', 'Score', 'Gross']); break;
+                case 'n2w': renderN2W(); break;
+                case 'w2n': renderW2N(); break;
             }
         }
 
-        // 2. CURRENCY (REAL API)
-        async function renderCurrency() {
-            toolTitle.innerText = "CURRENCY CONVERTER";
-            toolContent.innerHTML = `
-                <div class="input-group"><span class="input-label">AMOUNT</span><input type="number" id="cAmt" class="cyber-input" value="1"></div>
-                <div class="input-group"><span class="input-label">FROM</span><select id="cFrom" class="cyber-select"></select></div>
-                <div class="input-group"><span class="input-label">TO</span><select id="cTo" class="cyber-select"></select></div>
-                <button class="action-btn" onclick="doCurr()">CONVERT</button>
-                <div class="result-display" id="cRes">...</div>
-            `;
-            const currs = ["USD", "EUR", "BDT", "INR", "GBP", "JPY", "SAR", "AED"];
-            const f = document.getElementById('cFrom'), t = document.getElementById('cTo');
-            currs.forEach(c => { f.innerHTML+=`<option>${c}</option>`; t.innerHTML+=`<option>${c}</option>`; });
-            f.value="USD"; t.value="BDT";
+        // ==========================================
+        // TOOL LOGIC IMPLEMENTATIONS
+        // ==========================================
 
-            window.doCurr = async () => {
-                const amt = document.getElementById('cAmt').value;
-                document.getElementById('cRes').innerText = "Fetching...";
-                try {
-                    const res = await fetch(`https://api.exchangerate-api.com/v4/latest/${f.value}`);
-                    const data = await res.json();
-                    document.getElementById('cRes').innerText = (amt * data.rates[t.value]).toFixed(2) + " " + t.value;
-                } catch { document.getElementById('cRes').innerText = "API Error"; }
+        // --- 1. CONVERTER SYSTEM (The Brain) ---
+        const factors = {
+            // Length (Base: Meter)
+            'Meter':1, 'Kilometer':1000, 'Centimeter':0.01, 'Millimeter':0.001, 'Inch':0.0254, 'Foot':0.3048, 'Yard':0.9144, 'Mile':1609.34,
+            // Weight (Base: Kg)
+            'Kilogram':1, 'Gram':0.001, 'Milligram':0.000001, 'Pound':0.453592, 'Ounce':0.0283495, 'Ton':1000,
+            // Area (Base: Sq M)
+            'Sq Meter':1, 'Sq Kilometer':1000000, 'Sq Foot':0.092903, 'Acre':4046.86, 'Hectare':10000,
+            // Volume (Base: Liter)
+            'Liter':1, 'Milliliter':0.001, 'Cubic Meter':1000, 'Gallon (US)':3.78541, 'Gallon (UK)':4.54609,
+            // Time (Base: Second)
+            'Second':1, 'Minute':60, 'Hour':3600, 'Day':86400, 'Week':604800, 'Year':31536000,
+            // Speed (Base: m/s)
+            'Meter/Sec':1, 'KPH':0.277778, 'MPH':0.44704, 'Knot':0.514444, 'Mach':343,
+            // Digital (Base: Bit)
+            'Bit':1, 'Byte':8, 'Kilobyte':8192, 'Megabyte':8388608, 'Gigabyte':8589934592, 'Terabyte':8796093022208,
+            // Pressure (Base: Pascal)
+            'Pascal':1, 'Bar':100000, 'PSI':6894.76, 'Atmosphere':101325,
+            // Power (Base: Watt)
+            'Watt':1, 'Kilowatt':1000, 'Megawatt':1000000, 'Horsepower':745.7,
+            // Current (Base: Amp)
+            'Ampere':1, 'Milliampere':0.001, 'Kiloampere':1000,
+            // Voltage (Base: Volt)
+            'Volt':1, 'Millivolt':0.001, 'Kilovolt':1000,
+            // Energy (Base: Joule)
+            'Joule':1, 'Kilojoule':1000, 'Watt-hour':3600, 'Kilowatt-hour':3600000,
+            // Frequency (Base: Hz)
+            'Hertz':1, 'Kilohertz':1000, 'Megahertz':1000000, 'Gigahertz':1000000000,
+            // Angle (Base: Degree)
+            'Degree':1, 'Radian':57.2958, 'Gradian':0.9,
+            // Each
+            'Each':1, 'Dozen':12, 'Score':20, 'Gross':144,
+            // Pace (Base: min/km) -> Inverse logic needed, handled separately or simplified
+            'Min/Km':1, 'Min/Mile':1.60934 
+        };
+
+        function renderConv(title, units) {
+            toolHeader.innerText = title + " CONVERTER";
+            let opts = units.map(u => `<option value="${u}">${u}</option>`).join('');
+            toolBody.innerHTML = `
+                <div class="input-group"><span class="input-label">VALUE</span><input type="number" id="cIn" class="cyber-input" placeholder="0"></div>
+                <div class="input-group"><span class="input-label">FROM</span><select id="cF" class="cyber-select">${opts}</select></div>
+                <div class="input-group"><span class="input-label">TO</span><select id="cT" class="cyber-select">${opts}</select></div>
+                <button class="action-btn" onclick="doConv()">CONVERT</button>
+                <div class="result-display" id="cRes">0</div>
+            `;
+            document.getElementById('cT').selectedIndex = 1;
+
+            window.doConv = () => {
+                let v = parseFloat(document.getElementById('cIn').value);
+                let f = document.getElementById('cF').value;
+                let t = document.getElementById('cT').value;
+                if(isNaN(v)) return;
+
+                // Handle Pace (Inverse speed)
+                if(title === 'PACE') {
+                    // Logic: min/km * factor = min/mile
+                    // If 1 min/km -> 1.609 min/mile
+                    let res = (f==='Min/Km' && t==='Min/Mile') ? v * 1.60934 : 
+                              (f==='Min/Mile' && t==='Min/Km') ? v / 1.60934 : v;
+                    document.getElementById('cRes').innerText = res.toFixed(2);
+                    return;
+                }
+
+                // General Factor Logic
+                // Base = Input * Factor[From]
+                // Output = Base / Factor[To]
+                // Note: The dictionary is Base units. If Bit is 1, Byte is 8.
+                // To convert Byte to Bit: 1 Byte * 8 = 8 Bits.
+                // Wait, dictionary above is "How many Base units in this unit".
+                // e.g., 1 Kilometer = 1000 Meters.
+                
+                let valInBase = v * (factors[f] || 1); 
+                let res = valInBase / (factors[t] || 1);
+                
+                // Specific override for "Parts Per" (simple ratio)
+                if(title === 'PARTS PER') {
+                    const pp = {'PPM':1000000, 'PPB':1000000000, 'PPT':1000000000000, 'Percent':100};
+                    // Convert to decimal first
+                    let dec = v / pp[f];
+                    res = dec * pp[t];
+                }
+
+                document.getElementById('cRes').innerHTML = res.toPrecision(6) + ` <span class="result-sub">${t}</span>`;
             }
         }
 
-        // 3. GENERIC CONVERTER (Simulated for brevity, add formulas as needed)
-        function renderConverter(name, units) {
-            toolTitle.innerText = name + " CONVERTER";
-            let opts = units.map(u => `<option>${u}</option>`).join('');
-            toolContent.innerHTML = `
-                <div class="input-group"><span class="input-label">VALUE</span><input type="number" id="cvIn" class="cyber-input" placeholder="0"></div>
-                <div class="input-group"><span class="input-label">FROM</span><select id="cvF" class="cyber-select">${opts}</select></div>
-                <div class="input-group"><span class="input-label">TO</span><select id="cvT" class="cyber-select">${opts}</select></div>
-                <button class="action-btn" onclick="cvDo()">CONVERT</button>
-                <div class="result-display" id="cvRes">0</div>
+        // --- 2. TEMP CONVERTER (Special) ---
+        function renderTemp() {
+            toolHeader.innerText = "TEMPERATURE";
+            let u = ['Celsius', 'Fahrenheit', 'Kelvin'];
+            let o = u.map(x=>`<option>${x}</option>`).join('');
+            toolBody.innerHTML = `
+                <div class="input-group"><span class="input-label">VALUE</span><input type="number" id="tIn" class="cyber-input"></div>
+                <div class="input-group"><span class="input-label">FROM</span><select id="tF" class="cyber-select">${o}</select></div>
+                <div class="input-group"><span class="input-label">TO</span><select id="tT" class="cyber-select">${o}</select></div>
+                <button class="action-btn" onclick="calcTemp()">CONVERT</button>
+                <div class="result-display" id="tRes">--</div>
             `;
-            window.cvDo = () => {
-                let v = parseFloat(document.getElementById('cvIn').value);
-                // Demo logic: Just random multiplier for visual
-                document.getElementById('cvRes').innerText = (v * (Math.random()*10)).toFixed(4); 
+            document.getElementById('tT').selectedIndex = 1;
+            window.calcTemp = () => {
+                let v = parseFloat(document.getElementById('tIn').value);
+                let f = document.getElementById('tF').value;
+                let t = document.getElementById('tT').value;
+                let k;
+                if(f=='Celsius') k=v+273.15;
+                else if(f=='Fahrenheit') k=(v-32)*5/9 + 273.15;
+                else k=v;
+                let r;
+                if(t=='Celsius') r=k-273.15;
+                else if(t=='Fahrenheit') r=(k-273.15)*9/5 + 32;
+                else r=k;
+                document.getElementById('tRes').innerText = r.toFixed(2);
             }
         }
 
-        // 4. IP INTEL
-        async function renderIP() {
-            toolTitle.innerText = "IP RECONNAISSANCE";
-            toolContent.innerHTML = `<div id="ipL" style="color:var(--safe)">SCANNING NETWORK...</div>`;
-            try {
-                const r = await fetch('https://ipapi.co/json/');
-                const d = await r.json();
-                toolContent.innerHTML = `
-                    <div class="result-display">${d.ip}</div>
-                    <div style="text-align:left; margin-top:20px; font-size:12px; color:#ccc;">
-                        <p><strong>ISP:</strong> ${d.org}</p>
-                        <p><strong>CITY:</strong> ${d.city}</p>
-                        <p><strong>REGION:</strong> ${d.region}</p>
-                        <p><strong>COUNTRY:</strong> ${d.country_name}</p>
-                    </div>
-                `;
-            } catch { toolContent.innerHTML = "CONNECTION FAILED"; }
-        }
-
-        // 5. PASS GEN
-        function renderPass() {
-            toolTitle.innerText = "PASSWORD GENERATOR";
-            toolContent.innerHTML = `<div class="result-display" id="pwOut" style="font-size:16px;">...</div><button class="action-btn" onclick="gp()">GENERATE STRONG PASS</button>`;
-            window.gp=()=>{let c="A-Za-z0-9!@#$%^&*",p="";for(let i=0;i<16;i++)p+=c.charAt(Math.floor(Math.random()*c.length));document.getElementById('pwOut').innerText=p};
-        }
-
-        // 6. STOPWATCH
-        function renderStopwatch() {
-            toolTitle.innerText = "CHRONOMETER";
-            toolContent.innerHTML = `<div class="result-display" id="swT" style="font-size:30px;">00:00:00</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><button class="action-btn" onclick="startSw()">START</button><button class="action-btn" onclick="stopSw()">STOP</button></div>`;
-            let ms=0,s=0,m=0,run=false;
-            window.startSw=()=>{if(run)return; run=true; timerInterval=setInterval(()=>{ms++;if(ms==100){ms=0;s++}if(s==60){s=0;m++}document.getElementById('swT').innerText=`${m}:${s}:${ms}`},10)};
-            window.stopSw=()=>{run=false;clearInterval(timerInterval)};
-        }
-
-        // 7. COUNTER
-        function renderCounter() {
-            toolTitle.innerText = "TALLY COUNTER";
-            let c=0;
-            toolContent.innerHTML = `<div class="result-display" id="cnt" style="font-size:40px;">0</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><button class="action-btn" onclick="ud(1)">+</button><button class="action-btn" onclick="ud(-1)">-</button></div>`;
-            window.ud=(n)=>{c+=n;document.getElementById('cnt').innerText=c};
-        }
-
-        // 8. AGE
+        // --- 3. MATH TOOLS ---
         function renderAge() {
-            toolTitle.innerText = "AGE CALCULATOR";
-            toolContent.innerHTML = `<input type="date" id="dob" class="cyber-input"><button class="action-btn" onclick="cA()">CALCULATE</button><div class="result-display" id="aRes">0 Years</div>`;
-            window.cA=()=>{const d=new Date(document.getElementById('dob').value); const diff=Date.now()-d.getTime(); document.getElementById('aRes').innerText=Math.abs(new Date(diff).getUTCFullYear()-1970)+" Years"};
+            toolHeader.innerText = "AGE CALCULATOR";
+            toolBody.innerHTML = `<input type="date" id="dob" class="cyber-input"><button class="action-btn" onclick="cAge()">CALCULATE</button><div class="result-display" id="aOut">0</div>`;
+            window.cAge=()=>{
+                let d = new Date(document.getElementById('dob').value);
+                let diff = Date.now() - d.getTime();
+                let age = new Date(diff); 
+                document.getElementById('aOut').innerHTML = Math.abs(age.getUTCFullYear()-1970) + " <span class='result-sub'>YEARS OLD</span>";
+            }
+        }
+        function renderPerc() {
+            toolHeader.innerText = "PERCENTAGE";
+            toolBody.innerHTML = `<div class="input-group"><input id="p1" class="cyber-input" placeholder="What is %"></div><div class="input-group"><input id="p2" class="cyber-input" placeholder="Of Value"></div><button class="action-btn" onclick="cPerc()">CALC</button><div class="result-display" id="pOut">0</div>`;
+            window.cPerc=()=>{let a=parseFloat(document.getElementById('p1').value),b=parseFloat(document.getElementById('p2').value); document.getElementById('pOut').innerText = (b*(a/100)).toFixed(2);}
+        }
+        function renderAvg() {
+            toolHeader.innerText = "AVERAGE";
+            toolBody.innerHTML = `<textarea id="avgIn" class="cyber-input" placeholder="10, 20, 30..." rows="3"></textarea><button class="action-btn" onclick="cAvg()">CALC</button><div class="result-display" id="avOut">0</div>`;
+            window.cAvg=()=>{let arr=document.getElementById('avgIn').value.split(/[\s,]+/).map(Number).filter(n=>!isNaN(n)); let s=arr.reduce((a,b)=>a+b,0); document.getElementById('avOut').innerText = arr.length ? (s/arr.length).toFixed(4) : 0;}
+        }
+        function renderConf() {
+            toolHeader.innerText = "CONFIDENCE INTERVAL (95%)";
+            toolBody.innerHTML = `<div class="input-group"><span class="input-label">MEAN</span><input id="cm" class="cyber-input"></div><div class="input-group"><span class="input-label">STD DEV</span><input id="cs" class="cyber-input"></div><div class="input-group"><span class="input-label">SIZE</span><input id="cn" class="cyber-input"></div><button class="action-btn" onclick="cConf()">CALC</button><div class="result-display" id="coOut">...</div>`;
+            window.cConf=()=>{let m=parseFloat(document.getElementById('cm').value),s=parseFloat(document.getElementById('cs').value),n=parseFloat(document.getElementById('cn').value); let e=1.96*(s/Math.sqrt(n)); document.getElementById('coOut').innerHTML = `${(m-e).toFixed(2)} - ${(m+e).toFixed(2)}`;}
+        }
+        function renderProb() {
+            toolHeader.innerText = "PROBABILITY";
+            toolBody.innerHTML = `<div class="input-group"><span class="input-label">EVENTS</span><input id="pe" class="cyber-input"></div><div class="input-group"><span class="input-label">OUTCOMES</span><input id="po" class="cyber-input"></div><button class="action-btn" onclick="cProb()">CALC</button><div class="result-display" id="prOut">0%</div>`;
+            window.cProb=()=>{let e=parseFloat(document.getElementById('pe').value),o=parseFloat(document.getElementById('po').value); document.getElementById('prOut').innerText = ((e/o)*100).toFixed(2) + "%";}
+        }
+        function renderN2R() {
+            toolHeader.innerText = "NUM TO ROMAN";
+            toolBody.innerHTML = `<input id="nr" type="number" class="cyber-input"><button class="action-btn" onclick="cN2R()">CONVERT</button><div class="result-display" id="nrOut">...</div>`;
+            window.cN2R=()=>{let num=document.getElementById('nr').value; const l={M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1}; let r=''; for(let i in l){while(num>=l[i]){r+=i;num-=l[i]}} document.getElementById('nrOut').innerText=r;}
+        }
+        function renderR2N() {
+            toolHeader.innerText = "ROMAN TO NUM";
+            toolBody.innerHTML = `<input id="rn" class="cyber-input" style="text-transform:uppercase"><button class="action-btn" onclick="cR2N()">CONVERT</button><div class="result-display" id="rnOut">...</div>`;
+            window.cR2N=()=>{let s=document.getElementById('rn').value.toUpperCase(); const m={I:1,V:5,X:10,L:50,C:100,D:500,M:1000}; let r=0; for(let i=0;i<s.length;i++){let v1=m[s[i]],v2=m[s[i+1]]; if(v2>v1){r+=v2-v1;i++}else{r+=v1}} document.getElementById('rnOut').innerText=r;}
         }
 
-        // 9. BMI
-        function renderBMI() {
-            toolTitle.innerText = "BMI CALCULATOR";
-            toolContent.innerHTML = `<input id="w" type="number" class="cyber-input" placeholder="Weight (KG)" style="margin-bottom:10px"><input id="h" type="number" class="cyber-input" placeholder="Height (CM)"><button class="action-btn" onclick="cB()">CALC</button><div class="result-display" id="br">0.0</div>`;
-            window.cB=()=>{let w=parseFloat(document.getElementById('w').value), h=parseFloat(document.getElementById('h').value)/100; document.getElementById('br').innerText=(w/(h*h)).toFixed(1)};
+        // --- 4. FINANCE TOOLS ---
+        function renderTax() {
+            toolHeader.innerText = "SALES TAX";
+            toolBody.innerHTML = `<div class="input-group"><span class="input-label">AMOUNT</span><input id="ta" class="cyber-input"></div><div class="input-group"><span class="input-label">TAX %</span><input id="tr" class="cyber-input"></div><button class="action-btn" onclick="cTax()">CALC</button><div class="result-display" id="txOut">0</div>`;
+            window.cTax=()=>{let a=parseFloat(document.getElementById('ta').value),r=parseFloat(document.getElementById('tr').value); let t=a*(r/100); document.getElementById('txOut').innerHTML=`Total: ${(a+t).toFixed(2)}<span class='result-sub'>Tax: ${t.toFixed(2)}</span>`;}
+        }
+        function renderGST() {
+            toolHeader.innerText = "GST CALCULATOR";
+            toolBody.innerHTML = `<div class="input-group"><span class="input-label">PRICE</span><input id="ga" class="cyber-input"></div><div class="input-group"><span class="input-label">RATE %</span><select id="gr" class="cyber-select"><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option></select></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button class="action-btn" onclick="cGST(1)">ADD GST</button><button class="action-btn" style="background:#333" onclick="cGST(0)">REMOVE</button></div><div class="result-display" id="gsOut">0</div>`;
+            window.cGST=(mode)=>{let a=parseFloat(document.getElementById('ga').value),r=parseFloat(document.getElementById('gr').value); let res = mode ? a*(1+r/100) : a/(1+r/100); document.getElementById('gsOut').innerText=res.toFixed(2);}
+        }
+        function renderMargin() {
+            toolHeader.innerText = "MARGIN";
+            toolBody.innerHTML = `<div class="input-group"><span class="input-label">COST</span><input id="mc" class="cyber-input"></div><div class="input-group"><span class="input-label">REVENUE</span><input id="mr" class="cyber-input"></div><button class="action-btn" onclick="cMar()">CALC</button><div class="result-display" id="mOut">0%</div>`;
+            window.cMar=()=>{let c=parseFloat(document.getElementById('mc').value),r=parseFloat(document.getElementById('mr').value); document.getElementById('mOut').innerText = ((r-c)/r*100).toFixed(2) + "%";}
+        }
+        function renderLoan() {
+            toolHeader.innerText = "LOAN CALCULATOR";
+            toolBody.innerHTML = `<div class="input-group"><span class="input-label">AMOUNT</span><input id="la" class="cyber-input"></div><div class="input-group"><span class="input-label">RATE %</span><input id="lr" class="cyber-input"></div><div class="input-group"><span class="input-label">MONTHS</span><input id="lm" class="cyber-input"></div><button class="action-btn" onclick="cLoan()">CALC</button><div class="result-display" id="lOut">0</div>`;
+            window.cLoan=()=>{let p=parseFloat(document.getElementById('la').value),r=parseFloat(document.getElementById('lr').value)/1200,n=parseFloat(document.getElementById('lm').value); let m=(p*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1); document.getElementById('lOut').innerHTML=`${m.toFixed(2)} / Mo<span class='result-sub'>Total: ${(m*n).toFixed(2)}</span>`;}
+        }
+        function renderPaypal() {
+            toolHeader.innerText = "PAYPAL FEE";
+            toolBody.innerHTML = `<div class="input-group"><span class="input-label">RECEIVE AMOUNT</span><input id="pa" class="cyber-input"></div><button class="action-btn" onclick="cPP()">CALC</button><div class="result-display" id="ppOut">0</div>`;
+            window.cPP=()=>{let a=parseFloat(document.getElementById('pa').value); let ask=(a+0.30)/0.971; document.getElementById('ppOut').innerHTML=`Ask: ${ask.toFixed(2)}<span class='result-sub'>Fee: ${(ask-a).toFixed(2)}</span>`;}
+        }
+        function renderDiscount() {
+            toolHeader.innerText = "DISCOUNT";
+            toolBody.innerHTML = `<div class="input-group"><span class="input-label">PRICE</span><input id="dp" class="cyber-input"></div><div class="input-group"><span class="input-label">OFF %</span><input id="do" class="cyber-input"></div><button class="action-btn" onclick="cDisc()">CALC</button><div class="result-display" id="dOut">0</div>`;
+            window.cDisc=()=>{let p=parseFloat(document.getElementById('dp').value),o=parseFloat(document.getElementById('do').value); document.getElementById('dOut').innerText=(p-(p*o/100)).toFixed(2);}
+        }
+        function renderCPM() {
+            toolHeader.innerText = "CPM CALCULATOR";
+            toolBody.innerHTML = `<div class="input-group"><span class="input-label">COST</span><input id="cc" class="cyber-input"></div><div class="input-group"><span class="input-label">IMPRESSIONS</span><input id="ci" class="cyber-input"></div><button class="action-btn" onclick="cCPM()">CALC</button><div class="result-display" id="cpOut">0</div>`;
+            window.cCPM=()=>{let c=parseFloat(document.getElementById('cc').value),i=parseFloat(document.getElementById('ci').value); document.getElementById('cpOut').innerText = ((c/i)*1000).toFixed(2);}
+        }
+        async function renderCurrency() {
+            toolHeader.innerText = "CURRENCY (LIVE)";
+            toolBody.innerHTML = `<div class="input-group"><span class="input-label">AMOUNT</span><input id="cam" class="cyber-input" value="1"></div><div class="input-group"><span class="input-label">FROM</span><select id="cf" class="cyber-select"></select></div><div class="input-group"><span class="input-label">TO</span><select id="ct" class="cyber-select"></select></div><button class="action-btn" onclick="cCurr()">CONVERT</button><div class="result-display" id="crOut">...</div>`;
+            const cs=["USD","EUR","BDT","INR","GBP","CAD","AUD","JPY","AED","SAR"];
+            let f=document.getElementById('cf'),t=document.getElementById('ct');
+            cs.forEach(c=>{f.innerHTML+=`<option>${c}</option>`;t.innerHTML+=`<option>${c}</option>`});
+            f.value="USD"; t.value="BDT";
+            window.cCurr=async()=>{
+                let a=document.getElementById('cam').value, fr=f.value, to=t.value;
+                document.getElementById('crOut').innerText="Fetching...";
+                try{
+                    let r=await fetch(`https://api.exchangerate-api.com/v4/latest/${fr}`);
+                    let d=await r.json();
+                    document.getElementById('crOut').innerText=(a*d.rates[to]).toFixed(2) + " " + to;
+                }catch{document.getElementById('crOut').innerText="Error";}
+            }
         }
 
-        // 10. QR
-        function renderQR() {
-            toolTitle.innerText = "QR GENERATOR";
-            toolContent.innerHTML = `<input id="qIn" class="cyber-input" placeholder="URL/Text"><button class="action-btn" onclick="mq()">GENERATE</button><div style="text-align:center;margin-top:20px"><img id="qImg" style="border:4px solid #fff;display:none;max-width:150px"></div>`;
-            window.mq=()=>{let v=document.getElementById('qIn').value; if(v){let i=document.getElementById('qImg'); i.src=`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(v)}`; i.style.display='inline-block';}}
+        // --- 5. TEXT TOOLS ---
+        function renderN2W() {
+            toolHeader.innerText = "NUM TO WORD";
+            toolBody.innerHTML = `<input id="nw" type="number" class="cyber-input"><button class="action-btn" onclick="cNW()">CONVERT</button><div class="result-display" id="nwOut" style="font-size:16px">...</div>`;
+            window.cNW=()=>{
+                // Simplified 0-999 logic for demo space, ideally generic
+                const ones = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine'];
+                const tens = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+                const teens = ['Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+                let n = parseInt(document.getElementById('nw').value);
+                if(n==0) {document.getElementById('nwOut').innerText="Zero"; return;}
+                let str = "";
+                if(n>=1000){str+="Thousands+ not supported in mini-code"; }
+                else {
+                    if(n>=100){str+=ones[Math.floor(n/100)]+" Hundred "; n%=100;}
+                    if(n>=20){str+=tens[Math.floor(n/10)]+" "; n%=10;}
+                    if(n>=10){str+=teens[n-10]; n=0;}
+                    if(n>0){str+=ones[n];}
+                }
+                document.getElementById('nwOut').innerText = str;
+            }
+        }
+        function renderW2N() {
+            toolHeader.innerText = "WORD TO NUM";
+            toolBody.innerHTML = `<input id="wn" class="cyber-input" placeholder="one hundred twenty"><button class="action-btn" onclick="cWN()">CONVERT</button><div class="result-display" id="wnOut">0</div>`;
+            window.cWN=()=>{
+                let w = document.getElementById('wn').value.toLowerCase().split(' ');
+                const small = {'zero':0,'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,'ten':10,'eleven':11,'twelve':12,'thirteen':13,'fourteen':14,'fifteen':15,'sixteen':16,'seventeen':17,'eighteen':18,'nineteen':19,'twenty':20,'thirty':30,'forty':40,'fifty':50,'sixty':60,'seventy':70,'eighty':80,'ninety':90};
+                const mag = {'hundred':100,'thousand':1000};
+                let res=0, g=0;
+                w.forEach(x=>{
+                    if(small[x]) g+=small[x];
+                    else if(x=='hundred') g*=100;
+                    else if(x=='thousand') {res+=g*1000; g=0;}
+                });
+                document.getElementById('wnOut').innerText = res+g;
+            }
         }
 
-        // 11. HASH
-        function renderHash() {
-            toolTitle.innerText = "HASH ENCRYPTION";
-            toolContent.innerHTML = `<input class="cyber-input" id="hIn" placeholder="Text"><button class="action-btn" onclick="gh()">SHA-256</button><div class="result-display" id="hOut" style="font-size:10px;">...</div>`;
-            window.gh=async()=>{const t=document.getElementById('hIn').value; const b=new TextEncoder().encode(t); const h=await crypto.subtle.digest('SHA-256',b); document.getElementById('hOut').innerText=Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');}
-        }
-
-        // 12. TEXT
-        function renderText() {
-            toolTitle.innerText = "TEXT OPS";
-            toolContent.innerHTML = `<textarea id="tx" class="cyber-input" rows="4"></textarea><button class="action-btn" onclick="tm()">UPPERCASE</button><div class="result-display" id="txO">...</div>`;
-            window.tm=()=>{document.getElementById('txO').innerText=document.getElementById('tx').value.toUpperCase();}
-        }
-
-        // 13. OHM
-        function renderOhm() {
-            toolTitle.innerText = "OHM LAW";
-            toolContent.innerHTML = `<input id="v" class="cyber-input" placeholder="V"><input id="i" class="cyber-input" placeholder="I" style="margin:10px 0"><input id="r" class="cyber-input" placeholder="R"><button class="action-btn" onclick="cO()">CALC</button><div class="result-display" id="or">...</div>`;
-            window.cO=()=>{let v=document.getElementById('v').value, i=document.getElementById('i').value, r=document.getElementById('r').value; if(v&&i)document.getElementById('or').innerText=`R=${v/i}`; else if(v&&r)document.getElementById('or').innerText=`I=${v/r}`; else if(i&&r)document.getElementById('or').innerText=`V=${i*r}`;}
-        }
-
-        
-      
     </script>
 </body>
 </html>
