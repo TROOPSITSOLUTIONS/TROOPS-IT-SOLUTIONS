@@ -195,8 +195,7 @@ button.btn-signup:hover {
 
 <div class="login-card">
     <!-- ✅ Cross Button -->
-    <button class="close-btn" onclick="goBack()">✕</button>
-
+<button type="button" class="close-btn" onclick="goHome()">✕</button>
     <h1>BCT MEMBERS DASHBOARD</h1>
     
     <form onsubmit="return false;">
@@ -220,12 +219,14 @@ button.btn-signup:hover {
     <div class="status-tag">System update in progress: v2.0.4</div>
 </div>
 
-
 <script>
 function goHome() {
-    window.location.href = "index.html";
+    window.location.href = "#"; // main site
+}
+
+function triggerAlert() {
+    document.getElementById('alertOverlay').style.display = 'flex';
 }
 </script>
 </body>
 </html>
-
