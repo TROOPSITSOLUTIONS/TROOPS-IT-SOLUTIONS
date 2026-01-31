@@ -414,9 +414,9 @@ header .brand-name {
     <header class="main-header">
 
     <!-- LEFT : MENU -->
-    <button class="menu-trigger left-menu" onclick="toggleMenu()">
-        <i class="fas fa-bars"></i>
-    </button>
+    <button class="menu-trigger left-menu" onclick="toggleMenu()" id="menuBtn">
+    <i class="fas fa-bars" id="menuIcon"></i>
+</button>
 
     <!-- CENTER : BRAND -->
     <div class="brand-center">
@@ -678,10 +678,25 @@ const API_KEY =
 
 
         // --- SIDEBAR TOGGLE ---
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('menu-overlay').classList.toggle('active');
-        }
+
+function toggleMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('menu-overlay');
+    const icon = document.getElementById('menuIcon');
+
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+
+    // icon toggle
+    if (sidebar.classList.contains('active')) {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times'); // cross
+    } else {
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars'); // three line
+    }
+}
+
 
         // --// --- MODAL LOGIC ---
 const modal = document.getElementById('modal');
