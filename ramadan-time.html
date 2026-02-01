@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ramadan Time Table</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'void': '#000000',
+                        'neon': '#ff003c',
+                        'deep-red': '#8a001a',
+                        'panel': '#080808',
+                        'border': '#1f1f1f',
+                        'text-main': '#e0e0e0',
+                        'text-mute': '#666666'
+                    },
+                    fontFamily: {
+                        'bangla': ['"Tiro Bangla"', 'serif'],
+                        'cyber': ['"Orbitron"', 'sans-serif'],
+                        'tech': ['"Rajdhani"', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 5px #ff003c' },
+                            '50%': { boxShadow: '0 0 20px #ff003c' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* CORE RESET */
+        :root { --app-height: 100vh; --nav-height: 70px; }
+        body {
+            background-color: #000; color: #e0e0e0;
+            font-family: 'Tiro Bangla', serif;
+            overflow: hidden; height: var(--app-height); width: 100vw;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+        }
+
+        /* BACKGROUND PATTERN */
+        .islamic-bg {
+            position: absolute; inset: 0; z-index: -1;
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1a0005 0%, #000 60%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff003c' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* VIEW MANAGEMENT */
+        .view {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: none; flex-direction: column; z-index: 10;
+            padding-bottom: var(--nav-height); /* Space for nav */
+        }
+        .view.active { display: flex; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* SCROLL AREA */
+        .scroll-area {
+            flex: 1; overflow-y: auto; padding: 20px;
+            scroll-behavior: smooth;
+        }
+        .scroll-area::-webkit-scrollbar { width: 4px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: #ff003c; }
+
+        /* COMPONENTS */
+        .glass-panel {
+            background: rgba(10, 5, 5, 0.95); border: 1px solid #1f1f1f;
+            border-left: 3px solid #ff003c; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px); border-radius: 12px;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-height);
+            background: #050202; border-top: 1px solid #1f1f1f;
+            display: flex; justify-content: space-around; align-items: center; z-index: 50;
+        }
+        .nav-item {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #666; font-size: 10px; font-family: 'Orbitron'; cursor: pointer; height: 100%; gap: 5px; transition: 0.3s;
+        }
+        .nav-item i { font-size: 20px; transition: 0.3s; }
+        .nav-item.active { color: #ff003c; background: linear-gradient(to top, rgba(255,0,60,0.05), transparent); }
+        .nav-item.active i { transform: translateY(-3px); text-shadow: 0 0 10px #ff003c; }
+
+        /* LIST ITEM */
+        .district-tile {
+            background: #0a0a0a; border-bottom: 1px solid #1a1a1a; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;
+        }
+        .district-tile:active { background: #1a0505; }
+        .district-tile i { color: #333; }
+        .district-tile:hover i { color: #ff003c; transform: translateX(5px); }
+
+        /* CALENDAR TABLE */
+        .cal-row { display: grid; grid-template-columns: 0.8fr 1.2fr 1fr 1fr; padding: 12px 5px; border-bottom: 1px solid #111; text-align: center; font-size: 13px; font-family: 'Orbitron'; }
+        .cal-row:nth-child(even) { background: rgba(255,255,255,0.01); }
+        .cal-row.today { background: rgba(255,0,60,0.15); border-left: 3px solid #ff003c; }
+        .cal-head { background: #110505; color: #ff003c; font-weight: bold; border-bottom: 1px solid #33000b; position: sticky; top: 0; }
+    </style>
+</head>
+<body onload="initApp()">
+
+    <div class="islamic-bg"></div>
+
+    <div id="view-home" class="view active">
+        <div class="pt-10 pb-4 px-6 border-b border-[#1a1a1a] bg-black/90 sticky top-0 z-20">
+            <div class="flex justify-between items-center">
+                <div>
+                    <div class="font-cyber text-[10px] text-neon tracking-[3px] mb-1 animate-pulse">RAMADAN FASTING TIMETABLE</div>
+                    <h1 class="text-2xl font-bold text-white">ড্যাশবোর্ড</h1>
+                </div>
+                <div class="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center">
+                    <i class="fas fa-moon text-neon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-area">
+            <div class="glass-panel p-5 mb-6 relative">
+                <div class="absolute right-4 top-4 text-4xl text-neon opacity-10"><i class="fas fa-calendar-alt"></i></div>
+                <div class="font-cyber text-xs text-gray-500 mb-1">TODAY'S DATE</div>
+                <div class="text-xl font-bold text-white font-bangla" id="home-date-en">...</div>
+                <div class="text-sm text-gray-400 font-bangla">১৪৪৭ হিজরী</div>
+            </div>
+
+            <div id="status-engine" class="text-center mb-8">
+                </div>
+
+            <div onclick="switchView('view-districts')" class="bg-[#0a0505] border border-[#1a1a1a] p-5 rounded-lg text-center cursor-pointer active:scale-95 transition group hover:border-red-900">
+                <i class="fas fa-map-marker-alt text-3xl text-gray-700 mb-3 group-hover:text-neon transition"></i>
+                <h3 class="text-lg font-bold text-white">আপনার জেলা বাছুন</h3>
+                <p class="text-xs text-gray-500 font-bangla">৬৪ জেলার সঠিক সময়সূচি</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-districts" class="view">
+        <div class="pt-10 pb-4 px-5 border-b border-[#1a1a1a] bg-black/90 sticky top-0 z-20">
+            <h1 class="text-xl font-bold text-white mb-4">জেলা তালিকা</h1>
+            <input type="text" id="search-input" placeholder="জেলা খুঁজুন..." 
+                class="w-full bg-[#0a0505] border border-[#1a1a1a] rounded-lg py-3 px-5 text-white focus:outline-none focus:border-neon transition font-bangla">
+        </div>
+
+        <div class="scroll-area p-0" id="district-list-container">
+            </div>
+    </div>
+
+    <div id="view-calendar" class="view">
+        <div class="pt-10 pb-4 px-5 border-b border-[#1a1a1a] bg-black/90 sticky top-0 z-20 flex justify-between items-center shadow-lg">
+            <div class="flex items-center gap-3" onclick="switchView('view-districts')">
+                <i class="fas fa-arrow-left text-gray-400 text-xl"></i>
+                <div>
+                    <h2 class="text-lg font-bold text-white leading-none" id="cal-district-name">...</h2>
+                    <span class="text-[10px] text-neon font-cyber tracking-wider">FULL SCHEDULE</span>
+                </div>
+            </div>
+            <button onclick="downloadImage()" class="text-gray-500 hover:text-white"><i class="fas fa-download"></i></button>
+        </div>
+
+        <div class="scroll-area p-0" id="capture-area">
+            <div class="cal-row cal-head">
+                <div>ROZA</div>
+                <div>DATE</div>
+                <div>SEHRI</div>
+                <div>IFTAR</div>
+            </div>
+            <div id="calendar-body">
+                </div>
+            <div class="p-6 text-center text-xs text-gray-700 font-cyber bg-black">
+                © 2026 BANGLADESH CYBER TROOPS | DEVELOPED BY TROOPS IT SOLUTIONS
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchView('view-home')" id="nav-home">
+            <i class="fas fa-home"></i> <span>HOME</span>
+        </div>
+        <div class="nav-item" onclick="switchView('view-districts')" id="nav-districts">
+            <i class="fas fa-list"></i> <span>DISTRICTS</span>
+        </div>
+    </div>
+
+    <script>
+        // 1. DATA CONFIGURATION
+        const START_DATE = new Date("2026-02-19T00:00:00");
+        const TODAY = new Date(); // Real System Date
+        
+        // Base Dhaka Data (PDF Page 1)
+        const dhakaSchedule = [
+            {r:1, d:"19 Feb", s:"5:12", i:"5:58"}, {r:2, d:"20 Feb", s:"5:11", i:"5:58"},
+            {r:3, d:"21 Feb", s:"5:11", i:"5:59"}, {r:4, d:"22 Feb", s:"5:10", i:"5:59"},
+            {r:5, d:"23 Feb", s:"5:09", i:"6:00"}, {r:6, d:"24 Feb", s:"5:08", i:"6:00"},
+            {r:7, d:"25 Feb", s:"5:08", i:"6:01"}, {r:8, d:"26 Feb", s:"5:07", i:"6:01"},
+            {r:9, d:"27 Feb", s:"5:06", i:"6:02"}, {r:10, d:"28 Feb", s:"5:05", i:"6:02"},
+            {r:11, d:"01 Mar", s:"5:05", i:"6:03"}, {r:12, d:"02 Mar", s:"5:04", i:"6:03"},
+            {r:13, d:"03 Mar", s:"5:03", i:"6:04"}, {r:14, d:"04 Mar", s:"5:02", i:"6:04"},
+            {r:15, d:"05 Mar", s:"5:01", i:"6:05"}, {r:16, d:"06 Mar", s:"5:00", i:"6:05"},
+            {r:17, d:"07 Mar", s:"4:59", i:"6:06"}, {r:18, d:"08 Mar", s:"4:58", i:"6:06"},
+            {r:19, d:"09 Mar", s:"4:57", i:"6:07"}, {r:20, d:"10 Mar", s:"4:57", i:"6:07"},
+            {r:21, d:"11 Mar", s:"4:56", i:"6:07"}, {r:22, d:"12 Mar", s:"4:55", i:"6:08"},
+            {r:23, d:"13 Mar", s:"4:54", i:"6:08"}, {r:24, d:"14 Mar", s:"4:53", i:"6:09"},
+            {r:25, d:"15 Mar", s:"4:52", i:"6:09"}, {r:26, d:"16 Mar", s:"4:51", i:"6:10"},
+            {r:27, d:"17 Mar", s:"4:50", i:"6:10"}, {r:28, d:"18 Mar", s:"4:49", i:"6:10"},
+            {r:29, d:"19 Mar", s:"4:48", i:"6:11"}, {r:30, d:"20 Mar", s:"4:47", i:"6:11"}
+        ];
+
+        // District Offsets (Islamic Foundation)
+        const districts = [
+            {n:"ঢাকা", s:0, i:0}, {n:"গাজীপুর", s:-1, i:0}, {n:"চট্টগ্রাম", s:-5, i:-5}, {n:"নারায়ণগঞ্জ", s:-1, i:-1},
+            {n:"মুন্সীগঞ্জ", s:-1, i:-1}, {n:"মানিকগঞ্জ", s:+1, i:+2}, {n:"নরসিংদী", s:-2, i:-1}, {n:"ফরিদপুর", s:+1, i:+2},
+            {n:"রাজবাড়ী", s:+2, i:+3}, {n:"শরীয়তপুর", s:0, i:0}, {n:"মাদারীপুর", s:0, i:+1}, {n:"গোপালগঞ্জ", s:+1, i:+3},
+            {n:"কিশোরগঞ্জ", s:-3, i:-2}, {n:"টাঙ্গাইল", s:+1, i:+2}, {n:"ময়মনসিংহ", s:-1, i:0}, {n:"জামালপুর", s:+2, i:+2},
+            {n:"শেরপুর", s:+1, i:+1}, {n:"নেত্রকোণা", s:-2, i:-1}, {n:"সিলেট", s:-8, i:-7}, {n:"হবিগঞ্জ", s:-6, i:-5},
+            {n:"মৌলভীবাজার", s:-7, i:-7}, {n:"সুনামগঞ্জ", s:-6, i:-5}, {n:"কুমিল্লা", s:-4, i:-3}, {n:"ব্রাহ্মণবাড়িয়া", s:-3, i:-3},
+            {n:"চাঁদপুর", s:-2, i:-1}, {n:"নোয়াখালী", s:-4, i:-2}, {n:"লক্ষ্মীপুর", s:-2, i:-1}, {n:"ফেনী", s:-5, i:-3},
+            {n:"কক্সবাজার", s:-7, i:-5}, {n:"রাঙ্গামাটি", s:-7, i:-6}, {n:"খাগড়াছড়ি", s:-6, i:-6}, {n:"বান্দরবান", s:-8, i:-6},
+            {n:"রাজশাহী", s:+6, i:+7}, {n:"চাঁপাইনবাবগঞ্জ", s:+8, i:+9}, {n:"নওগাঁ", s:+6, i:+7}, {n:"নাটোর", s:+5, i:+6},
+            {n:"পাবনা", s:+4, i:+5}, {n:"সিরাজগঞ্জ", s:+3, i:+4}, {n:"বগুড়া", s:+4, i:+5}, {n:"জয়পুরহাট", s:+5, i:+6},
+            {n:"রংপুর", s:+5, i:+4}, {n:"দিনাজপুর", s:+7, i:+6}, {n:"ঠাকুরগাঁও", s:+8, i:+6}, {n:"পঞ্চগড়", s:+8, i:+6},
+            {n:"নীলফামারী", s:+6, i:+5}, {n:"লালমনিরহাট", s:+4, i:+3}, {n:"কুড়িগ্রাম", s:+3, i:+2}, {n:"গাইবান্ধা", s:+4, i:+4},
+            {n:"খুলনা", s:+3, i:+4}, {n:"বাগেরহাট", s:+2, i:+3}, {n:"সাতক্ষীরা", s:+4, i:+6}, {n:"যশোর", s:+4, i:+6},
+            {n:"ঝিনাইদহ", s:+4, i:+5}, {n:"মাগুরা", s:+3, i:+4}, {n:"নড়াইল", s:+3, i:+4}, {n:"কুষ্টিয়া", s:+5, i:+6},
+            {n:"চুয়াডাঙ্গা", s:+6, i:+7}, {n:"মেহেরপুর", s:+7, i:+8}, {n:"বরিশাল", s:-1, i:+1}, {n:"ঝালকাঠি", s:0, i:+2},
+            {n:"পটুয়াখালী", s:-1, i:+1}, {n:"পিরোজপুর", s:+1, i:+3}, {n:"ভোলা", s:-2, i:-1}, {n:"বরগুনা", s:0, i:+2}
+        ].sort((a,b) => a.n.localeCompare(b.n));
+
+        // 2. HELPER FUNCTIONS
+        function bnNum(n) { return String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]); }
+        
+        function addMins(timeStr, offset) {
+            let [h, m] = timeStr.split(':').map(Number);
+            let d = new Date(2026, 0, 1, h, m);
+            d.setMinutes(d.getMinutes() + offset);
+            let nh = d.getHours();
+            let nm = d.getMinutes().toString().padStart(2, '0');
+            return `${nh}:${nm}`;
+        }
+
+        // 3. INITIALIZATION
+        function initApp() {
+            updateHomeDate();
+            renderDashboard();
+            renderDistrictList();
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            
+            // Update Nav State
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(viewId.includes('home')) document.getElementById('nav-home').classList.add('active');
+            if(viewId.includes('districts') || viewId.includes('calendar')) document.getElementById('nav-districts').classList.add('active');
+        }
+
+        function updateHomeDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('home-date-en').innerText = TODAY.toLocaleDateString('bn-BD', options);
+        }
+
+        // 4. DASHBOARD ENGINE
+        function renderDashboard() {
+            const diffMs = TODAY - START_DATE;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const engine = document.getElementById('status-engine');
+
+            if(diffDays < 0) {
+                // COUNTDOWN
+                engine.innerHTML = `
+                    <div class="text-neon font-cyber text-3xl font-bold animate-pulse">WAITING MODE</div>
+                    <div class="text-sm text-gray-500 font-bangla mt-1">রমজান শুরু হতে বাকি</div>
+                    <div class="grid grid-cols-4 gap-2 mt-5 max-w-xs mx-auto">
+                        ${timerBox('days', 'দিন')} ${timerBox('hours', 'ঘন্টা')} 
+                        ${timerBox('mins', 'মিনিট')} ${timerBox('secs', 'সেকেন্ড')}
+                    </div>
+                `;
+                startCountdown();
+            } else if (diffDays >= 0 && diffDays < 30) {
+                // LIVE RAMADAN
+                const todayInfo = dhakaSchedule[diffDays];
+                engine.innerHTML = `
+                    <div class="text-white font-bangla text-2xl font-bold">আজ <span class="text-neon">${bnNum(diffDays+1)}ম</span> রমজান</div>
+                    <div class="text-xs text-gray-500 font-bangla mt-1 mb-6">ঢাকার সময়সূচি</div>
+                    <div class="flex justify-center gap-6">
+                        <div class="text-center">
+                            <div class="text-[10px] font-cyber text-gray-600 mb-1">SEHRI END</div>
+                            <div class="text-4xl font-cyber text-white font-bold">${bnNum(todayInfo.s)}</div>
+                        </div>
+                        <div class="w-[1px] bg-[#333]"></div>
+                        <div class="text-center">
+                            <div class="text-[10px] font-cyber text-gray-600 mb-1">IFTAR TIME</div>
+                            <div class="text-4xl font-cyber text-neon font-bold neon-text">${bnNum(todayInfo.i)}</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                engine.innerHTML = `<div class="text-3xl text-yellow-500 font-bangla py-10">ঈদ মোবারক!</div>`;
+            }
+        }
+
+        function timerBox(id, lbl) {
+            return `<div class="bg-[#0a0505] border border-[#1a1a1a] rounded p-2"><div id="cd-${id}" class="font-cyber text-white font-bold text-xl">00</div><div class="text-[10px] text-gray-600">${lbl}</div></div>`;
+        }
+
+        function startCountdown() {
+            setInterval(() => {
+                const now = new Date();
+                const dist = START_DATE - now;
+                if(dist < 0) return;
+                document.getElementById('cd-days').innerText = bnNum(Math.floor(dist / (1000 * 60 * 60 * 24)));
+                document.getElementById('cd-hours').innerText = bnNum(Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+                document.getElementById('cd-mins').innerText = bnNum(Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60)));
+                document.getElementById('cd-secs').innerText = bnNum(Math.floor((dist % (1000 * 60)) / 1000));
+            }, 1000);
+        }
+
+        // 5. DISTRICT LIST & RENDER
+        function renderDistrictList() {
+            const list = document.getElementById('district-list-container');
+            const search = document.getElementById('search-input');
+
+            function populate(filter = '') {
+                list.innerHTML = "";
+                districts.forEach(d => {
+                    if(d.n.includes(filter)) {
+                        const item = document.createElement('div');
+                        item.className = "district-tile";
+                        item.innerHTML = `
+                            <span class="text-lg font-bold text-gray-300 font-bangla">${d.n}</span>
+                            <i class="fas fa-chevron-right text-xs text-gray-600"></i>
+                        `;
+                        // DIRECTLY CALL OPEN CALENDAR
+                        item.onclick = function() { openDistrictCalendar(d); };
+                        list.appendChild(item);
+                    }
+                });
+            }
+            populate();
+            search.addEventListener('input', (e) => populate(e.target.value));
+        }
+
+        // 6. CALENDAR GENERATOR (FIXED)
+        function openDistrictCalendar(district) {
+            // 1. Update Title
+            document.getElementById('cal-district-name').innerText = district.n;
+            
+            // 2. Generate Table
+            const body = document.getElementById('calendar-body');
+            body.innerHTML = "";
+            
+            // Calculate active day
+            const diffMs = TODAY - START_DATE;
+            const activeIdx = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+            dhakaSchedule.forEach((day, idx) => {
+                const sTime = addMins(day.s, district.s);
+                const iTime = addMins(day.i, district.i);
+                const activeClass = idx === activeIdx ? 'today' : '';
+
+                body.innerHTML += `
+                    <div class="cal-row ${activeClass}">
+                        <div class="text-gray-500">${bnNum(day.r)}</div>
+                        <div class="text-gray-400 font-sans">${day.d}</div>
+                        <div class="text-white font-bold">${bnNum(sTime)}</div>
+                        <div class="text-neon font-bold">${bnNum(iTime)}</div>
+                    </div>
+                `;
+            });
+
+            // 3. Switch View
+            switchView('view-calendar');
+        }
+
+        // 7. DOWNLOAD IMAGE
+        function downloadImage() {
+            const el = document.getElementById('capture-area');
+            html2canvas(el, { backgroundColor: "#000" }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Ramadan_Schedule.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
