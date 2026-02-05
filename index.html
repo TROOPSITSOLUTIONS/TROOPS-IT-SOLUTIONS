@@ -6,6 +6,7 @@
     <title>Bangladesh Cyber Troops | Troops It Solutions |Team BCT</title>
     <meta name="description" content="Bangladesh Cyber Troops হলো বাংলাদেশি সাইবার নিরাপত্তা ও হ্যাকিং কমিউনিটির শীর্ষ দল। আমরা সাইবার হামলা প্রতিরোধ, ডিজিটাল নিরাপত্তা, এবং IT সমাধান প্রদান করি। এখনই আমাদের সাথে যুক্ত হও এবং সাইবার নিরাপত্তায় এগিয়ে থাকো।">
     
+
     <!-- Keywords -->
     <meta name="keywords" content="Bangladesh Cyber Troops, সাইবার সিকিউরিটি,Troops IT Solutions, বাংলাদেশ, Team BCT, bct_404, BCT,Cybersecurity Team">
 
@@ -70,7 +71,7 @@ OSINT Bangladesh
 
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css?family=Hind+Siliguri" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -395,6 +396,8 @@ header .brand-name {
     color:var(--primary);
     transform:scale(1.15);
 }
+
+
 .ramadan-dialog {
     position: fixed;
     inset: 0;
@@ -546,6 +549,191 @@ header .brand-name {
         max-width: 90%;
     }
 }
+/* ===== BCT TOOL SEARCH (UPDATED) ===== */
+:root {
+    --primary: #ff0033; /* BCT Red */
+    --dark-bg: #050505;
+    --glass-bg: rgba(20, 20, 20, 0.8);
+}
+
+.tool-search-wrapper {
+    position: relative;
+    max-width: 620px;
+    margin: 0 auto 60px;
+    z-index: 10;
+}
+
+/* SEARCH ICON */
+.tool-search-wrapper i {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    color: var(--primary);
+    font-size: 18px;
+    opacity: 0.7;
+    transition: 0.3s ease;
+    z-index: 2;
+    text-shadow: 0 0 5px var(--primary);
+}
+
+/* INPUT FIELD */
+#toolSearchInput {
+    width: 100%;
+    padding: 16px 20px 16px 55px; /* Left padding for icon */
+    background: linear-gradient(145deg, rgba(10,10,10,0.9), rgba(0,0,0,0.95));
+    border: 1px solid rgba(255, 0, 51, 0.3);
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    border-radius: 12px; /* Slightly more rounded */
+    letter-spacing: 1.5px;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(5px);
+    
+    /* DEFAULT GLOW */
+    box-shadow: 
+        0 4px 15px rgba(0,0,0,0.5),
+        inset 0 0 10px rgba(255, 0, 51, 0.05);
+}
+
+/* PLACEHOLDER */
+#toolSearchInput::placeholder {
+    color: #555;
+    font-weight: 400;
+    letter-spacing: 2px;
+    transition: 0.3s;
+}
+
+/* INPUT HOVER */
+#toolSearchInput:hover {
+    border-color: rgba(255, 0, 51, 0.6);
+    box-shadow: 
+        0 0 15px rgba(255, 0, 51, 0.15),
+        inset 0 0 10px rgba(255, 0, 51, 0.1);
+}
+
+/* INPUT FOCUS - ACTIVE STATE */
+#toolSearchInput:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #000;
+    box-shadow: 
+        0 0 20px rgba(255, 0, 51, 0.4),
+        0 0 40px rgba(255, 0, 51, 0.1),
+        inset 0 0 15px rgba(255, 0, 51, 0.1);
+    transform: scale(1.01); /* Subtle pop effect */
+}
+
+/* FOCUS ICON ANIMATION */
+#toolSearchInput:focus + i,
+.tool-search-wrapper:focus-within i {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+    text-shadow: 0 0 10px var(--primary);
+}
+
+/* RESULT BOX - DROPDOWN */
+#toolSearchResults {
+    position: absolute;
+    top: 115%; /* Slightly more gap */
+    left: 0;
+    width: 100%;
+    background: rgba(8, 8, 8, 0.95);
+    border: 1px solid rgba(255, 0, 51, 0.3);
+    border-top: 2px solid var(--primary); /* Stronger top border */
+    border-radius: 0 0 10px 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    display: none; /* JS will toggle this */
+    z-index: 999;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    
+    /* Scrollbar Styling */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) #111;
+}
+
+/* RESULT ITEM */
+.search-item {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #aaa;
+    letter-spacing: 0.5px;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* LEFT ACCENT BAR ON HOVER */
+.search-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: var(--primary);
+    transform: scaleY(0); /* Hidden by default */
+    transition: transform 0.2s ease;
+    transform-origin: bottom;
+}
+
+/* HOVER EFFECT */
+.search-item:hover {
+    background: linear-gradient(90deg, rgba(255,0,51,0.1), transparent);
+    color: #fff;
+    padding-left: 28px; /* Slide text to right */
+    text-shadow: 0 0 8px rgba(255, 0, 51, 0.6);
+}
+
+.search-item:hover::before {
+    transform: scaleY(1); /* Show bar */
+    transform-origin: top;
+}
+
+/* LAST ITEM BORDER FIX */
+.search-item:last-child {
+    border-bottom: none;
+}
+
+/* SCROLLBAR (WEBKIT) */
+#toolSearchResults::-webkit-scrollbar {
+    width: 5px;
+}
+
+#toolSearchResults::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+#toolSearchResults::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+#toolSearchResults::-webkit-scrollbar-thumb:hover {
+    background: #ff3355;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media(max-width: 480px) {
+    #toolSearchInput {
+        font-size: 15px;
+        padding-left: 45px;
+    }
+    
+    .tool-search-wrapper i {
+        left: 15px;
+        font-size: 15px;
+    }
+}
     </style>
     
 </head>
@@ -658,17 +846,24 @@ header .brand-name {
   
     </div>
 </div>
+<br><br>
 
 
 
+<div class="tool-search-wrapper">
+  <i class="fa-solid fa-magnifying-glass"></i> 
+  <input type="text" id="toolSearchInput" placeholder="Search BCT tools...">
+  <div id="toolSearchResults" class="search-results"></div>
+</div>
 
-        <!-- DYNAMIC CONTENT AREA -->
-        <div id="dynamic-tools-container">
-            <div id="content-loader">
-                <i class="fas fa-sync fa-spin"></i> LOADING ENCRYPTED TOOLS...
-            </div>
-        </div>
+<!-- TOOLS CONTAINER -->
+<div id="dynamic-tools-container"></div>
 
+<!-- ONLY THIS SCRIPT -->
+<script src="tools.js" defer></script>
+
+        <!-- TOOLS REQUEST AREA -->
+        
         <div class="req-zone">
             <h2 style="font-family: 'Rajdhani'; font-size: 24px; color: #fff; margin-bottom: 10px;">MISSING A TOOL?</h2>
             <p style="color:#888; max-width:500px; margin:0 auto 25px; font-size: 14px;">We are constantly updating our arsenal. If you need a specific tool, let us know.</p>
@@ -736,43 +931,101 @@ header .brand-name {
         </div>
     </div>
 
-    <script src="tools.js" defer></script>
-    <script>    
-      // --- RENDER TOOLS DYNAMICALLY ---
-        function renderTools(sections) {
-            const container = document.getElementById('dynamic-tools-container');
-            container.innerHTML = ''; 
+<script src="tools.js" defer></script>
+    <script>
 
-            sections.forEach(section => {
-                const sectionHTML = `
-                    <div class="section-separator">
-                        <span class="sep-title" style="color:${section.title_color || 'var(--primary)'}; border-color:${section.title_color || 'var(--primary)'};">
-                            ${section.section_title}
-                        </span>
-                        <div class="sep-line"></div>
+ 
+
+// ================= RENDER TOOLS =================
+let allTools = [];
+
+function renderTools(sections) {
+    const container = document.getElementById('dynamic-tools-container');
+    container.innerHTML = '';
+    allTools = [];
+
+    sections.forEach(section => {
+
+        container.innerHTML += `
+        <div class="section-separator">
+            <span class="sep-title" style="color:${section.title_color || 'var(--primary)'};border-color:${section.title_color || 'var(--primary)'};">
+                ${section.section_title}
+            </span>
+            <div class="sep-line"></div>
+        </div>
+
+        <div class="mega-grid">
+            ${section.tools.map(tool => {
+
+                /* SEARCH DATA */
+                allTools.push({
+                    title: tool.title,
+                    url: tool.url
+                });
+
+                return `
+                <a href="${tool.url}" class="tech-card" target="_blank">
+
+                    <div class="card-header" style="display:flex;align-items:center;gap:10px">
+                        <i class="${tool.icon} card-icon"></i>
+                        ${tool.tag ? `<span class="card-tag ${tool.tag_class || 'tag-red'}">${tool.tag}</span>` : ''}
                     </div>
-                    <div class="mega-grid">
-                        ${section.tools.map(tool => `
-                        <a href="${tool.url}" class="tech-card" target="_blank">
-                                <div class="card-header">
-                                    <i class="${tool.icon} card-icon"></i>
-                                    ${tool.tag ? `<span class="card-tag ${tool.tag_class}">${tool.tag}</span>` : ''}
-                                </div>
-                                <div class="card-body">
-                                    <h3>${tool.title}</h3>
-                                    <p>${tool.desc}</p>
-                                </div>
-                                <div class="card-footer">
-                                    <span class="open-btn">ACCESS TOOL</span>
-                                    <i class="fas fa-arrow-right arrow" style="color:${tool.arrow_color || 'var(--primary)'}"></i>
-                                </div>
-                            </a>
-                        `).join('')}
+
+                    <div class="card-body">
+                        <h3>${tool.title}</h3>
+                        <p>${tool.desc}</p>
                     </div>
+
+                    <div class="card-footer">
+                        <span class="open-btn">ACCESS TOOL</span>
+                        <i class="fas fa-arrow-right" style="color:${tool.arrow_color || 'var(--primary)'}"></i>
+                    </div>
+
+                </a>
                 `;
-                container.innerHTML += sectionHTML;
-            });
-        }
+            }).join('')}
+        </div>
+        `;
+    });
+}
+
+// ================= SEARCH =================
+document.addEventListener("input", e => {
+    if (e.target.id !== "toolSearchInput") return;
+
+    const q = e.target.value.toLowerCase();
+    const box = document.getElementById("toolSearchResults");
+    box.innerHTML = "";
+
+    if (!q) {
+        box.style.display = "none";
+        return;
+    }
+
+    const matches = allTools.filter(t =>
+        t.title.toLowerCase().includes(q)
+    );
+
+    if (!matches.length) {
+        box.innerHTML = `<div class="search-item">No tools found</div>`;
+    } else {
+        matches.forEach(t => {
+            box.innerHTML += `
+                <div class="search-item" onclick="window.open('${t.url}','_blank')">
+                    ${t.title}
+                </div>
+            `;
+        });
+    }
+
+    box.style.display = "block";
+});
+
+// ================= INIT =================
+document.addEventListener("DOMContentLoaded", async () => {
+    const sections = await fetchToolsFromBin();
+    renderTools(sections);
+});
 
        
     // --- BOOT SEQUENCE (FIXED) ---
@@ -931,5 +1184,6 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
   </div>
 </div>
+
 </body>
 </html>
