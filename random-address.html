@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RANDOM ADDRESS GENERATOR | TEAM BCT </title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =================================================================
+           CORE ARCHITECTURE: TITAN RED OMEGA
+           ================================================================= */
+        :root {
+            --bg-deep: #020202;
+            --bg-panel: #0a0a0a;
+            --bg-surface: #111111;
+            
+            --primary: #ff0033;
+            --primary-dark: #cc0029;
+            --primary-glow: rgba(255, 0, 51, 0.3);
+            
+            --accent: #00ffcc;
+            --border: #2a2a2a;
+            --text-main: #e0e0e0;
+            --text-mute: #777777;
+            
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; scrollbar-width: thin; scrollbar-color: var(--primary) var(--bg-deep); }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(255,0,51,0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(255,0,51,0.05) 0%, transparent 40%),
+                linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 320px; height: 100%; background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 25px;
+            z-index: 100; box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        .brand {
+            font-family: var(--font-head); font-size: 26px; font-weight: 900;
+            color: #fff; letter-spacing: 2px; margin-bottom: 5px;
+            text-shadow: 0 0 15px var(--primary);
+        }
+        .brand span { color: var(--primary); }
+        .version { font-family: var(--font-code); font-size: 10px; color: var(--text-mute); margin-bottom: 40px; letter-spacing: 1px; }
+
+        /* CONTROLS */
+        .control-group { margin-bottom: 25px; }
+        .label { 
+            display: flex; justify-content: space-between; color: var(--text-mute); 
+            font-family: var(--font-code); font-size: 11px; margin-bottom: 10px; 
+            text-transform: uppercase; letter-spacing: 1px; 
+        }
+        
+        .cyber-select {
+            width: 100%; background: #050505; border: 1px solid #333; color: #fff;
+            padding: 15px; border-radius: 6px; font-family: var(--font-body); 
+            font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .cyber-select:hover { border-color: var(--primary); }
+        .cyber-select:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
+
+        .slider-container { display: flex; align-items: center; gap: 10px; }
+        input[type=range] {
+            flex: 1; -webkit-appearance: none; height: 4px; background: #333;
+            border-radius: 2px; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 16px; height: 16px; background: var(--primary);
+            border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--primary);
+        }
+        .range-val { font-family: var(--font-code); color: var(--primary); width: 30px; text-align: right; }
+
+        .action-btn {
+            width: 100%; padding: 18px; background: var(--primary); color: #fff; border: none;
+            font-family: var(--font-head); font-weight: 800; font-size: 16px; margin-top: 10px;
+            letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+            clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%);
+            transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .action-btn::before {
+            content: ''; position: absolute; top:0; left:-100%; width:100%; height:100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        .action-btn:hover::before { left: 100%; }
+        .action-btn:hover { box-shadow: 0 0 30px var(--primary-glow); text-shadow: 0 0 5px #fff; }
+
+        /* EXPORT BUTTONS */
+        .export-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; }
+        .sec-btn {
+            background: #111; border: 1px solid #333; color: #aaa; padding: 12px;
+            font-family: var(--font-code); font-size: 12px; cursor: pointer; transition: 0.3s;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .sec-btn:hover { border-color: var(--primary); color: #fff; background: rgba(255,0,51,0.05); }
+
+        /* --- MAIN DASHBOARD --- */
+        .dashboard {
+            flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.7) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.7) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* HEADER STATS */
+        .stats-bar {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(15,15,15,0.9); border: 1px solid var(--border); padding: 15px;
+            border-radius: 8px; position: relative; overflow: hidden; backdrop-filter: blur(5px);
+        }
+        .stat-card::after { content:''; position:absolute; bottom:0; left:0; height:3px; width:100%; background:var(--primary); }
+        .stat-label { font-size: 11px; color: var(--text-mute); font-family: var(--font-code); text-transform: uppercase; }
+        .stat-val { font-size: 24px; font-weight: 700; color: #fff; margin-top: 5px; font-family: var(--font-head); }
+        .stat-icon { position: absolute; top: 15px; right: 15px; font-size: 24px; color: #222; }
+
+        /* RESULTS GRID */
+        .results-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;
+            padding-bottom: 50px;
+        }
+
+        .addr-card {
+            background: var(--bg-surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 0; position: relative; overflow: hidden;
+            animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: 0.3s;
+        }
+        .addr-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .card-header {
+            padding: 15px; background: rgba(255,255,255,0.03); border-bottom: 1px solid #222;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .flag-icon { font-size: 18px; display: flex; align-items: center; gap: 10px; font-weight: bold; color: #fff; }
+        .copy-icon { color: var(--text-mute); cursor: pointer; transition: 0.2s; }
+        .copy-icon:hover { color: var(--primary); }
+
+        .card-body { padding: 15px; }
+        .data-row { margin-bottom: 8px; display: flex; flex-direction: column; }
+        .d-label { font-size: 10px; color: var(--primary); font-family: var(--font-code); text-transform: uppercase; margin-bottom: 2px; }
+        .d-val { font-size: 14px; color: #ddd; font-weight: 500; word-break: break-word; }
+
+        /* TERMINAL LOG */
+        .terminal {
+            margin-top: auto; background: #000; border: 1px solid #333; height: 150px;
+            padding: 15px; font-family: var(--font-code); font-size: 12px; color: var(--accent);
+            overflow-y: auto; opacity: 0.8; border-radius: 8px; margin-top: 20px;
+        }
+        .log-entry { margin-bottom: 4px; display: flex; gap: 10px; }
+        .log-time { color: #555; }
+        .blink { animation: blink 1s infinite; }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 999; display: none;
+            justify-content: center; align-items: center; backdrop-filter: blur(5px);
+        }
+        .modal-box {
+            background: var(--bg-panel); border: 1px solid var(--primary);
+            padding: 30px; width: 90%; max-width: 500px; text-align: center;
+            border-radius: 12px; box-shadow: 0 0 50px rgba(255,0,51,0.2);
+        }
+        
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* RESPONSIVE */
+        @media(max-width: 900px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+            .dashboard { overflow: visible; }
+            .stats-bar { grid-template-columns: 1fr 1fr; }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #555;
+        }
+
+        footer strong {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand">BIT<span> ADDR</span></div>
+        <div class="version">RANDOM ADDRESS GENERATOR | PRO</div>
+
+        <div class="control-group">
+            <div class="label"><span>TARGET NATION</span> <i class="fas fa-globe"></i></div>
+            <select id="country" class="cyber-select">
+                </select>
+        </div>
+
+        <div class="control-group">
+            <div class="label">
+                <span>GENERATION QUANTITY</span> 
+                <span id="qty-disp" style="color:var(--primary)">5</span>
+            </div>
+            <div class="slider-container">
+                <input type="range" id="quantity" min="1" max="50" value="5" oninput="updateQty(this.value)">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="label"><span>DATA FORMAT</span> <i class="fas fa-code"></i></div>
+            <select id="format" class="cyber-select" style="padding:10px; font-size:14px;">
+                <option value="standard">Standard Card View</option>
+                <option value="json">Raw JSON Object</option>
+                <option value="csv">CSV (Comma Separated)</option>
+            </select>
+        </div>
+
+        <button class="action-btn" onclick="generate()">
+            <i class="fas fa-bolt"></i> INITIATE SEQUENCE
+        </button>
+
+        <div class="export-grid">
+            <button class="sec-btn" onclick="exportData('json')"><i class="fas fa-file-code"></i> JSON</button>
+            <button class="sec-btn" onclick="exportData('csv')"><i class="fas fa-file-csv"></i> CSV</button>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-label">Database Status</div>
+                <div class="stat-val" style="color:var(--accent)">ONLINE</div>
+                <i class="fas fa-database stat-icon"></i>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Countries Supported</div>
+                <div class="stat-val">52</div>
+                <i class="fas fa-flag stat-icon"></i>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Generated</div>
+                <div class="stat-val" id="total-gen">0</div>
+                <i class="fas fa-chart-line stat-icon"></i>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Session ID</div>
+                <div class="stat-val" style="font-size:14px; margin-top:10px;">#BCT-<span id="sess-id">000</span></div>
+                <i class="fas fa-fingerprint stat-icon"></i>
+            </div>
+        </div>
+
+        <div id="results-area" class="results-grid">
+            <div style="grid-column: 1/-1; text-align:center; padding:50px; color:#333; border:2px dashed #222; border-radius:12px;">
+                <i class="fas fa-terminal" style="font-size:40px; margin-bottom:15px;"></i><br>
+                SYSTEM READY. AWAITING INPUT.
+            </div>
+        </div>
+
+        <div class="terminal" id="terminal">
+            <div class="log-entry"><span class="log-time">[12:00:00]</span> <span>System Initialized...</span></div>
+            <div class="log-entry"><span class="log-time">[12:00:01]</span> <span>Database Connected: 52 Regions Loaded.</span></div>
+            <div class="log-entry"><span class="log-time">[12:00:02]</span> <span>Waiting for user command... <span class="blink">_</span></span></div>
+        </div>
+
+    </div>
+    
+    <footer>
+        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
+    </footer>
+
+    <script>
+        // =================================================================
+        // 1. THE TITAN DATABASE (50+ COUNTRIES)
+        // =================================================================
+        // Simplified structure for massive scale. Real names, streets, formats.
+        
+        const DATA = {
+            bd: { n: "Bangladesh", c: ["Dhaka", "Chittagong", "Sylhet", "Rajshahi", "Khulna", "Barisal", "Comilla"], s: ["Road No 1", "Kazi Nazrul Ave", "Mirpur Rd", "Begum Rokeya Sarani", "VIP Road", "Elephant Rd"], st: ["Dhaka", "Chittagong", "Sylhet"], z: "1###", p: "+880 1###-######" },
+            in: { n: "India", c: ["Mumbai", "Delhi", "Bangalore", "Kolkata", "Chennai", "Hyderabad", "Pune"], s: ["MG Road", "Station Road", "Park Street", "Ring Road", "Link Road", "Nehru Place"], st: ["MH", "DL", "KA", "WB", "TN", "TG", "GJ"], z: "400###", p: "+91 9#### #####" },
+            pk: { n: "Pakistan", c: ["Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad"], s: ["Jinnah Ave", "Mall Road", "Gulberg Blvd", "Clifton Rd", "Constitution Ave"], st: ["Sindh", "Punjab", "ICT"], z: "7####", p: "+92 3## #######" },
+            us: { n: "United States", c: ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia"], s: ["Main St", "Broadway", "Wall St", "5th Ave", "Sunset Blvd", "Park Ave"], st: ["NY", "CA", "IL", "TX", "AZ", "PA"], z: "10###", p: "+1 (###) ###-####" },
+            gb: { n: "United Kingdom", c: ["London", "Manchester", "Birmingham", "Liverpool", "Leeds"], s: ["High St", "Station Rd", "London Rd", "Church St", "Main St", "Victoria Rd"], st: ["England", "Scotland", "Wales"], z: "SW1A #AA", p: "+44 7### ######" },
+            ca: { n: "Canada", c: ["Toronto", "Montreal", "Vancouver", "Calgary", "Ottawa"], s: ["Yonge St", "Queen St", "Robson St", "Jasper Ave", "Main St"], st: ["ON", "QC", "BC", "AB"], z: "M5V 2T#", p: "+1 ###-###-####" },
+            au: { n: "Australia", c: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide"], s: ["George St", "Pitt St", "Collins St", "Bourke St", "Queen St"], st: ["NSW", "VIC", "QLD", "WA"], z: "2###", p: "+61 4## ### ###" },
+            de: { n: "Germany", c: ["Berlin", "Hamburg", "Munich", "Cologne", "Frankfurt"], s: ["Hauptstraße", "Bahnhofstraße", "Dorfstraße", "Schulstraße", "Bergstraße"], st: ["Berlin", "Hamburg", "Bavaria"], z: "10###", p: "+49 1## #######" },
+            fr: { n: "France", c: ["Paris", "Marseille", "Lyon", "Toulouse", "Nice"], s: ["Rue de la Paix", "Champs-Élysées", "Rue de Rivoli", "Boulevard Saint-Germain"], st: ["IDF", "PACA", "ARA"], z: "750##", p: "+33 6 ## ## ## ##" },
+            jp: { n: "Japan", c: ["Tokyo", "Osaka", "Kyoto", "Yokohama", "Sapporo"], s: ["Ginza", "Shinjuku", "Shibuya", "Harajuku", "Omotesando"], st: ["Tokyo", "Osaka", "Kyoto"], z: "100-####", p: "+81 90-####-####" },
+            cn: { n: "China", c: ["Beijing", "Shanghai", "Shenzhen", "Guangzhou"], s: ["Nanjing Rd", "Huaihai Rd", "Chang'an Ave", "Wangfujing St"], st: ["Beijing", "Shanghai", "Guangdong"], z: "100###", p: "+86 13# #### ####" },
+            ru: { n: "Russia", c: ["Moscow", "St. Petersburg", "Novosibirsk", "Kazan"], s: ["Tverskaya St", "Nevsky Prospect", "Arbat St", "Lenin St"], st: ["Moscow", "Leningrad"], z: "101###", p: "+7 9## ###-##-##" },
+            br: { n: "Brazil", c: ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador"], s: ["Av. Paulista", "Copacabana", "Ipanema", "Av. Brasil"], st: ["SP", "RJ", "DF"], z: "010##-###", p: "+55 11 9####-####" },
+            it: { n: "Italy", c: ["Rome", "Milan", "Naples", "Turin"], s: ["Via Roma", "Corso Vittorio", "Via Dante", "Via Mazzini"], st: ["Lazio", "Lombardy", "Campania"], z: "001##", p: "+39 3## #######" },
+            es: { n: "Spain", c: ["Madrid", "Barcelona", "Valencia", "Seville"], s: ["Gran Via", "La Rambla", "Paseo de Gracia", "Calle Mayor"], st: ["Madrid", "Catalonia", "Valencia"], z: "280##", p: "+34 6## ## ## ##" },
+            nl: { n: "Netherlands", c: ["Amsterdam", "Rotterdam", "Utrecht"], s: ["Kalverstraat", "Damrak", "Coolsingel", "Herenstraat"], st: ["NH", "SH", "UT"], z: "1012 ##", p: "+31 6 ########" },
+            se: { n: "Sweden", c: ["Stockholm", "Gothenburg", "Malmo"], s: ["Drottninggatan", "Sveavägen", "Avenyn"], st: ["Stockholm", "Västra Götaland"], z: "1## ##", p: "+46 7# ### ## ##" },
+            no: { n: "Norway", c: ["Oslo", "Bergen", "Trondheim"], s: ["Karl Johans gate", "Bryggen", "Munkegata"], st: ["Oslo", "Vestland"], z: "0###", p: "+47 ### ## ###" },
+            dk: { n: "Denmark", c: ["Copenhagen", "Aarhus", "Odense"], s: ["Strøget", "Nyhavn", "Vesterbrogade"], st: ["Capital", "Central"], z: "1###", p: "+45 ## ## ## ##" },
+            fi: { n: "Finland", c: ["Helsinki", "Espoo", "Tampere"], s: ["Mannerheimintie", "Aleksanterinkatu"], st: ["Uusimaa", "Pirkanmaa"], z: "00###", p: "+358 4# ### ####" },
+            pl: { n: "Poland", c: ["Warsaw", "Krakow", "Lodz"], s: ["Marszałkowska", "Floriańska", "Piotrkowska"], st: ["Mazowieckie", "Malopolskie"], z: "00-###", p: "+48 ### ### ###" },
+            tr: { n: "Turkey", c: ["Istanbul", "Ankara", "Izmir"], s: ["Istiklal Ave", "Bagdat Ave", "Ataturk Blvd"], st: ["Istanbul", "Ankara"], z: "34###", p: "+90 5## ### ## ##" },
+            sa: { n: "Saudi Arabia", c: ["Riyadh", "Jeddah", "Mecca"], s: ["King Fahd Rd", "Olaya St", "Tahlia St"], st: ["Riyadh", "Makkah"], z: "1####", p: "+966 5# ### ####" },
+            ae: { n: "UAE", c: ["Dubai", "Abu Dhabi", "Sharjah"], s: ["Sheikh Zayed Rd", "Jumeirah Rd", "Corniche Rd"], st: ["Dubai", "Abu Dhabi"], z: "#####", p: "+971 5# ### ####" },
+            za: { n: "South Africa", c: ["Johannesburg", "Cape Town", "Durban"], s: ["Long St", "Vilakazi St", "Mandela Blvd"], st: ["Gauteng", "Western Cape"], z: "2###", p: "+27 7# ### ####" },
+            ng: { n: "Nigeria", c: ["Lagos", "Abuja", "Port Harcourt"], s: ["Broad St", "Adetokunbo Ademola St"], st: ["Lagos", "FCT"], z: "10####", p: "+234 8## ### ####" },
+            eg: { n: "Egypt", c: ["Cairo", "Alexandria", "Giza"], s: ["Tahrir St", "Corniche", "Pyramids Rd"], st: ["Cairo", "Alexandria"], z: "11###", p: "+20 1# #### ####" },
+            id: { n: "Indonesia", c: ["Jakarta", "Surabaya", "Bandung"], s: ["Jalan Sudirman", "Jalan Thamrin"], st: ["Jakarta", "East Java"], z: "1####", p: "+62 8## #### ####" },
+            th: { n: "Thailand", c: ["Bangkok", "Chiang Mai", "Phuket"], s: ["Sukhumvit Rd", "Silom Rd", "Khao San Rd"], st: ["Bangkok", "Chiang Mai"], z: "10###", p: "+66 8# ### ####" },
+            vn: { n: "Vietnam", c: ["Hanoi", "Ho Chi Minh"], s: ["Nguyen Hue", "Le Loi", "Tran Hung Dao"], st: ["Hanoi", "HCMC"], z: "100###", p: "+84 9# ### ####" },
+            my: { n: "Malaysia", c: ["Kuala Lumpur", "Penang"], s: ["Jalan Bukit Bintang", "Jalan Sultan Ismail"], st: ["KL", "Penang"], z: "50###", p: "+60 1# ### ####" },
+            ph: { n: "Philippines", c: ["Manila", "Cebu", "Davao"], s: ["Ayala Ave", "EDSA", "Rizal Ave"], st: ["Metro Manila", "Cebu"], z: "1###", p: "+63 9## ### ####" },
+            kr: { n: "South Korea", c: ["Seoul", "Busan", "Incheon"], s: ["Gangnam-daero", "Teheran-ro", "Jongno"], st: ["Gyeonggi", "Busan"], z: "0####", p: "+82 10-####-####" },
+            sg: { n: "Singapore", c: ["Singapore"], s: ["Orchard Rd", "Marina Blvd", "Raffles Ave"], st: ["Central", "East"], z: "0####", p: "+65 8### ####" },
+            mx: { n: "Mexico", c: ["Mexico City", "Guadalajara"], s: ["Paseo de la Reforma", "Av. Insurgentes"], st: ["CDMX", "Jalisco"], z: "0####", p: "+52 55 #### ####" },
+            ar: { n: "Argentina", c: ["Buenos Aires", "Cordoba"], s: ["Av. 9 de Julio", "Corrientes"], st: ["CABA", "Cordoba"], z: "C1###AAA", p: "+54 9 11 #### ####" },
+            cl: { n: "Chile", c: ["Santiago", "Valparaiso"], s: ["Alameda", "Providencia"], st: ["RM", "Valparaiso"], z: "832####", p: "+56 9 #### ####" },
+            co: { n: "Colombia", c: ["Bogota", "Medellin"], s: ["Carrera 7", "Calle 100"], st: ["Bogota", "Antioquia"], z: "11####", p: "+57 3## ### ####" },
+            pe: { n: "Peru", c: ["Lima", "Cusco"], s: ["Av. Arequipa", "Javier Prado"], st: ["Lima", "Cusco"], z: "15###", p: "+51 9## ### ###" },
+            ie: { n: "Ireland", c: ["Dublin", "Cork", "Galway"], s: ["Grafton St", "O'Connell St"], st: ["Leinster", "Munster"], z: "D0# ####", p: "+353 8# ### ####" },
+            pt: { n: "Portugal", c: ["Lisbon", "Porto"], s: ["Av. da Liberdade", "Rua Augusta"], st: ["Lisbon", "Porto"], z: "1###-###", p: "+351 9# ### ####" },
+            gr: { n: "Greece", c: ["Athens", "Thessaloniki"], s: ["Ermou St", "Tsimiski St"], st: ["Attica", "Macedonia"], z: "1## ##", p: "+30 69# ### ####" },
+            ch: { n: "Switzerland", c: ["Zurich", "Geneva"], s: ["Bahnhofstrasse", "Rue du Rhône"], st: ["Zurich", "Geneva"], z: "80##", p: "+41 7# ### ## ##" },
+            at: { n: "Austria", c: ["Vienna", "Salzburg"], s: ["Kärntner Straße", "Getreidegasse"], st: ["Vienna", "Salzburg"], z: "10##", p: "+43 6## #######" },
+            be: { n: "Belgium", c: ["Brussels", "Antwerp"], s: ["Rue de la Loi", "Meir"], st: ["Brussels", "Flanders"], z: "10##", p: "+32 4## ## ## ##" },
+            cz: { n: "Czech Republic", c: ["Prague", "Brno"], s: ["Pařížská", "Na Příkopě"], st: ["Prague", "Moravia"], z: "1## ##", p: "+420 7## ### ###" },
+            hu: { n: "Hungary", c: ["Budapest", "Debrecen"], s: ["Váci utca", "Andrássy út"], st: ["Pest", "Hajdú-Bihar"], z: "1###", p: "+36 30 ### ####" },
+            ro: { n: "Romania", c: ["Bucharest", "Cluj"], s: ["Calea Victoriei", "Magheru"], st: ["Ilfov", "Cluj"], z: "01####", p: "+40 7## ### ###" },
+            ua: { n: "Ukraine", c: ["Kyiv", "Lviv"], s: ["Khreshchatyk", "Volodymyrska"], st: ["Kyiv", "Lviv"], z: "01###", p: "+380 6# ### ####" }
+        };
+
+        // =================================================================
+        // 2. HELPER FUNCTIONS
+        // =================================================================
+        const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+        const randNum = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        
+        function formatPattern(pattern) {
+            return pattern.replace(/#/g, () => Math.floor(Math.random() * 10))
+                          .replace(/A/g, () => String.fromCharCode(65 + Math.floor(Math.random() * 26)));
+        }
+
+        function log(msg) {
+            const term = document.getElementById('terminal');
+            const now = new Date().toLocaleTimeString();
+            term.innerHTML = `<div class="log-entry"><span class="log-time">[${now}]</span> <span>${msg}</span></div>` + term.innerHTML;
+        }
+
+        // =================================================================
+        // 3. MAIN LOGIC
+        // =================================================================
+        let generatedData = [];
+
+        window.onload = () => {
+            // Populate Dropdown
+            const sel = document.getElementById('country');
+            const sortedKeys = Object.keys(DATA).sort((a, b) => DATA[a].n.localeCompare(DATA[b].n));
+            
+            sortedKeys.forEach(k => {
+                let opt = document.createElement('option');
+                opt.value = k;
+                opt.text = DATA[k].n;
+                sel.appendChild(opt);
+            });
+
+            // Session ID
+            document.getElementById('sess-id').innerText = randNum(1000, 9999);
+        };
+
+        function updateQty(val) {
+            document.getElementById('qty-disp').innerText = val;
+        }
+
+        function generate() {
+            const code = document.getElementById('country').value;
+            const qty = parseInt(document.getElementById('quantity').value);
+            const container = document.getElementById('results-area');
+            const totalGen = document.getElementById('total-gen');
+            
+            if(!code) { alert("Please Select a Country"); return; }
+
+            // Clear & Prep
+            container.innerHTML = "";
+            generatedData = [];
+            log(`Initiating batch generation for ${DATA[code].n} (Qty: ${qty})...`);
+
+            const data = DATA[code];
+
+            for(let i = 0; i < qty; i++) {
+                // Address Logic
+                let buildNum = randNum(1, 9999);
+                let street = rand(data.s);
+                let city = rand(data.c);
+                let state = rand(data.st);
+                let zip = formatPattern(data.z);
+                let phone = formatPattern(data.p);
+                
+                let obj = {
+                    street: `${buildNum} ${street}`,
+                    city: city,
+                    state: state,
+                    zip: zip,
+                    country: data.n,
+                    phone: phone
+                };
+                generatedData.push(obj);
+
+                // HTML Render
+                let card = document.createElement('div');
+                card.className = "addr-card";
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="flag-icon"><i class="fas fa-map-marker-alt" style="color:var(--primary)"></i> ${data.n.toUpperCase()}</div>
+                        <i class="fas fa-copy copy-icon" onclick="copyCard(this, '${JSON.stringify(obj).replace(/"/g, '&quot;')}')"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="data-row">
+                            <span class="d-label">Street Address</span>
+                            <span class="d-val">${obj.street}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="d-label">City, State</span>
+                            <span class="d-val">${city}, ${state}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="d-label">Postal Code</span>
+                            <span class="d-val" style="color:var(--accent)">${zip}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="d-label">Phone</span>
+                            <span class="d-val">${phone}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+
+            // Update Stats
+            let currentTotal = parseInt(totalGen.innerText);
+            totalGen.innerText = currentTotal + qty;
+            log(`Success. ${qty} identities forged.`);
+        }
+
+        // =================================================================
+        // 4. EXPORT UTILS
+        // =================================================================
+        function copyCard(btn, dataStr) {
+            const data = JSON.parse(dataStr);
+            const text = `${data.street}, ${data.city}, ${data.state} ${data.zip}, ${data.country}\nPhone: ${data.phone}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                if(toast) {
+                   toast.classList.add('show');
+                   setTimeout(() => { toast.classList.remove('show'); }, 1500);
+                }
+                btn.className = "fas fa-check copy-icon";
+                btn.style.color = "var(--accent)";
+                setTimeout(() => { 
+                    btn.className = "fas fa-copy copy-icon";
+                    btn.style.color = "";
+                }, 1500);
+            });
+        }
+
+        function exportData(type) {
+            if(generatedData.length === 0) { alert("Generate data first!"); return; }
+            
+            let content = "";
+            let mime = "text/plain";
+            let ext = "";
+
+            if(type === 'json') {
+                content = JSON.stringify(generatedData, null, 2);
+                mime = "application/json";
+                ext = "json";
+            } else if(type === 'csv') {
+                const headers = Object.keys(generatedData[0]).join(",");
+                const rows = generatedData.map(obj => Object.values(obj).join(",")).join("\n");
+                content = headers + "\n" + rows;
+                mime = "text/csv";
+                ext = "csv";
+            }
+
+            const blob = new Blob([content], { type: mime });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BCT_DATA_${Date.now()}.${ext}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            log(`Data exported as ${ext.toUpperCase()}`);
+        }
+
+    </script>
+</body>
+</html>
