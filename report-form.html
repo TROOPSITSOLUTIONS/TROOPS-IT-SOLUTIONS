@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BCT - Scam Reporting Terminal</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-dark: #050505;
+      --glass-panel: rgba(20, 20, 20, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --primary-red: #ff2a2a;
+      --primary-glow: rgba(255, 42, 42, 0.4);
+      --text-main: #ffffff;
+      --text-dim: #888888;
+      --font-head: 'Orbitron', sans-serif;
+      --font-body: 'Hind Siliguri', sans-serif;
+    }
+
+    * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      background-color: var(--bg-dark);
+      background-image: 
+        linear-gradient(rgba(255, 42, 42, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 42, 42, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* --- Container --- */
+    .main-container {
+      width: 100%;
+      max-width: 700px;
+      position: relative;
+      z-index: 10;
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* --- Header --- */
+    .cyber-header {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    
+    .cyber-logo {
+      font-family: var(--font-head);
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: linear-gradient(to right, #fff, #aaa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 5px;
+      display: inline-block;
+    }
+    
+    .cyber-subtitle {
+      font-size: 14px;
+      color: var(--primary-red);
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .cyber-subtitle::before, .cyber-subtitle::after {
+      content: ''; display: block; width: 30px; height: 2px; background: var(--primary-red); opacity: 0.5;
+    }
+
+    /* --- Glass Card --- */
+    .glass-card {
+      background: var(--glass-panel);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .glass-card::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
+    }
+
+    /* --- Option Switcher --- */
+    .option-switch {
+      display: flex;
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 25px;
+      border: 1px solid var(--glass-border);
+    }
+    
+    .switch-btn {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-dim);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+    
+    .switch-btn.active {
+      background: rgba(255, 42, 42, 0.15);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(255, 42, 42, 0.1);
+      border: 1px solid rgba(255, 42, 42, 0.3);
+    }
+
+    /* --- Forms --- */
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      margin-top: 15px;
+      font-weight: 500;
+    }
+    
+    .badge {
+      font-size: 10px; background: #222; padding: 2px 6px; border-radius: 4px; 
+      border: 1px solid #333; color: var(--primary-red); margin-left: 5px;
+    }
+
+    input[type="text"], input[type="date"], textarea, select {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 14px;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 15px;
+      transition: 0.3s;
+    }
+    
+    input:focus, textarea:focus {
+      border-color: var(--primary-red);
+      box-shadow: 0 0 15px var(--primary-glow);
+      background: rgba(0,0,0,0.6);
+    }
+
+    textarea { min-height: 120px; resize: vertical; }
+
+    /* --- Radio Buttons (Payment) --- */
+    .payment-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .radio-card {
+      position: relative;
+    }
+    
+    .radio-card input {
+      position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0;
+    }
+    
+    .radio-card label {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--glass-border);
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+      color: #ccc;
+    }
+    
+    .radio-card input:checked + label {
+      background: var(--primary-red);
+      color: #fff;
+      border-color: var(--primary-red);
+      box-shadow: 0 5px 15px rgba(255, 42, 42, 0.3);
+    }
+
+    /* --- Grid Layout --- */
+    .grid-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    @media (max-width: 600px) { .grid-row { grid-template-columns: 1fr; } }
+
+    /* --- Submit Button --- */
+    .btn-submit {
+      width: 100%;
+      margin-top: 30px;
+      padding: 16px;
+      background: var(--primary-red);
+      color: #fff;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-submit:hover {
+      background: #d40000;
+      box-shadow: 0 0 20px var(--primary-glow);
+      transform: translateY(-2px);
+    }
+    .btn-submit:active { transform: translateY(0); }
+    
+    .status-msg {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 15px;
+    }
+
+    footer {
+            text-align: center;
+            padding: 30px 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #555;
+        }
+
+        footer strong {
+    color: #FF1709;
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+  </style>
+</head>
+<body>
+
+<div class="main-container">
+
+  <div class="cyber-header">
+    <div class="cyber-logo">BANGLADESH CYBER TROOPS</div>
+    <div class="cyber-subtitle">স্ক্যাম রিপোর্ট টার্মিনাল</div>
+  </div>
+
+  <div class="glass-card">
+    
+    <div class="option-switch">
+      <div class="switch-btn" id="option1">টাকা দিয়ে প্রতারিত</div>
+      <div class="switch-btn" id="option2">পণ্য দিয়ে টাকা পাননি</div>
+    </div>
+
+    <form id="reportForm" autocomplete="off">
+      
+      <div id="section1" style="display: none;">
+        <label>লেনদেনের মাধ্যম <span class="badge">সিলেক্ট করুন</span></label>
+        
+        <div class="payment-grid">
+          <div class="radio-card">
+            <input type="radio" name="method" id="m_bkash" value="বিকাশ">
+            <label for="m_bkash">বিকাশ</label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="method" id="m_nagad" value="নগদ">
+            <label for="m_nagad">নগদ</label>
+          </div>
+          <div class="radio-card">
+            <input type="radio" name="method" id="m_other" value="অন্যান্য">
+            <label for="m_other">অন্যান্য</label>
+          </div>
+        </div>
+
+        <div class="payment-section" id="bkashFields">
+          <div class="grid-row">
+            <div>
+              <label>তারিখ</label>
+              <input type="date" name="bkash_date">
+            </div>
+            <div>
+              <label>পরিমাণ (টাকা)</label>
+              <input type="text" name="bkash_amount" inputmode="decimal" placeholder="1500">
+            </div>
+          </div>
+          <div class="grid-row">
+            <div>
+              <label>আপনার নাম্বার</label>
+              <input type="text" name="bkash_from" placeholder="01XXXXXXXXX">
+            </div>
+            <div>
+              <label>প্রতারকের নাম্বার</label>
+              <input type="text" name="bkash_to" placeholder="01XXXXXXXXX">
+            </div>
+          </div>
+          <label>ট্রানজেকশন আইডি (TrxID)</label>
+          <input type="text" name="bkash_txn" placeholder="8H2AXXXXX">
+        </div>
+
+        <div class="payment-section" id="nagadFields">
+          <div class="grid-row">
+            <div>
+              <label>তারিখ</label>
+              <input type="date" name="nagad_date">
+            </div>
+            <div>
+              <label>পরিমাণ (টাকা)</label>
+              <input type="text" name="nagad_amount" inputmode="decimal" placeholder="2000">
+            </div>
+          </div>
+          <div class="grid-row">
+            <div>
+              <label>আপনার নাম্বার</label>
+              <input type="text" name="nagad_from" placeholder="01XXXXXXXXX">
+            </div>
+            <div>
+              <label>প্রতারকের নাম্বার</label>
+              <input type="text" name="nagad_to" placeholder="01XXXXXXXXX">
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-section" id="otherFields">
+          <div class="grid-row">
+            <div>
+              <label>তারিখ</label>
+              <input type="date" name="other_date">
+            </div>
+            <div>
+              <label>প্লাটফর্মের নাম</label>
+              <input type="text" name="other_platform" placeholder="রকেট / উপায় / ব্যাংক">
+            </div>
+          </div>
+          <div class="grid-row">
+            <div>
+              <label>আপনার নাম্বার/অ্যাকাউন্ট</label>
+              <input type="text" name="other_from">
+            </div>
+            <div>
+              <label>প্রতারকের নাম্বার/অ্যাকাউন্ট</label>
+              <input type="text" name="other_to">
+            </div>
+          </div>
+          <label>টাকার পরিমাণ</label>
+          <input type="text" name="other_amount" inputmode="decimal" placeholder="1000">
+        </div>
+      </div>
+
+      <div id="section2" style="display: none;">
+        <label>বিস্তারিত অভিযোগ <span class="badge">বাংলায় লিখুন</span></label>
+        <textarea name="complaint" placeholder="কি ঘটেছে, কবে ঘটেছে, কোন পণ্য ছিল এবং প্রমাণ থাকলে ড্রাইভ লিংক দিন..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">রিপোর্ট সাবমিট করুন</button>
+      <div class="status-msg" id="statusText">সঠিক তথ্য দিয়ে ফর্মটি পূরণ করুন</div>
+
+    </form>
+  </div>
+
+  <div class="cyber-footer" id="footer">
+    </div>
+
+</div>
+
+<footer>
+        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
+    </footer>
+<script>
+
+
+    // ====== Telegram Config (Same as before) ======
+    const TELEGRAM_BOT_TOKEN = "8250305398:AAHRqNvyUhkwg2WAzkRWuzzaNcUudkDqmtY";
+    const TELEGRAM_CHAT_IDS = ["7662135269","8432912137", "8365272832"];
+
+    // ====== Elements ======
+    const option1 = document.getElementById('option1');
+    const option2 = document.getElementById('option2');
+    const section1 = document.getElementById('section1');
+    const section2 = document.getElementById('section2');
+    const reportForm = document.getElementById('reportForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusText = document.getElementById('statusText');
+
+    // ====== Local Report ID ======
+    let reportID = localStorage.getItem("reportID") || "4042024190";
+
+    // ====== Option Toggle Logic ======
+    function setActive(opt) {
+      if (opt === 1) {
+        option1.classList.add('active');
+        option2.classList.remove('active');
+        section1.style.display = 'block';
+        section2.style.display = 'none';
+        submitBtn.style.display = 'block';
+      } else {
+        option2.classList.add('active');
+        option1.classList.remove('active');
+        section1.style.display = 'none';
+        section2.style.display = 'block';
+        submitBtn.style.display = 'block';
+      }
+      statusText.textContent = "ফর্ম পূরণ করে সাবমিট করুন।";
+    }
+
+    // Default Selection (Optional: Select option 1 by default for better UX)
+    setActive(1); 
+
+    option1.addEventListener('click', () => setActive(1));
+    option2.addEventListener('click', () => setActive(2));
+
+    // ====== Payment Method Logic ======
+    document.querySelectorAll('input[name="method"]').forEach(radio => {
+      radio.addEventListener('change', e => {
+        document.querySelectorAll('.payment-section').forEach(div => div.style.display = 'none');
+        if (e.target.value === 'বিকাশ') document.getElementById('bkashFields').style.display = 'block';
+        if (e.target.value === 'নগদ') document.getElementById('nagadFields').style.display = 'block';
+        if (e.target.value === 'অন্যান্য') document.getElementById('otherFields').style.display = 'block';
+      });
+    });
+
+    // ====== Helpers ======
+    function sanitize(text) {
+      return String(text || '').replace(/[<>]/g, '');
+    }
+
+    function buildMessage(data, type) {
+      let msg = `🔴 <b>BCT SCAM ALERT</b>\n<b>REPORT ID:</b> #${reportID}\n`;
+      if (type === 1) {
+        msg += `<b>TYPE:</b> FINANCIAL FRAUD\n`;
+        const method = sanitize(data.get("method") || "");
+        msg += `<b>METHOD:</b> ${method}\n`;
+        msg += `--------------------------------\n`;
+
+        if (method === "বিকাশ") {
+          msg += `📅 <b>Date:</b> ${sanitize(data.get("bkash_date"))}\n`;
+          msg += `👤 <b>Victim:</b> ${sanitize(data.get("bkash_from"))}\n`;
+          msg += `👺 <b>Scammer:</b> ${sanitize(data.get("bkash_to"))}\n`;
+          msg += `💰 <b>Amount:</b> ${sanitize(data.get("bkash_amount"))} BDT\n`;
+          msg += `🧾 <b>TrxID:</b> ${sanitize(data.get("bkash_txn"))}\n`;
+        } else if (method === "নগদ") {
+          msg += `📅 <b>Date:</b> ${sanitize(data.get("nagad_date"))}\n`;
+          msg += `👤 <b>Victim:</b> ${sanitize(data.get("nagad_from"))}\n`;
+          msg += `👺 <b>Scammer:</b> ${sanitize(data.get("nagad_to"))}\n`;
+          msg += `💰 <b>Amount:</b> ${sanitize(data.get("nagad_amount"))} BDT\n`;
+        } else if (method === "অন্যান্য") {
+          msg += `📅 <b>Date:</b> ${sanitize(data.get("other_date"))}\n`;
+          msg += `🏦 <b>Platform:</b> ${sanitize(data.get("other_platform"))}\n`;
+          msg += `👤 <b>Victim:</b> ${sanitize(data.get("other_from"))}\n`;
+          msg += `👺 <b>Scammer:</b> ${sanitize(data.get("other_to"))}\n`;
+          msg += `💰 <b>Amount:</b> ${sanitize(data.get("other_amount"))} BDT\n`;
+        }
+      } else {
+        msg += `<b>TYPE:</b> SELLER FRAUD (NO PAYMENT)\n`;
+        msg += `--------------------------------\n`;
+        msg += `📝 <b>Details:</b>\n${sanitize(data.get("complaint"))}\n`;
+      }
+      return msg;
+    }
+
+    async function sendToTelegram(message) {
+      await Promise.all(
+        TELEGRAM_CHAT_IDS.map(id =>
+          fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              chat_id: id,
+              text: message,
+              parse_mode: 'HTML',
+              disable_web_page_preview: true
+            })
+          }).then(r => {
+            if (!r.ok) throw new Error('Telegram error');
+            return r.json();
+          })
+        )
+      );
+    }
+
+    // ====== Submit Handler ======
+    reportForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const data = new FormData(reportForm);
+
+      const isOpt1 = option1.classList.contains("active");
+      
+      // Validation
+      if (isOpt1) {
+        const method = data.get("method");
+        if (!method) { alert("দয়া করে পেমেন্ট মাধ্যম সিলেক্ট করুন।"); return; }
+      } else {
+        const c = (data.get("complaint") || "").trim();
+        if (c.length < 5) { alert("অভিযোগটি বিস্তারিত লিখুন।"); return; }
+      }
+
+      // Increment Report ID
+      reportID = (parseInt(reportID, 10) + 1).toString();
+      localStorage.setItem("reportID", reportID);
+
+      const message = buildMessage(data, isOpt1 ? 1 : 2);
+
+      // UI Loading State
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> প্রসেসিং হচ্ছে...';
+      statusText.textContent = "সার্ভারে কানেক্ট করা হচ্ছে...";
+      statusText.style.color = "var(--primary-red)";
+
+      try {
+        await sendToTelegram(message);
+        
+        // Success State
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> সফল হয়েছে';
+        submitBtn.style.background = "#00c853";
+        statusText.textContent = `রিপোর্ট #${reportID} সফলভাবে জমা হয়েছে।`;
+        statusText.style.color = "#00c853";
+        
+        reportForm.reset();
+        
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "রিপোর্ট সাবমিট করুন";
+            submitBtn.style.background = ""; // reset to CSS default
+            statusText.textContent = "নতুন রিপোর্ট করতে পারেন";
+            statusText.style.color = "var(--text-dim)";
+        }, 3000);
+
+      } catch (err) {
+        console.error(err);
+        alert("নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "রিপোর্ট সাবমিট করুন";
+        statusText.textContent = "এরর: ইন্টারনেক কানেকশন চেক করুন";
+      }
+    });
+</script>
+
+</body>
+</html>
