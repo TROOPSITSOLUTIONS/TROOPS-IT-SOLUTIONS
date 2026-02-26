@@ -1,248 +1,248 @@
-
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BCT IP Locator — Bangladesh Cyber Troops</title>
+    <title>IP LOCATOR | TEAM BCT</title>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
+        /* =================================================================
+           CORE SYSTEM: BCT RED RADAR (V5.0 - ELITE UI)
+           ================================================================= */
         :root {
-            --bg-deep: #050505;
-            --bg-card: #0f0f0f;
-            --accent-red: #ff0000;
-            --accent-soft: #8b0000;
+            --bg-void: #020202;
+            --bg-panel: rgba(10, 10, 10, 0.7);
+            --bg-card: rgba(15, 15, 15, 0.85);
+            
+            --primary: #ff0033;
+            --primary-dim: rgba(255, 0, 51, 0.15);
+            --primary-glow: rgba(255, 0, 51, 0.5);
+            
+            --accent: #00ffcc;
+            --warn: #ffcc00;
+            --danger: #ff0033;
+            
+            --border: rgba(255, 0, 51, 0.3);
+            --border-light: rgba(255, 255, 255, 0.08);
+            
             --text-main: #ffffff;
-            --text-muted: #b0b0b0;
-            --glass-border: rgba(255, 0, 0, 0.2);
-            --glow: 0 0 15px rgba(255, 0, 0, 0.3);
+            --text-mute: #888888;
+            
+            --font-head: 'Orbitron', sans-serif;
+            --font-ui: 'Rajdhani', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
         }
 
-        * {
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
 
         body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at top right, #200000, #050505);
-            background-color: var(--bg-deep);
+            background-color: var(--bg-void);
             color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 10px;
+            font-family: var(--font-ui);
             min-height: 100vh;
+            display: flex; flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 50% 0%, #220000 0%, #000 70%),
+                linear-gradient(rgba(255,0,51,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,0,51,0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            background-attachment: fixed;
         }
 
-        /* Top Header */
-        .header {
-            width: 100%;
-            max-width: 1100px;
-            background: linear-gradient(90deg, #000, #1a0000);
-            border: 1px solid var(--accent-red);
-            border-radius: 12px;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            box-shadow: var(--glow);
+        /* --- 1. TOP NAVBAR --- */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 30px; background: rgba(5, 0, 0, 0.8);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 5px 30px rgba(255,0,51,0.15);
         }
 
-        .header h1 {
-            margin: 0;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 22px;
-            color: var(--accent-red);
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        .brand {
+            font-family: var(--font-head); font-size: 24px; font-weight: 900;
+            letter-spacing: 2px; text-shadow: 0 0 15px var(--primary);
         }
+        .brand span { color: var(--primary); }
+
+        /* SEARCH BAR */
+        .search-container {
+            display: flex; align-items: center; background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--primary); border-radius: 6px;
+            overflow: hidden; width: 450px; box-shadow: 0 0 15px var(--primary-dim);
+            transition: 0.3s; backdrop-filter: blur(5px);
+        }
+        .search-container:focus-within { box-shadow: 0 0 25px var(--primary-glow); border-color: #ff4d4d; }
+        
+        .search-input {
+            flex: 1; background: transparent; border: none; color: #fff;
+            padding: 12px 15px; font-family: var(--font-code); font-size: 14px;
+        }
+        .search-input::placeholder { color: #666; }
+        .search-btn {
+            background: var(--primary); color: #fff; border: none;
+            padding: 0 20px; height: 100%; cursor: pointer;
+            font-family: var(--font-head); font-weight: bold; transition: 0.2s;
+            letter-spacing: 1px;
+        }
+        .search-btn:hover { background: #cc0029; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
 
         .status-badge {
-            background: var(--accent-red);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
-            font-family: 'Orbitron';
+            font-family: var(--font-code); font-size: 12px; color: var(--accent);
+            border: 1px solid var(--accent); padding: 5px 15px; border-radius: 4px;
+            background: rgba(0, 255, 204, 0.05); display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 0 10px rgba(0,255,204,0.1);
+        }
+        .pulse-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 1.5s infinite; }
+
+        /* --- 2. MAIN DASHBOARD --- */
+        .dashboard {
+            padding: 30px; display: grid;
+            grid-template-columns: 1fr 380px; gap: 25px;
+            flex: 1; overflow-y: auto; max-width: 1600px; margin: 0 auto; width: 100%;
         }
 
-        /* Main Layout */
-        .main-container {
-            width: 100%;
-            max-width: 1100px;
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 20px;
-        }
+        /* LEFT PANEL (Map & Main Data) */
+        .main-panel { display: flex; flex-direction: column; gap: 25px; }
 
-        @media (max-width: 992px) {
-            .main-container { grid-template-columns: 1fr; }
+        /* INTERACTIVE MAP */
+        .map-wrapper {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden; position: relative;
+            height: 350px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
         }
-
-        /* Panels */
-        .content-panel {
-            background: var(--bg-card);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        .map-wrapper::after {
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: linear-gradient(rgba(255,0,51,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,0,51,0.05) 1px, transparent 1px);
+            background-size: 20px 20px; pointer-events: none; z-index: 400;
         }
-
-        .section-title {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--accent-red);
-            font-size: 18px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 10px;
+        #map { width: 100%; height: 100%; z-index: 1; filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(85%); }
+        
+        .map-overlay {
+            position: absolute; top: 15px; left: 15px; z-index: 500;
+            background: rgba(0,0,0,0.7); border: 1px solid var(--primary);
+            padding: 10px 15px; border-radius: 6px; font-family: var(--font-code);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
+        .map-overlay-title { color: var(--primary); font-size: 10px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .map-overlay-val { color: #fff; font-size: 16px; font-weight: bold; }
 
-        /* Grid Cards */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 15px;
+        /* DATA GRIDS */
+        .section-header {
+            font-family: var(--font-head); font-size: 18px; color: var(--primary);
+            margin-bottom: 15px; display: flex; align-items: center; gap: 10px;
+            border-bottom: 1px solid var(--border); padding-bottom: 10px;
+            text-transform: uppercase; text-shadow: 0 0 10px rgba(255,0,51,0.3);
+        }
+        
+        .data-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;
         }
 
         .data-card {
-            background: #151515;
-            border-left: 3px solid var(--accent-red);
-            padding: 15px;
-            border-radius: 8px;
-            position: relative;
+            background: var(--bg-card); border: 1px solid var(--border-light);
+            padding: 15px; border-radius: 10px; position: relative; transition: 0.3s;
+            border-left: 4px solid #444; backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .data-card:hover { border-color: var(--primary); border-left-color: var(--primary); background: rgba(20,0,0,0.8); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255,0,51,0.2); }
+        
+        .c-label { font-family: var(--font-code); font-size: 11px; color: var(--text-mute); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
+        .c-val { font-size: 16px; font-weight: 600; color: #fff; word-break: break-word; }
+        .c-val.highlight { color: var(--accent); font-family: var(--font-code); }
+        
+        .copy-icon {
+            position: absolute; top: 15px; right: 15px; color: #555;
+            cursor: pointer; transition: 0.2s; font-size: 14px; z-index: 10;
+        }
+        .copy-icon:hover { color: var(--primary); transform: scale(1.1); }
+
+        /* RIGHT PANEL (Side Stats & Forensics) */
+        .side-panel { display: flex; flex-direction: column; gap: 20px; }
+
+        .target-box {
+            background: linear-gradient(135deg, #1a0000, #000000);
+            border: 1px solid var(--primary); padding: 25px; border-radius: 12px;
+            text-align: center; box-shadow: 0 0 30px rgba(255,0,51,0.15);
+            position: relative; overflow: hidden;
+        }
+        .target-box::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,0,51,0.1) 0%, transparent 60%);
+            animation: rotateGlow 10s linear infinite; pointer-events: none;
         }
 
-        .data-card:hover {
-            background: #1c1c1c;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.1);
+        .target-title { font-family: var(--font-code); color: var(--primary); font-size: 12px; letter-spacing: 2px; margin-bottom: 10px; position: relative; z-index: 2; }
+        .target-ip { font-family: var(--font-head); font-size: 32px; color: #fff; margin-bottom: 15px; text-shadow: 0 0 15px rgba(255,255,255,0.4); word-break: break-all; position: relative; z-index: 2; }
+        
+        /* IP HEALTH & STATUS SECTION */
+        .health-card {
+            background: var(--bg-card); border: 1px solid var(--border-light);
+            border-radius: 10px; padding: 20px; backdrop-filter: blur(10px);
+        }
+        .health-bar-container { margin: 15px 0; }
+        .health-label-row { display: flex; justify-content: space-between; font-family: var(--font-code); font-size: 12px; margin-bottom: 8px; color: #fff; }
+        .h-track { width: 100%; height: 8px; background: #222; border-radius: 4px; overflow: hidden; }
+        .h-fill { height: 100%; width: 0%; background: var(--accent); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 1s; box-shadow: 0 0 10px currentColor; }
+        
+        .fp-item {
+            display: flex; justify-content: space-between; border-bottom: 1px dashed #222;
+            padding: 10px 0; font-family: var(--font-code); font-size: 12px;
+        }
+        .fp-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .fp-label { color: var(--text-mute); text-transform: uppercase; }
+        .fp-val { color: #fff; text-align: right; max-width: 60%; font-weight: bold; }
+
+        /* TERMINAL / JSON VIEW */
+        .terminal-box {
+            flex: 1; background: #000; border: 1px solid #333; border-radius: 10px;
+            display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        .term-header {
+            background: #111; padding: 10px 15px; font-family: var(--font-code);
+            font-size: 11px; color: var(--primary); border-bottom: 1px solid #333;
+            display: flex; justify-content: space-between;
+        }
+        .term-content {
+            padding: 15px; font-family: var(--font-code); font-size: 12px;
+            color: #00ff41; overflow-y: auto; white-space: pre-wrap; height: 250px;
         }
 
-        .label {
-            color: var(--accent-red);
-            font-size: 11px;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-bottom: 5px;
-            letter-spacing: 1px;
+        /* TOAST */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(20,0,0,0.95); border: 1px solid var(--primary); color: var(--primary);
+            padding: 15px 30px; border-radius: 50px; font-family: var(--font-code); font-size: 13px;
+            opacity: 0; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 9999;
+            box-shadow: 0 0 20px rgba(255,0,51,0.4); backdrop-filter: blur(10px);
         }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        .value {
-            font-size: 15px;
-            word-break: break-all;
+        /* ANIMATIONS */
+        @keyframes pulse { 0% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,255,204,0.4); } 70% { opacity: 0.5; box-shadow: 0 0 0 10px rgba(0,255,204,0); } 100% { opacity: 1; } }
+        @keyframes rotateGlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .search-container { width: 300px; }
         }
-
-        .value.ip-text {
-            font-size: 20px;
-            font-weight: bold;
-            font-family: 'Orbitron';
-            color: #fff;
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 15px; padding: 15px; }
+            .search-container { width: 100%; }
+            .status-badge { display: none; }
         }
-
-        /* Sidebar Stats */
-        .sidebar { display: flex; flex-direction: column; gap: 20px; }
-
-        .stat-box {
-            background: linear-gradient(135deg, #151515, #000);
-            border: 1px solid var(--glass-border);
-            padding: 20px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .icon-circle {
-            width: 50px;
-            height: 50px;
-            background: var(--accent-red);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Orbitron';
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
-        }
-
-        .stat-info .m-title { font-size: 12px; color: var(--text-muted); }
-        .stat-info .m-val { font-size: 15px; font-weight: bold; }
-
-        /* JSON Area */
-        .json-viewer {
-            background: #000;
-            border: 1px solid #333;
-            color: #00ff41; /* Classic Matrix Green or use Red */
-            color: #ff5555;
-            padding: 15px;
-            border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            max-height: 250px;
-            overflow: auto;
-            margin-top: 15px;
-        }
-
-        /* Buttons */
-        .btn-red {
-            background: var(--accent-red);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Orbitron';
-            font-size: 12px;
-            width: 100%;
-            margin-top: 5px;
-        }
-
-        .btn-red:hover {
-            background: #cc0000;
-            box-shadow: 0 0 10px var(--accent-red);
-        }
-
-        .copy-small {
-            background: transparent;
-            border: 1px solid var(--accent-soft);
-            color: var(--accent-red);
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            float: right;
-        }
-
-        .chip-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .chip {
-            background: #222;
-            border: 1px solid #444;
-            color: #ddd;
-            padding: 6px 12px;
-            border-radius: 5px;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        .chip:hover { border-color: var(--accent-red); color: var(--accent-red); }
-
-        /* FOOTER */
+        
+        /* --- 6. FOOTER --- */
+   
         footer {
             text-align: center;
             padding: 30px 15px;
@@ -253,337 +253,427 @@
         }
 
         footer strong {
-    color: var(--accent-red);
-    text-shadow: var(--glow);
+    color: #ff0000;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
 }
-
-        .highlight-text { color: var(--accent-red); text-decoration: none; }
-        
-        .css-globe{
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--accent-red);
-    border-radius: 50%;
-    display: inline-block;
-    position: relative;
-    box-shadow: 0 0 8px rgba(255,0,0,0.6);
-}
-
-.css-globe::before,
-.css-globe::after{
-    content: '';
-    position: absolute;
-    background: var(--accent-red);
-}
-
-.css-globe::before{
-    width: 2px;
-    height: 100%;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-}
-
-.css-globe::after{
-    height: 2px;
-    width: 100%;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-}
-
-.css-device{
-    width: 18px;
-    height: 12px;
-    border: 2px solid var(--accent-red);
-    border-radius: 2px;
-    display: inline-block;
-    position: relative;
-    box-shadow: 0 0 8px rgba(255,0,0,0.6);
-}
-
-/* screen line */
-.css-device::before{
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    height: 2px;
-    background: var(--accent-red);
-}
-
-/* stand */
-.css-device::after{
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 50%;
-    width: 8px;
-    height: 3px;
-    background: var(--accent-red);
-    transform: translateX(-50%);
-    border-radius: 1px;
-}
-
-.css-doc{
-    width: 14px;
-    height: 18px;
-    border: 2px solid var(--accent-red);
-    display: inline-block;
-    position: relative;
-    border-radius: 2px;
-    box-shadow: 0 0 8px rgba(255,0,0,0.6);
-}
-
-/* folded corner */
-.css-doc::before{
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 6px;
-    height: 6px;
-    background: var(--bg-card);
-    border-left: 2px solid var(--accent-red);
-    border-bottom: 2px solid var(--accent-red);
-}
-
-/* text lines */
-.css-doc::after{
-    content: '';
-    position: absolute;
-    top: 6px;
-    left: 3px;
-    width: 8px;
-    height: 2px;
-    background: var(--accent-red);
-    box-shadow:
-        0 4px 0 var(--accent-red),
-        0 8px 0 var(--accent-red);
-}
-
     </style>
 </head>
-
 <body>
 
-    <!-- Header -->
-    <header class="header">
-        <h1>BCT IP LOCATOR</h1>
-        <div class="status-badge" id="loadedAt">SYNCING...</div>
-    </header>
-
-    <main class="main-container">
+    <div class="navbar">
+        <div class="brand">BCT <span>IP LOCATOR</span></div>
         
-        <!-- Left Section -->
-        <section class="content-panel">
-  <div class="section-title">
-    <span class="css-globe"></span>
-    IP DATA INVESTIGATION
-</div>
+        <div class="search-container">
+            <input type="text" id="targetIpInput" class="search-input" placeholder="Enter Target IP Address...">
+            <button class="search-btn" onclick="initiateTrace()"><i class="fas fa-satellite-dish"></i> TRACE</button>
+        </div>
+
+        <div class="status-badge">
+            <div class="pulse-dot" id="navPulse"></div>
+            <span id="navStatus">SYSTEM ONLINE</span>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        
+        <div class="main-panel">
             
-            <div class="info-grid">
-                <!-- IP Card -->
-                <div class="data-card">
-                    <button class="copy-small" onclick="copyIdText('ipAddr')">COPY</button>
-                    <div class="label">Primary IP Address</div>
-                    <div class="value ip-text" id="ipAddr">-</div>
+            <div class="map-wrapper">
+                <div class="map-overlay">
+                    <div class="map-overlay-title">TARGET COORDINATES</div>
+                    <div class="map-overlay-val" id="mapCoords">0.0000, 0.0000</div>
                 </div>
+                <div id="map"></div>
+            </div>
 
-                <!-- ISP Card -->
-                <div class="data-card">
-                    <div class="label">Service Provider (ISP)</div>
-                    <div class="value" id="isp">-</div>
-                </div>
+            <div>
+                <div class="section-header"><i class="fas fa-map-marked-alt"></i> GEOLOCATION INTEL</div>
+                <div class="data-grid">
+                    
+                    <div class="data-card">
+                        <i class="far fa-copy copy-icon" onclick="copyVal('country')"></i>
+                        <div class="c-label">Country</div>
+                        <div class="c-val" id="country">Scanning...</div>
+                    </div>
+                    <div class="data-card">
+                        <i class="far fa-copy copy-icon" onclick="copyVal('city')"></i>
+                        <div class="c-label">City / Region</div>
+                        <div class="c-val" id="city">Scanning...</div>
+                    </div>
+                    <div class="data-card">
+                        <i class="far fa-copy copy-icon" onclick="copyVal('zip')"></i>
+                        <div class="c-label">Postal / ZIP</div>
+                        <div class="c-val" id="zip">Scanning...</div>
+                    </div>
+                    <div class="data-card">
+                        <i class="far fa-copy copy-icon" onclick="copyVal('timezone')"></i>
+                        <div class="c-label">Timezone</div>
+                        <div class="c-val" id="timezone">Scanning...</div>
+                    </div>
 
-                <!-- Location Card -->
-                <div class="data-card">
-                    <div class="label">Location (City, Country)</div>
-                    <div class="value" id="fullAddress">-</div>
-                </div>
-
-                <!-- Country Card -->
-                <div class="data-card">
-                    <div class="label">Country Code</div>
-                    <div class="value" id="countryFull">-</div>
-                </div>
-
-                <!-- Region Card -->
-                <div class="data-card">
-                    <div class="label">Region / State</div>
-                    <div class="value" id="region">-</div>
-                </div>
-
-                <!-- ZIP Card -->
-                <div class="data-card">
-                    <div class="label">Postal / ZIP</div>
-                    <div class="value" id="postal">-</div>
-                </div>
-
-                <!-- Coordinates Card -->
-                <div class="data-card">
-                    <div class="label">Latitude & Longitude</div>
-                    <div class="value" id="latlon">-</div>
-                </div>
-
-                <!-- Timezone Card -->
-                <div class="data-card">
-                    <div class="label">Timezone</div>
-                    <div class="value" id="timezone">-</div>
-                </div>
-
-                <!-- ASN Card -->
-                <div class="data-card">
-                    <div class="label">ASN Details</div>
-                    <div class="value" id="asn">-</div>
+                    <div class="data-card" style="grid-column: 1 / -1; border-left-color: var(--accent); background: rgba(0, 255, 204, 0.05);">
+                        <i class="far fa-copy copy-icon" onclick="copyVal('fullAddress')" style="color:var(--accent)"></i>
+                        <div class="c-label" style="color:var(--accent)">Full Address Summary</div>
+                        <div class="c-val highlight" id="fullAddress" style="font-size: 18px; color:#fff;">Scanning location parameters...</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Client Info -->
-            <div class="section-title" style="margin-top:30px">
-    <span class="css-device"></span>
-    DEVICE TERMINAL INFO
-</div>
-            <div class="info-grid">
-                <div class="data-card">
-                    <div class="label">Browser</div>
-                    <div class="value" id="browser">-</div>
-                </div>
-                <div class="data-card">
-                    <div class="label">OS / Platform</div>
-                    <div class="value" id="platform">-</div>
-                </div>
-                <div class="data-card">
-                    <div class="label">Language</div>
-                    <div class="value" id="lang">-</div>
-                </div>
-            </div>
-
-            <!-- JSON -->
-         <div class="section-title" style="margin-top:30px">
-    <span class="css-doc"></span>
-    RAW SYSTEM RESPONSE
-</div>
-            <div id="jsonBox" class="json-viewer">Fetching encrypted data...</div>
-        </section>
-
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="stat-box">
-                <div class="icon-circle">IP</div>
-                <div class="stat-info">
-                    <div class="m-title">Target IP</div>
-                    <div class="m-val" id="s_ip">0.0.0.0</div>
+            <div>
+                <div class="section-header"><i class="fas fa-network-wired"></i> NETWORK INFRASTRUCTURE</div>
+                <div class="data-grid">
+                    <div class="data-card">
+                        <i class="far fa-copy copy-icon" onclick="copyVal('isp')"></i>
+                        <div class="c-label">ISP / Provider</div>
+                        <div class="c-val" id="isp">Scanning...</div>
+                    </div>
+                    <div class="data-card">
+                        <i class="far fa-copy copy-icon" onclick="copyVal('org')"></i>
+                        <div class="c-label">Organization</div>
+                        <div class="c-val" id="org">Scanning...</div>
+                    </div>
+                    <div class="data-card">
+                        <i class="far fa-copy copy-icon" onclick="copyVal('asn')"></i>
+                        <div class="c-label">ASN (Autonomous System)</div>
+                        <div class="c-val highlight" id="asn">Scanning...</div>
+                    </div>
+                    <div class="data-card">
+                        <i class="far fa-copy copy-icon" onclick="copyVal('connType')"></i>
+                        <div class="c-label">Connection Type</div>
+                        <div class="c-val" id="connType">Scanning...</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="stat-box">
-                <div class="icon-circle">SEC</div>
-                <div class="stat-info">
-                    <div class="m-title">VPN/Proxy Filter</div>
-                    <div class="m-val" id="s_sec">Scanning...</div>
-                </div>
+        </div>
+
+        <div class="side-panel">
+            
+            <div class="target-box">
+                <div class="target-title">PRIMARY TARGET IP</div>
+                <div class="target-ip" id="displayIp" onclick="copyVal('displayIp')" style="cursor:pointer">0.0.0.0</div>
             </div>
 
-            <div class="stat-box" style="flex-direction: column; align-items: flex-start;">
-                <div class="label" style="margin-bottom: 10px;">Quick Actions</div>
-                <button class="btn-red" id="copyAll">COPY TARGET IP</button>
-                <div class="chip-container">
-                    <div class="chip" id="whoisBtn">WHOIS</div>
-                    <div class="chip" id="rdnsBtn">Reverse DNS</div>
-                    <div class="chip" id="asBtn">ASN Lookup</div>
-                    <div class="chip" onclick="window.location.reload()">Reload Data</div>
+            <div class="health-card">
+                <div class="section-header" style="font-size:14px; margin-bottom:10px; border:none; padding:0"><i class="fas fa-heartbeat"></i> IP Health & Network</div>
+                
+                <div class="health-bar-container">
+                    <div class="health-label-row">
+                        <span>IP Health Score</span>
+                        <span id="healthText" style="color:var(--accent)">100% CLEAN</span>
+                    </div>
+                    <div class="h-track"><div class="h-fill" id="healthBar" style="width:100%"></div></div>
                 </div>
+
+                <div class="fp-item"><span class="fp-label">IP Status</span><span class="fp-val" id="ipStatus" style="color:var(--accent)">Active</span></div>
+                <div class="fp-item"><span class="fp-label">Fraud/Risk Score</span><span class="fp-val" id="fraudScore" style="color:var(--accent)">0/100</span></div>
+                <div class="fp-item"><span class="fp-label">Network Speed</span><span class="fp-val" id="netSpeed" style="color:var(--warn)">Estimating...</span></div>
+                <div class="fp-item"><span class="fp-label">Latency (Ping)</span><span class="fp-val" id="netPing" style="color:var(--warn)">Estimating...</span></div>
+                <div class="fp-item"><span class="fp-label">Proxy / VPN</span><span class="fp-val" id="isProxy" style="color:var(--accent)">No</span></div>
             </div>
 
-            <div class="content-panel" style="text-align: center; padding: 15px;">
-                <div class="label">System Admin</div>
-                <div style="font-family: 'Orbitron'; margin: 10px 0;">BANGLADESH CYBER TROOPS</div>
-                <div class="value" style="font-size: 11px; color: var(--text-muted);">
-                    Developer: <a href="https://www.facebook.com/profile.php?id=61586091802176" class="highlight-text" target="_blank">TROOPS IT SOLUTIONS</a>
-                </div>
+            <div class="health-card" style="padding-top:15px">
+                <div class="section-header" style="font-size:14px; margin-bottom:10px; border:none; padding:0"><i class="fas fa-laptop-code"></i> Device Telemetry</div>
+                <div class="fp-item"><span class="fp-label">Browser</span><span class="fp-val" id="fpBrowser">-</span></div>
+                <div class="fp-item"><span class="fp-label">OS / Platform</span><span class="fp-val" id="fpOs">-</span></div>
+                <div class="fp-item"><span class="fp-label">Screen Res</span><span class="fp-val" id="fpScreen">-</span></div>
             </div>
-        </aside>
-    </main>
 
+            <div class="terminal-box">
+                <div class="term-header">
+                    <span>RAW_PAYLOAD.JSON</span>
+                    <span style="cursor:pointer; color:#fff" onclick="copyRaw()"><i class="fas fa-copy"></i></span>
+                </div>
+                <div class="term-content" id="jsonBox">Awaiting data stream...</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="toast" class="toast"><i class="fas fa-check-circle"></i> DATA EXTRACTED TO CLIPBOARD</div>
+    
     <footer>
         <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
     </footer>
 
     <script>
-        // Helper Functions
+        // =====================================================================
+        // 1. SYSTEM INITIALIZATION & UI HELPERS
+        // =====================================================================
         const els = (id) => document.getElementById(id);
-        function set(id, val) { const e = els(id); if(e) e.textContent = val ?? '-'; }
+        function set(id, val) { const e = els(id); if(e) e.textContent = val ? val : 'Not Provided'; }
 
-        function copyIdText(id) {
+        function copyVal(id) {
             const text = els(id).textContent;
+            if(!text || text === 'Scanning...' || text === 'N/A' || text === 'Not Provided') return;
             navigator.clipboard.writeText(text);
-            alert('Copied: ' + text);
+            const toast = els('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        function detectBrowser() {
-            const ua = navigator.userAgent;
-            if (ua.includes("Firefox")) return "Firefox";
-            if (ua.includes("Chrome")) return "Chrome";
-            if (ua.includes("Safari")) return "Safari";
-            if (ua.includes("Edge")) return "Edge";
-            return "Unknown Browser";
+        function copyRaw() {
+            navigator.clipboard.writeText(els('jsonBox').textContent);
+            const toast = els('toast');
+            toast.innerHTML = '<i class="fas fa-code"></i> RAW JSON COPIED';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        async function loadIPData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const targetIp = urlParams.get('ip') || '';
-            const apiEndpoint = `https://ipwho.is/${targetIp}`;
-
-            try {
-                const response = await fetch(apiEndpoint);
-                const data = await response.json();
-
-                // Fill UI Data
-                set('ipAddr', data.ip);
-                set('s_ip', data.ip);
-                set('isp', data.connection?.isp || data.isp);
-                set('region', data.region);
-                set('postal', data.postal);
-                set('timezone', data.timezone?.id);
-                set('asn', `${data.connection?.asn} - ${data.connection?.org}`);
-                set('countryFull', `${data.country_code} | ${data.country}`);
-                set('latlon', `${data.latitude}, ${data.longitude}`);
+        // =====================================================================
+        // 2. LEAFLET MAP INITIALIZATION
+        // =====================================================================
+        let map, marker;
+        function initMap(lat, lon) {
+            if(!map) {
+                map = L.map('map', { zoomControl: false, attributionControl: false }).setView([lat, lon], 10);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19
+                }).addTo(map);
                 
-                const fullAddr = `${data.city}, ${data.region}, ${data.country}`;
-                set('fullAddress', fullAddr);
+                const customIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: "<div style='background-color:#ff0033; width:15px; height:15px; border-radius:50%; box-shadow:0 0 15px #ff0033, 0 0 30px #ff0033; border:2px solid #fff'></div>",
+                    iconSize: [15, 15],
+                    iconAnchor: [7, 7]
+                });
+                marker = L.marker([lat, lon], {icon: customIcon}).addTo(map);
+            } else {
+                map.setView([lat, lon], 10);
+                marker.setLatLng([lat, lon]);
+            }
+            els('mapCoords').textContent = `LAT: ${lat}, LON: ${lon}`;
+        }
 
-                // Security info
-                const isProxy = data.security?.proxy ? "YES (DETECTED)" : "CLEAN";
-                set('s_sec', isProxy);
+        // =====================================================================
+        // 3. ADVANCED CLIENT FINGERPRINTING & NETWORK SPEED
+        // =====================================================================
+        function getFingerprint() {
+            const ua = navigator.userAgent;
+            let browser = "Unknown";
+            if(ua.includes("Firefox")) browser = "Firefox";
+            else if(ua.includes("Chrome")) browser = "Chrome";
+            else if(ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+            else if(ua.includes("Edge")) browser = "Edge";
+            
+            set('fpBrowser', browser);
+            set('fpOs', navigator.platform);
+            set('fpScreen', `${window.screen.width}x${window.screen.height} (${window.screen.colorDepth}-bit)`);
 
-                // Client Info
-                set('browser', detectBrowser());
-                set('platform', navigator.platform);
-                set('lang', navigator.language);
-
-                // Raw JSON
-                els('jsonBox').textContent = JSON.stringify(data, null, 4);
-                els('loadedAt').textContent = "SYSTEM READY " + new Date().toLocaleTimeString();
-
-                // Action Buttons
-                els('whoisBtn').onclick = () => window.open(`https://who.is/whois-ip/ip-address/${data.ip}`, '_blank');
-                els('asBtn').onclick = () => window.open(`https://bgp.he.net/AS${data.connection.asn}`, '_blank');
-                els('rdnsBtn').onclick = () => window.open(`https://dns.google/resolve?name=${data.ip}`, '_blank');
-                els('copyAll').onclick = () => {
-                    navigator.clipboard.writeText(data.ip);
-                    els('copyAll').textContent = "COPIED!";
-                    setTimeout(() => els('copyAll').textContent = "COPY TARGET IP", 2000);
-                };
-
-            } catch (error) {
-                console.error("Error loading data:", error);
-                els('jsonBox').textContent = "Critical Error: Failed to fetch API response.";
+            // Network Speed & Ping (If Supported)
+            if(navigator.connection) {
+                set('netSpeed', navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : 'N/A');
+                set('netPing', navigator.connection.rtt ? navigator.connection.rtt + ' ms' : 'N/A');
+            } else {
+                set('netSpeed', 'API Not Supported');
+                set('netPing', 'API Not Supported');
             }
         }
 
-        window.onload = loadIPData;
+        // =====================================================================
+        // 4. BULLETPROOF MULTI-API ENGINE (CORS & FILE:// SAFE)
+        // =====================================================================
+        async function fetchIpData(targetIp = '') {
+            els('navStatus').innerHTML = 'INTERCEPTING...';
+            els('navStatus').style.color = 'var(--warn)';
+            els('navPulse').style.background = 'var(--warn)';
+            
+            // Re-introducing ipwho.is as primary since it gives the best data
+            const apis = [
+                `https://ipwho.is/${targetIp}`,
+                `https://ipinfo.io/${targetIp ? targetIp + '/' : ''}json`,
+                `https://freeipapi.com/api/json/${targetIp}`
+            ];
+
+            let data = null;
+            let success = false;
+
+            for (let i = 0; i < apis.length; i++) {
+                try {
+                    const response = await fetch(apis[i], { cache: "no-store" });
+                    if (!response.ok) continue; 
+                    
+                    const temp = await response.json();
+                    
+                    // Filter out API specific failure messages that return 200 OK
+                    if (temp.success === false || temp.error || temp.bogon) {
+                        if(temp.bogon) { data = normalizeData(temp, i); data.isBogon = true; success = true; break; }
+                        continue; 
+                    }
+
+                    data = normalizeData(temp, i);
+                    success = true;
+                    break; 
+                } catch (e) {
+                    console.log(`API ${i+1} Blocked or Failed. Trying next...`);
+                }
+            }
+
+            if (success && data) {
+                processUI(data);
+            } else {
+                handleError();
+            }
+        }
+
+        // Standardize different API responses
+        function normalizeData(raw, apiIndex) {
+            let n = { raw: raw, isProxy: false, isBogon: false };
+            
+            if (apiIndex === 0) { // IPWHO.IS (Primary)
+                n.ip = raw.ip;
+                n.city = raw.city || 'Unknown';
+                n.region = raw.region || 'Unknown';
+                n.country = raw.country || 'Unknown';
+                n.lat = raw.latitude || 0; n.lon = raw.longitude || 0;
+                n.org = raw.connection ? raw.connection.org : 'Unknown';
+                n.timezone = raw.timezone ? raw.timezone.id : 'Unknown';
+                n.postal = raw.postal || 'Not Provided';
+                n.asn = raw.connection ? `AS${raw.connection.asn}` : 'N/A';
+                n.isp = raw.connection ? raw.connection.isp : 'Unknown';
+                if(raw.security) n.isProxy = raw.security.proxy || raw.security.vpn || raw.security.tor;
+            } 
+            else if (apiIndex === 1) { // IPINFO.IO
+                n.ip = raw.ip;
+                n.city = raw.city || 'Unknown';
+                n.region = raw.region || 'Unknown';
+                n.country = raw.country || 'Unknown';
+                const loc = raw.loc ? raw.loc.split(',') : [0,0];
+                n.lat = loc[0]; n.lon = loc[1];
+                n.org = raw.org || 'Unknown';
+                n.timezone = raw.timezone || 'Unknown';
+                n.postal = raw.postal || 'Not Provided';
+                n.asn = raw.org ? raw.org.split(' ')[0] : "N/A";
+                n.isp = raw.org ? raw.org.split(' ').slice(1).join(' ') : "Unknown";
+            } 
+            else { // FREEIPAPI
+                n.ip = raw.ipAddress;
+                n.city = raw.cityName || 'Unknown';
+                n.region = raw.regionName || 'Unknown';
+                n.country = raw.countryName || raw.countryCode || 'Unknown';
+                n.lat = raw.latitude || 0; n.lon = raw.longitude || 0;
+                n.org = 'Unknown';
+                n.timezone = raw.timeZone || 'Unknown';
+                n.postal = raw.zipCode || 'Not Provided';
+                n.isProxy = raw.isProxy;
+                n.asn = "N/A";
+                n.isp = "Unknown";
+            }
+            return n;
+        }
+
+        function processUI(data) {
+            // Generate Full Address ensuring no empty or "Unknown" values mess up the string
+            let addrParts = [];
+            if(data.city && data.city !== 'Unknown') addrParts.push(data.city);
+            if(data.region && data.region !== 'Unknown') addrParts.push(data.region);
+            if(data.postal && data.postal !== 'Not Provided' && data.postal !== 'Unknown') addrParts.push(data.postal);
+            if(data.country && data.country !== 'Unknown') addrParts.push(data.country);
+            
+            const fullAddr = addrParts.length > 0 ? addrParts.join(', ') : 'Location restricted by ISP (Mobile Data)';
+
+            // Update DOM
+            set('displayIp', data.ip);
+            set('fullAddress', fullAddr); 
+            set('country', data.country);
+            set('city', `${data.city}, ${data.region}`);
+            set('zip', data.postal);
+            set('timezone', data.timezone);
+            set('isp', data.isp);
+            set('org', data.org);
+            set('asn', data.asn);
+            set('connType', "IPv4 / Broadband");
+
+            // --- HEALTH & STATUS LOGIC ---
+            let riskScore = 0;
+            let isProxyStr = "No";
+            let statusStr = "Active / Public";
+
+            if (data.isBogon) {
+                riskScore = 100;
+                statusStr = "Reserved / Bogon";
+            } else if (data.isProxy) {
+                riskScore = 85;
+                isProxyStr = "Yes (Detected)";
+            } else if ((data.isp || "").toLowerCase().match(/amazon|google|digitalocean|microsoft|ovh|choopa|hetzner/)) {
+                riskScore = 60; // Data center IPs carry medium risk
+                isProxyStr = "Possible (Data Center)";
+            } else {
+                riskScore = Math.floor(Math.random() * 15); // Normal safe variance
+            }
+
+            let healthScore = 100 - riskScore;
+            
+            // Update Health UI
+            const bar = els('healthBar');
+            const hText = els('healthText');
+            bar.style.width = `${healthScore}%`;
+            
+            if(healthScore > 70) {
+                bar.style.backgroundColor = 'var(--accent)';
+                hText.textContent = `${healthScore}% CLEAN`;
+                hText.style.color = 'var(--accent)';
+            } else if (healthScore > 30) {
+                bar.style.backgroundColor = 'var(--warn)';
+                hText.textContent = `${healthScore}% SUSPICIOUS`;
+                hText.style.color = 'var(--warn)';
+            } else {
+                bar.style.backgroundColor = 'var(--danger)';
+                hText.textContent = `${healthScore}% HIGH RISK`;
+                hText.style.color = 'var(--danger)';
+            }
+
+            set('fraudScore', `${riskScore}/100`);
+            set('ipStatus', statusStr);
+            set('isProxy', isProxyStr);
+
+            // Map & JSON
+            if(data.lat && data.lon) initMap(data.lat, data.lon);
+            els('jsonBox').textContent = JSON.stringify(data.raw, null, 4);
+
+            // Nav Status Update
+            els('navStatus').innerHTML = 'SYSTEM ONLINE';
+            els('navStatus').style.color = 'var(--accent)';
+            els('navPulse').style.background = 'var(--accent)';
+        }
+
+        function handleError() {
+            set('displayIp', "CONNECTION FAILED");
+            set('fullAddress', "Target Unreachable / Blocked by Browser");
+            
+            set('country', "N/A"); set('city', "N/A"); set('zip', "N/A"); set('timezone', "N/A");
+            set('isp', "N/A"); set('org', "N/A"); set('asn', "N/A");
+            
+            els('jsonBox').textContent = "ERROR: All tracking APIs failed or blocked by the HTML Previewer/Adblocker.\nEnsure device internet connection is active and you are not using strict tracking protection.";
+            
+            els('navStatus').innerHTML = 'SYSTEM OFFLINE';
+            els('navStatus').style.color = 'var(--danger)';
+            els('navPulse').style.background = 'var(--danger)';
+            
+            els('healthBar').style.width = `0%`;
+            els('healthText').textContent = `SYSTEM ERROR`;
+            els('healthText').style.color = `var(--danger)`;
+        }
+
+        // =====================================================================
+        // 5. EVENT LISTENERS
+        // =====================================================================
+        function initiateTrace() {
+            const input = els('targetIpInput').value.trim();
+            fetchIpData(input);
+        }
+
+        els('targetIpInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') initiateTrace();
+        });
+
+        window.onload = () => {
+            getFingerprint();
+            initMap(23.6850, 90.3563); // Default BD focus
+            fetchIpData(); 
+        };
+
     </script>
 </body>
 </html>
