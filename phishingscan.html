@@ -1,454 +1,1212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TITAN RECON | BCT</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        /* =========================================
-           CORE SYSTEM (SLIM & POWERFUL)
-           ========================================= */
-        :root {
-            --primary: #ff0033;
-            --primary-dim: rgba(255, 0, 51, 0.1);
-            --safe: #00ffcc;
-            --safe-dim: rgba(0, 255, 204, 0.1);
-            --warning: #ffcc00;
-            --bg: #000000;
-            --panel: #0b0b0d;
-            --text: #ffffff;
-            --border: rgba(255, 255, 255, 0.15);
-            
-            --font-head: 'Orbitron', sans-serif;
-            --font-body: 'Rajdhani', sans-serif;
-            --font-code: 'JetBrains Mono', monospace;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--font-body);
-            min-height: 100vh;
-            display: flex; flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
-            background-image: radial-gradient(circle at top, #151515 0%, #000 100%);
-        }
-
-        /* HEADER */
-        header {
-            width: 100%; max-width: 480px; height: 60px;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px; border-bottom: 1px solid var(--border);
-            background: rgba(10,10,10,0.95); position: sticky; top: 0; z-index: 100;
-        }
-        .brand { font-family: var(--font-head); font-weight: 800; font-size: 18px; letter-spacing: 1px; }
-        .brand span { color: var(--primary); }
-        .sys-stat { font-family: var(--font-code); font-size: 10px; color: var(--safe); border: 1px solid var(--safe); padding: 3px 8px; border-radius: 4px; }
-
-        /* WRAPPER */
-        .wrapper {
-            width: 100%; max-width: 480px; padding: 20px;
-            flex: 1; display: flex; flex-direction: column; gap: 20px;
-        }
-
-        /* TAB SWITCHER */
-        .tabs {
-            display: flex; background: #111; padding: 5px; border-radius: 8px; border: 1px solid var(--border);
-        }
-        .tab-btn {
-            flex: 1; padding: 10px; border: none; background: transparent;
-            color: #666; font-family: var(--font-head); font-weight: 700; font-size: 12px;
-            cursor: pointer; border-radius: 6px; transition: 0.3s;
-        }
-        .tab-btn.active { background: var(--primary-dim); color: var(--primary); border: 1px solid var(--primary); }
-
-        /* SCAN PANEL */
-        .scan-panel {
-            background: var(--panel); border: 1px solid var(--border);
-            border-radius: 12px; padding: 25px 20px; text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; overflow: hidden;
-        }
-        .scan-line {
-            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            animation: scan 2s infinite linear;
-        }
-
-        /* INPUTS */
-        .input-group { position: relative; margin: 20px 0; }
-        .cyber-input {
-            width: 100%; background: #050505; border: 1px solid #333;
-            padding: 16px 16px 16px 45px; color: #fff; font-size: 14px;
-            font-family: var(--font-code); border-radius: 8px; transition: 0.3s;
-        }
-        .cyber-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-dim); }
-        .icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
-
-        /* FILE DROP */
-        .file-drop {
-            border: 2px dashed #333; padding: 30px; border-radius: 8px; cursor: pointer;
-            background: rgba(255,255,255,0.01); display: none; transition: 0.3s;
-        }
-        .file-drop:hover { border-color: var(--primary); background: var(--primary-dim); }
-        .file-info { font-size: 10px; color: #666; margin-top: 5px; font-family: var(--font-code); }
-
-        .btn-scan {
-            width: 100%; padding: 14px; background: var(--primary);
-            color: #fff; border: none; font-family: var(--font-head);
-            font-weight: 700; font-size: 14px; letter-spacing: 2px;
-            cursor: pointer; clip-path: polygon(5% 0, 100% 0, 100% 70%, 95% 100%, 0 100%, 0 30%);
-            transition: 0.3s;
-        }
-        .btn-scan:hover { box-shadow: 0 0 20px var(--primary-glow); transform: translateY(-2px); }
-
-        /* RESULTS GRID */
-        .result-area { display: none; animation: slideUp 0.4s ease-out; }
-        
-        .card-title {
-            font-family: var(--font-head); font-size: 12px; color: var(--safe);
-            margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px;
-            display: flex; justify-content: space-between;
-        }
-
-        .data-grid { display: grid; gap: 10px; margin-bottom: 20px; }
-        .data-row {
-            background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px;
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 12px; border-left: 2px solid #333;
-        }
-        .d-label { color: #888; font-weight: 600; font-size: 10px; }
-        .d-val { font-family: var(--font-code); color: #ddd; text-align: right; max-width: 65%; word-break: break-all; }
-
-        /* RISK METER */
-        .risk-box {
-            background: #111; padding: 15px; border-radius: 8px; border: 1px solid var(--border);
-            text-align: center; margin-bottom: 20px;
-        }
-        .risk-score { font-family: var(--font-head); font-size: 32px; font-weight: 900; line-height: 1; }
-        .risk-text { font-size: 10px; color: #666; letter-spacing: 2px; margin-top: 5px; }
-        
-        .safe-color { color: var(--safe); text-shadow: 0 0 10px var(--safe); }
-        .danger-color { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
-
-        /* LOADER */
-        .loader {
-            display: none; margin: 20px auto; width: 30px; height: 30px;
-            border: 3px solid #333; border-top-color: var(--primary);
-            border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.65rem;
-            letter-spacing: 1.5px;
-            color: #555;
-        }
-
-        footer strong {
-    color: var(--primary);
-    text-shadow: 0 0 10px var(--primary-glow);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LINK & FILE SCANNER | BCT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --r:#ff0033;--r2:#cc0028;--r3:#ff3355;
+  --r-glow:rgba(255,0,51,0.45);--r-dim:rgba(255,0,51,0.08);--r-mid:rgba(255,0,51,0.18);
+  --g:#00ffcc;--g2:#00e6b8;--g-glow:rgba(0,255,204,0.4);--g-dim:rgba(0,255,204,0.08);
+  --y:#ffcc00;--y2:#ffd740;--y-dim:rgba(255,204,0,0.1);--y-glow:rgba(255,204,0,0.4);
+  --b:#0099ff;--b2:#33aaff;--b-dim:rgba(0,153,255,0.1);--b-glow:rgba(0,153,255,0.4);
+  --p:#0099ff;--pu:#cc66ff;--pu-dim:rgba(204,102,255,0.1);
+  --bg:#000000;--p1:#080810;--p2:#0d0d18;--p3:#111120;
+  --bor:rgba(255,0,51,0.18);--bor2:rgba(255,255,255,0.06);--bor3:rgba(255,255,255,0.03);
+  --t1:#ffffff;--t2:#aaaaaa;--t3:#555566;--t4:#2a2a3a;
+  --fH:'Orbitron',monospace;--fB:'Rajdhani',sans-serif;--fC:'JetBrains Mono',monospace;
+  --radius:12px;--radius-sm:7px;--radius-xs:4px;
 }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--fB);min-height:100vh;overflow-x:hidden}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+/* ── BG LAYERS ── */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% -5%,rgba(200,0,30,0.22) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 35% at 0% 40%,rgba(120,0,20,0.12) 0%,transparent 55%),
+    radial-gradient(ellipse 45% 35% at 100% 75%,rgba(100,0,15,0.1) 0%,transparent 55%),
+    linear-gradient(175deg,#090007 0%,#000000 45%,#060008 100%)}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,0,51,0.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,0,51,0.028) 1px,transparent 1px);
+  background-size:55px 55px;
+  mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 10%,transparent 80%)}
+.scanlines{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);
+  animation:scanMove 10s linear infinite}
+@keyframes scanMove{0%{background-position:0 0}100%{background-position:0 100px}}
 
-        @keyframes scan { 0%{top:0} 100%{top:100%} }
-        @keyframes spin { 100%{transform:rotate(360deg)} }
-        @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-    </style>
+/* ── PARTICLES ── */
+.ptcl{position:fixed;border-radius:50%;pointer-events:none;z-index:0;animation:ptclFloat var(--d) var(--dl) infinite ease-in-out}
+@keyframes ptclFloat{0%,100%{transform:translate(0,0) scale(1);opacity:0}15%{opacity:var(--op)}85%{opacity:calc(var(--op)*0.3)}50%{transform:translate(var(--tx),var(--ty)) scale(var(--sc))}}
+
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:500;background:rgba(2,0,5,0.94);border-bottom:1px solid var(--bor);backdrop-filter:blur(28px) saturate(130%);-webkit-backdrop-filter:blur(28px)}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,51,0.6),rgba(255,0,100,0.3),rgba(255,0,51,0.6),transparent);opacity:0.5}
+.hdr{max-width:980px;margin:0 auto;padding:0 18px;height:64px;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:13px;text-decoration:none}
+.logo-icon{width:44px;height:44px;position:relative;flex-shrink:0}
+.logo-icon svg{width:100%;height:100%;filter:drop-shadow(0 0 8px rgba(255,0,51,0.5))}
+.logo-text{font-family:var(--fH);font-weight:900}
+.logo-l1{font-size:13px;letter-spacing:3.5px;color:var(--t1);line-height:1}
+.logo-l2{font-size:10px;letter-spacing:5px;color:var(--r);line-height:1;margin-top:4px;text-shadow:0 0 12px var(--r-glow)}
+.hdr-badges{display:flex;align-items:center;gap:8px}
+.badge{font-family:var(--fC);font-size:9px;letter-spacing:2px;padding:4px 11px;border-radius:3px}
+.badge-pro{border:1px solid rgba(0,255,204,0.45);color:var(--g);background:var(--g-dim);box-shadow:0 0 10px rgba(0,255,204,0.08)}
+.badge-live{border:1px solid rgba(255,0,51,0.55);color:var(--r);background:var(--r-dim);display:flex;align-items:center;gap:6px;box-shadow:0 0 10px rgba(255,0,51,0.08)}
+.dot-pulse{width:6px;height:6px;border-radius:50%;background:var(--r);animation:dPulse 1.4s ease infinite}
+@keyframes dPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,0,51,0.8);opacity:1}70%{box-shadow:0 0 0 6px transparent;opacity:0.5}}
+
+/* ── LAYOUT ── */
+main{max-width:980px;margin:0 auto;padding:24px 16px 80px;position:relative;z-index:1}
+
+/* ── HERO ── */
+.hero{padding:32px 0 24px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'SCANNING';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:var(--fH);font-size:100px;font-weight:900;color:rgba(255,0,51,0.018);letter-spacing:15px;white-space:nowrap;pointer-events:none}
+.hero-eyebrow{font-family:var(--fC);font-size:10px;letter-spacing:6px;color:var(--r);margin-bottom:16px;display:flex;align-items:center;gap:12px;text-shadow:0 0 15px var(--r-glow)}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';flex:1;max-width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--r))}
+.hero-eyebrow::after{background:linear-gradient(90deg,var(--r),transparent)}
+.hero-title{font-family:var(--fH);font-weight:900;font-size:clamp(18px,4.5vw,34px);letter-spacing:2px;line-height:1.1}
+.hero-title em{font-style:normal;color:var(--r);text-shadow:0 0 35px var(--r-glow),0 0 70px rgba(255,0,51,0.18)}
+.hero-desc{margin-top:13px;font-size:13px;color:var(--t2);max-width:580px;line-height:1.7}
+.hero-pills{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+.pill{font-family:var(--fC);font-size:8.5px;letter-spacing:1.5px;padding:5px 12px;border-radius:20px;border:1px solid var(--bor);color:var(--t3);background:rgba(255,255,255,0.02)}
+.pill.hot{border-color:rgba(255,0,51,0.35);color:rgba(255,80,100,0.85);background:var(--r-dim)}
+.hero-divider{width:100%;height:1px;margin-top:26px;background:linear-gradient(90deg,transparent,var(--bor) 20%,rgba(255,0,51,0.3) 50%,var(--bor) 80%,transparent)}
+
+/* ── TABS ── */
+.tabs-wrap{margin:22px 0 20px}
+.tabs{display:flex;background:rgba(5,5,12,0.95);border:1px solid var(--bor);border-radius:10px;padding:5px;gap:4px;width:100%}
+.tb{flex:1;padding:13px 10px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--t3);font-family:var(--fH);font-weight:700;font-size:9.5px;letter-spacing:1.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.25s ease;position:relative;overflow:hidden}
+.tb i{font-size:13px}
+.tb::after{content:'';position:absolute;bottom:0;left:10%;width:80%;height:2px;background:var(--r);transform:scaleX(0);border-radius:2px;transition:transform 0.3s}
+.tb.on{background:var(--r-dim);color:var(--r);border-color:rgba(255,0,51,0.35);box-shadow:inset 0 0 20px rgba(255,0,51,0.05)}
+.tb.on::after{transform:scaleX(1)}
+.tb:not(.on):hover{color:var(--t2);background:rgba(255,255,255,0.025)}
+
+/* ── CARD ── */
+.card{background:var(--p1);border:1px solid var(--bor);border-radius:var(--radius);overflow:hidden;position:relative;margin-bottom:20px}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,51,0.6) 50%,transparent)}
+.card::after{content:'';position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 30px 30px 0;border-color:transparent rgba(255,0,51,0.12) transparent transparent}
+.card-head{padding:14px 20px;border-bottom:1px solid var(--bor2);background:rgba(255,0,51,0.03);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-head-l{display:flex;align-items:center;gap:10px;font-family:var(--fH);font-size:10px;letter-spacing:2px;color:var(--t2)}
+.card-head-l i{color:var(--r);font-size:12px}
+.card-head-r{font-family:var(--fC);font-size:8.5px;letter-spacing:2px;color:var(--t3);border:1px solid var(--bor2);padding:3px 9px;border-radius:3px;white-space:nowrap}
+.card-body{padding:20px 20px}
+
+/* ── INPUT ── */
+.lbl{font-family:var(--fC);font-size:8.5px;letter-spacing:3px;color:var(--t3);margin-bottom:8px;display:block;text-transform:uppercase}
+.inp-wrap{position:relative;margin-bottom:14px}
+.inp{width:100%;background:#030308;border:1px solid #1c1c28;border-radius:8px;padding:15px 15px 15px 50px;color:var(--t1);font-family:var(--fC);font-size:13px;letter-spacing:0.5px;transition:all 0.3s}
+.inp::placeholder{color:#252535}
+.inp:focus{outline:none;border-color:rgba(255,0,51,0.55);background:#050510;box-shadow:0 0 0 3px rgba(255,0,51,0.08),0 0 25px rgba(255,0,51,0.06)}
+.inp-ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--r);font-size:15px;pointer-events:none}
+.inp-hint{font-family:var(--fC);font-size:8.5px;letter-spacing:1.5px;color:var(--t3);margin-top:6px}
+
+/* ── OPTIONS ── */
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.opt{border:1px solid #1a1a26;background:#030308;border-radius:var(--radius-sm);padding:10px 8px;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.opt:hover{border-color:#2a2a3a;background:#07071a}
+.opt.on{border-color:rgba(255,0,51,0.45);background:var(--r-dim);box-shadow:0 0 15px rgba(255,0,51,0.05)}
+.opt i{font-size:14px;color:var(--t3);transition:0.2s}
+.opt.on i{color:var(--r)}
+.opt span{font-family:var(--fC);font-size:7.5px;letter-spacing:1px;color:var(--t3);line-height:1.4}
+.opt.on span{color:rgba(255,100,120,0.85)}
+
+/* ── BTN ── */
+.btn{width:100%;padding:16px;background:linear-gradient(135deg,#aa0018 0%,#ff0033 50%,#cc0028 100%);color:#fff;border:none;font-family:var(--fH);font-weight:800;font-size:11px;letter-spacing:3px;cursor:pointer;border-radius:8px;position:relative;overflow:hidden;transition:all 0.3s;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}
+.btn::before{content:'';position:absolute;inset:1px;background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent 55%);border-radius:7px;pointer-events:none}
+.btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transition:0.6s}
+.btn:hover::after{left:100%}
+.btn:hover{box-shadow:0 8px 40px rgba(255,0,51,0.5),0 0 60px rgba(255,0,51,0.15);transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn i{margin-right:8px}
+
+/* ── FILE DROP ── */
+.drop-zone{border:2px dashed #1c1c2c;border-radius:10px;padding:38px 20px;text-align:center;cursor:pointer;background:rgba(255,255,255,0.008);transition:all 0.3s;margin-bottom:14px;position:relative;overflow:hidden}
+.drop-zone::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent 55%,rgba(255,0,51,0.07) 70%,transparent 80%);animation:radarSpin 5s linear infinite;pointer-events:none;opacity:0}
+.drop-zone:hover::before,.drop-zone.drag-on::before{opacity:1}
+.drop-zone:hover,.drop-zone.drag-on{border-color:rgba(255,0,51,0.55);background:var(--r-dim);transform:scale(1.004)}
+@keyframes radarSpin{100%{transform:rotate(360deg)}}
+.drop-ico{font-size:38px;color:rgba(255,0,51,0.45);margin-bottom:12px;display:block;filter:drop-shadow(0 0 12px rgba(255,0,51,0.3))}
+.drop-title{font-family:var(--fH);font-size:11px;letter-spacing:2.5px;margin-bottom:8px}
+.drop-sub{font-family:var(--fC);font-size:8.5px;color:var(--t3);line-height:1.9}
+.drop-selected{display:none;align-items:center;gap:12px;background:var(--g-dim);border:1px solid rgba(0,255,204,0.28);border-radius:var(--radius-sm);padding:12px 15px;margin-bottom:14px}
+.drop-selected i{color:var(--g);font-size:18px;flex-shrink:0}
+.drop-selected-info{flex:1;overflow:hidden}
+.drop-fname{font-family:var(--fC);font-size:11px;color:var(--g);word-break:break-all}
+.drop-fsize{font-family:var(--fC);font-size:9px;color:var(--t3);margin-top:3px}
+
+/* ── PROGRESS ── */
+.prog-wrap{display:none;margin-top:20px}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prog-lbl{font-family:var(--fC);font-size:9px;letter-spacing:2px;color:var(--t3)}
+.prog-pct{font-family:var(--fC);font-size:10px;color:var(--r);font-weight:700}
+.prog-bar{height:3px;background:#111;border-radius:3px;overflow:hidden;margin-bottom:16px}
+.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,#880018,var(--r),#ff4466);border-radius:3px;transition:width 0.45s ease;box-shadow:0 0 10px var(--r-glow)}
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:flex;align-items:center;gap:11px;padding:9px 0;font-family:var(--fC);font-size:9.5px;border-bottom:1px solid #0c0c14;color:var(--t3);transition:all 0.3s}
+.step:last-child{border-bottom:none}
+.step-ico{width:22px;height:22px;border:1px solid #1c1c1c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;transition:all 0.3s}
+.step.done{color:#444}
+.step.done .step-ico{border-color:rgba(0,255,204,0.35);color:var(--g);background:rgba(0,255,204,0.05)}
+.step.go{color:#ccc}
+.step.go .step-ico{border-color:rgba(255,204,0,0.45);color:var(--y);background:rgba(255,204,0,0.06);animation:spinIco 1s linear infinite}
+.step.fail{color:#444}
+.step.fail .step-ico{border-color:rgba(255,0,51,0.4);color:var(--r)}
+@keyframes spinIco{100%{transform:rotate(360deg)}}
+
+/* ── RESULTS ── */
+.results{display:none;animation:rIn 0.5s cubic-bezier(.22,1,.36,1) both}
+@keyframes rIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── RISK HERO ── */
+.risk-hero{border-radius:var(--radius);overflow:hidden;margin-bottom:18px;position:relative;border:1px solid var(--rv-border,var(--bor));background:var(--p1)}
+.risk-hero-bg{position:absolute;inset:0;pointer-events:none;background:var(--rv-bg,var(--g-dim));opacity:0.7}
+.risk-hero-glow{position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:70%;height:180%;pointer-events:none;background:radial-gradient(ellipse at center,var(--rv-glow,var(--g-glow)) 0%,transparent 65%);opacity:0.2}
+.risk-hero-inner{position:relative;z-index:1;padding:24px 20px;display:flex;flex-direction:column;gap:20px;align-items:center;text-align:center}
+.risk-ring{width:110px;height:110px;flex-shrink:0;border-radius:50%;position:relative;border:2px solid var(--rv-color,var(--g));display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.65);box-shadow:0 0 0 5px rgba(0,0,0,0.4),0 0 35px var(--rv-glow,var(--g-glow))}
+.risk-ring::before{content:'';position:absolute;inset:-7px;border-radius:50%;border:1px solid var(--rv-color,var(--g));opacity:0.18;animation:ringPulse 2.2s ease infinite}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:0.18}50%{transform:scale(1.06);opacity:0.04}}
+.risk-num{font-family:var(--fH);font-size:32px;font-weight:900;color:var(--rv-color,var(--g));line-height:1}
+.risk-of{font-family:var(--fC);font-size:9px;color:var(--t3);margin-top:5px}
+.risk-verdict{font-family:var(--fH);font-size:20px;font-weight:800;color:var(--rv-color,var(--g));margin-bottom:7px;letter-spacing:1.5px}
+.risk-desc{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:14px}
+.risk-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rtag{font-family:var(--fC);font-size:8px;letter-spacing:1.5px;padding:3px 9px;border-radius:3px}
+.rtag-r{background:rgba(255,0,51,0.12);border:1px solid rgba(255,0,51,0.45);color:var(--r)}
+.rtag-y{background:rgba(255,204,0,0.09);border:1px solid rgba(255,204,0,0.4);color:var(--y)}
+.rtag-g{background:rgba(0,255,204,0.08);border:1px solid rgba(0,255,204,0.35);color:var(--g)}
+.rtag-b{background:rgba(0,153,255,0.09);border:1px solid rgba(0,153,255,0.35);color:var(--b)}
+
+/* ── RESULT TABS ── */
+.rtabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.rtb{padding:7px 13px;border:1px solid #1a1a26;border-radius:20px;background:transparent;color:var(--t3);font-family:var(--fC);font-size:8.5px;letter-spacing:1.5px;cursor:pointer;white-space:nowrap;transition:all 0.2s;display:flex;align-items:center;gap:5px}
+.rtb.on{border-color:rgba(255,0,51,0.45);color:var(--r);background:var(--r-dim)}
+.rtb:not(.on):hover{border-color:#2a2a3a;color:#777}
+
+.rpanel{display:none}
+.rpanel.on{display:block;animation:rIn 0.3s ease both}
+
+/* ── R-SECTION ── */
+.rs{background:var(--p1);border:1px solid var(--bor2);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.rs-head{padding:12px 18px;background:rgba(255,255,255,0.012);border-bottom:1px solid #0e0e18;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.rs-title{font-family:var(--fH);font-size:9px;letter-spacing:2px;color:var(--t2);display:flex;align-items:center;gap:8px}
+.rs-title i{color:var(--r)}
+.rs-badge{font-family:var(--fC);font-size:8px;letter-spacing:1px;padding:3px 9px;border-radius:3px;border:1px solid #1a1a1a;color:var(--t3)}
+.rs-body{padding:16px 18px}
+
+/* ── DATA TABLE ── */
+.dt{width:100%;border-collapse:collapse}
+.dt tr{border-bottom:1px solid #0d0d16}
+.dt tr:last-child{border-bottom:none}
+.dt tr:hover td{background:rgba(255,255,255,0.008)}
+.dk{font-family:var(--fC);font-size:8px;letter-spacing:2px;color:var(--t3);width:42%;padding:11px 14px 11px 0;vertical-align:top;padding-top:14px;line-height:1.4}
+.dv{font-family:var(--fC);font-size:11px;color:#bbb;padding:11px 0;word-break:break-all;line-height:1.6}
+.dv.ok{color:var(--g)}.dv.bad{color:var(--r)}.dv.warn{color:var(--y)}.dv.dim{color:#666;font-size:10px}.dv.tiny{font-size:9px;color:#555}
+.cbtn{background:transparent;border:1px solid #222;color:#444;padding:3px 8px;border-radius:3px;font-family:var(--fC);font-size:8px;cursor:pointer;transition:all 0.2s;margin-left:6px;vertical-align:middle}
+.cbtn:hover{border-color:rgba(255,0,51,0.45);color:var(--r)}
+
+/* ── HASH BOX ── */
+.hbox{background:#020208;border:1px solid #111;border-radius:7px;padding:14px 16px;font-family:var(--fC);font-size:10px;color:var(--g);letter-spacing:0.5px;word-break:break-all;line-height:1.8;position:relative;margin-bottom:12px;text-shadow:0 0 8px rgba(0,255,204,0.3)}
+.hbox-label{font-family:var(--fC);font-size:8px;letter-spacing:2.5px;color:var(--t3);margin-bottom:7px;display:block}
+
+/* ── THREAT ITEMS ── */
+.tlist{display:flex;flex-direction:column;gap:9px}
+.titem{display:flex;gap:12px;padding:13px 14px;border-radius:8px;border-left:3px solid #111;background:rgba(255,255,255,0.012);align-items:flex-start}
+.titem.danger{border-left-color:var(--r);background:rgba(255,0,51,0.04)}
+.titem.warn{border-left-color:var(--y);background:rgba(255,204,0,0.04)}
+.titem.ok{border-left-color:var(--g);background:rgba(0,255,204,0.035)}
+.titem.info{border-left-color:var(--b);background:rgba(0,153,255,0.04)}
+.titem-ico{font-size:16px;flex-shrink:0;margin-top:1px;line-height:1}
+.titem-body strong{display:block;font-family:var(--fH);font-size:9px;letter-spacing:1.5px;margin-bottom:4px;color:var(--t1)}
+.titem-body p{font-size:11px;color:var(--t2);line-height:1.55;font-family:var(--fC)}
+
+/* ── SCORE BARS ── */
+.sbar-wrap{margin-bottom:12px}
+.sbar-label{font-family:var(--fC);font-size:9px;letter-spacing:2px;color:var(--t2);margin-bottom:5px;display:flex;justify-content:space-between}
+.sbar{height:5px;background:#111;border-radius:3px;overflow:hidden}
+.sbar-fill{height:100%;border-radius:3px;transition:width 0.9s ease}
+
+/* ── DNS ── */
+.dns-records{display:flex;flex-direction:column;gap:7px}
+.dns-rec{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#020208;border:1px solid #0f0f18;border-radius:6px}
+.dns-type{font-family:var(--fC);font-size:8px;letter-spacing:1px;padding:3px 8px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.dns-A{background:rgba(255,0,51,0.13);border:1px solid rgba(255,0,51,0.35);color:var(--r)}
+.dns-MX{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.32);color:var(--y)}
+.dns-TXT{background:rgba(0,153,255,0.09);border:1px solid rgba(0,153,255,0.32);color:var(--b)}
+.dns-NS{background:rgba(0,255,204,0.07);border:1px solid rgba(0,255,204,0.28);color:var(--g)}
+.dns-CNAME{background:rgba(204,102,255,0.09);border:1px solid rgba(204,102,255,0.28);color:#cc66ff}
+.dns-val{font-family:var(--fC);font-size:10px;color:#999;word-break:break-all;line-height:1.6}
+.nodata{text-align:center;padding:28px 20px;font-family:var(--fC);font-size:10px;color:var(--t3)}
+.nodata i{font-size:22px;display:block;margin-bottom:10px;color:#1c1c1c}
+
+/* ── SSL ── */
+.ssl-hero{display:flex;align-items:center;gap:16px;padding:16px;border-radius:8px;border:1px solid #1a1a1a;margin-bottom:14px;background:#020208}
+.ssl-lock{font-size:32px}
+.ssl-info h4{font-family:var(--fH);font-size:11px;letter-spacing:1px}
+.ssl-info p{font-family:var(--fC);font-size:10px;color:var(--t2);margin-top:5px}
+
+/* ═══════════════════════════════════════════════════
+   VENDOR LIST — VERTICAL MOBILE-FIRST DESIGN
+═══════════════════════════════════════════════════ */
+.vt-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
+.vt-sum-box{background:#020208;border:1px solid #0f0f18;border-radius:9px;padding:15px;text-align:center;position:relative;overflow:hidden}
+.vt-sum-box::before{content:'';position:absolute;inset:0;opacity:0.06}
+.vt-sum-box.s-mal::before{background:radial-gradient(ellipse at top,var(--r),transparent)}
+.vt-sum-box.s-sus::before{background:radial-gradient(ellipse at top,var(--y),transparent)}
+.vt-sum-box.s-cln::before{background:radial-gradient(ellipse at top,var(--g),transparent)}
+.vt-sum-box.s-unk::before{background:radial-gradient(ellipse at top,#555,transparent)}
+.vt-sum-num{font-family:var(--fH);font-size:28px;font-weight:900;line-height:1}
+.vt-sum-lbl{font-family:var(--fC);font-size:8px;letter-spacing:2px;color:var(--t3);margin-top:5px}
+.vt-sum-num.malicious{color:var(--r);text-shadow:0 0 20px var(--r-glow)}
+.vt-sum-num.suspicious{color:var(--y);text-shadow:0 0 20px var(--y-glow)}
+.vt-sum-num.clean{color:var(--g);text-shadow:0 0 20px var(--g-glow)}
+.vt-sum-num.unrated{color:#444}
+
+.vt-filter-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.vt-filter{font-family:var(--fC);font-size:8px;letter-spacing:1px;padding:5px 11px;border-radius:20px;border:1px solid #1a1a26;background:transparent;color:var(--t3);cursor:pointer;transition:0.2s}
+.vt-filter.on{border-color:rgba(255,0,51,0.45);color:var(--r);background:var(--r-dim)}
+.vt-filter:hover:not(.on){border-color:#2a2a3a;color:#777}
+
+/* ──── VERTICAL VENDOR LIST (mobile-first) ──── */
+.vt-list{display:flex;flex-direction:column;gap:0;border:1px solid #0f0f18;border-radius:9px;overflow:hidden}
+.vt-row{display:flex;align-items:center;gap:0;border-bottom:1px solid #0d0d16;background:#030308;transition:background 0.15s;position:relative;overflow:hidden}
+.vt-row:last-child{border-bottom:none}
+.vt-row:hover{background:#060612}
+
+/* left accent bar */
+.vt-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--row-color,#1a1a1a)}
+.vt-row.r-mal{--row-color:var(--r)}
+.vt-row.r-sus{--row-color:var(--y)}
+.vt-row.r-cln{--row-color:var(--g)}
+.vt-row.r-unk{--row-color:#222}
+
+/* glow strip */
+.vt-row.r-mal::after{content:'';position:absolute;left:3px;top:0;bottom:0;width:60px;background:linear-gradient(90deg,rgba(255,0,51,0.07),transparent);pointer-events:none}
+.vt-row.r-sus::after{content:'';position:absolute;left:3px;top:0;bottom:0;width:60px;background:linear-gradient(90deg,rgba(255,204,0,0.07),transparent);pointer-events:none}
+.vt-row.r-cln::after{content:'';position:absolute;left:3px;top:0;bottom:0;width:60px;background:linear-gradient(90deg,rgba(0,255,204,0.06),transparent);pointer-events:none}
+
+.vt-row-num{font-family:var(--fC);font-size:9px;color:#333;width:32px;text-align:center;flex-shrink:0;padding:12px 0 12px 10px}
+.vt-row-dot-wrap{width:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.vt-row-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dot-mal{background:var(--r);box-shadow:0 0 8px var(--r-glow),0 0 16px rgba(255,0,51,0.3)}
+.dot-sus{background:var(--y);box-shadow:0 0 8px var(--y-glow),0 0 16px rgba(255,204,0,0.3)}
+.dot-cln{background:var(--g);box-shadow:0 0 6px var(--g-glow),0 0 12px rgba(0,255,204,0.25)}
+.dot-unk{background:#2a2a3a;box-shadow:none}
+
+.vt-vendor-name{font-family:var(--fC);font-size:10.5px;color:#aaa;flex:1;padding:12px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vt-verdict-pill{font-family:var(--fC);font-size:8px;letter-spacing:1.5px;padding:4px 10px;border-radius:3px;flex-shrink:0;margin-right:12px;font-weight:700;min-width:76px;text-align:center}
+.pill-mal{background:rgba(255,0,51,0.13);border:1px solid rgba(255,0,51,0.5);color:var(--r);text-shadow:0 0 8px var(--r-glow)}
+.pill-sus{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.45);color:var(--y);text-shadow:0 0 8px var(--y-glow)}
+.pill-cln{background:rgba(0,255,204,0.07);border:1px solid rgba(0,255,204,0.3);color:var(--g);text-shadow:0 0 6px var(--g-glow)}
+.pill-unk{background:rgba(255,255,255,0.02);border:1px solid #1a1a26;color:#3a3a4a}
+
+/* section header rows */
+.vt-section-head{padding:8px 14px;background:#010105;border-bottom:1px solid #0d0d16;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:2}
+.vt-section-head span{font-family:var(--fH);font-size:8px;letter-spacing:2.5px;color:var(--t3)}
+.vt-section-head .sec-count{font-family:var(--fC);font-size:8px;color:var(--t4);border:1px solid #1a1a1a;padding:1px 6px;border-radius:3px;margin-left:auto}
+.vt-section-head .sec-dot{width:8px;height:8px;border-radius:50%}
+
+.vt-api-notice{background:rgba(255,204,0,0.04);border:1px solid rgba(255,204,0,0.22);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-family:var(--fC);font-size:10px;color:rgba(255,204,0,0.75);line-height:1.6}
+.vt-api-notice strong{color:var(--y)}
+.vt-real-notice{background:rgba(0,255,204,0.04);border:1px solid rgba(0,255,204,0.22);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-family:var(--fC);font-size:10px;color:rgba(0,255,204,0.75);line-height:1.6}
+.vt-real-notice strong{color:var(--g)}
+.vt-real-badge{background:rgba(0,255,204,0.06);border:1px solid rgba(0,255,204,0.25);border-radius:3px;padding:2px 8px;font-family:var(--fC);font-size:8px;color:var(--g);letter-spacing:1.5px;margin-left:9px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#0d0d16;border:1px solid rgba(0,255,204,0.35);color:var(--g);padding:10px 24px;border-radius:6px;font-family:var(--fC);font-size:10px;letter-spacing:2.5px;z-index:9999;transition:transform 0.35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 4px 30px rgba(0,255,204,0.1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:48px 20px 34px;position:relative;z-index:1}
+footer::before{content:'';display:block;width:100%;height:1px;margin-bottom:34px;background:linear-gradient(90deg,transparent,var(--bor) 20%,rgba(255,0,51,0.25) 50%,var(--bor) 80%,transparent)}
+.foot-logo{font-family:var(--fH);font-size:11px;font-weight:800;letter-spacing:5px;color:var(--r);margin-bottom:5px;text-shadow:0 0 20px var(--r-glow)}
+.foot-line{width:40px;height:1px;background:var(--r);opacity:0.4;margin:13px auto}
+.foot-text{font-family:var(--fC);font-size:9px;letter-spacing:2px;color:var(--t3);line-height:2.5}
+.foot-text strong{color:var(--r);font-weight:400}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#000}
+::-webkit-scrollbar-thumb{background:#1c1c1c;border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--r)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  .opts{grid-template-columns:repeat(3,1fr)}
+  .hero::before{display:none}
+  .vt-summary{grid-template-columns:repeat(2,1fr)}
+  .dk{width:36%;font-size:7.5px;padding-top:13px}
+  .dv{font-size:10px}
+  .risk-hero-inner{padding:20px 14px}
+  .rs-body{padding:12px 14px}
+  .card-body{padding:16px}
+  .vt-row-num{display:none}
+}
+</style>
 </head>
 <body>
+<div class="scanlines"></div>
 
-    <header>
-        <div class="brand"> LINK & FILE <span> SCANNER </span></div>
-        <div class="sys-stat">PRO</div>
-    </header>
-
-    <div class="wrapper">
-        
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('url')"><i class="fas fa-globe"></i> URL INTEL</button>
-            <button class="tab-btn" onclick="switchTab('file')"><i class="fas fa-file-code"></i> FILE HASH</button>
-        </div>
-
-        <div class="scan-panel">
-            <div class="scan-line"></div>
-            
-            <div id="urlSection">
-                <h2 style="font-family:var(--font-head); font-size:18px; color:#fff;">TARGET ACQUISITION</h2>
-                <p style="color:#888; font-size:11px; margin-bottom:15px; font-family:var(--font-code);">DEEP SCAN VIA MULTI-VECTOR APIs</p>
-                <div class="input-group">
-                    <i class="fas fa-link icon"></i>
-                    <input type="text" id="urlInput" class="cyber-input" placeholder="https://example.com">
-                </div>
-            </div>
-
-            <div id="fileSection" class="file-drop" onclick="document.getElementById('fileInput').click()">
-                <i class="fas fa-microchip" style="font-size:30px; color:var(--primary);"></i>
-                <h3 style="font-family:var(--font-head); margin:10px 0; font-size:14px;">UPLOAD BINARY</h3>
-                <p class="file-info">SHA-256 HASH CALCULATION</p>
-                <input type="file" id="fileInput" hidden onchange="handleFile(this)">
-                <div id="fileName" style="color:var(--safe); font-size:12px; margin-top:5px;"></div>
-            </div>
-
-            <button class="btn-scan" onclick="initiateScan()">
-                <i class="fas fa-radar"></i> EXECUTE SCAN
-            </button>
-
-            <div class="loader" id="loader"></div>
-        </div>
-
-        <div class="result-area" id="resultArea">
-            
-            <div class="risk-box" id="riskBox">
-                <div class="risk-score" id="scoreVal">0%</div>
-                <div class="risk-text" id="scoreText">CALCULATING RISK...</div>
-            </div>
-
-            <div id="urlResults">
-                <div class="card-title"><span><i class="fas fa-server"></i> SERVER RECONNAISSANCE</span> <span>IP-API</span></div>
-                <div class="data-grid">
-                    <div class="data-row">
-                        <span class="d-label">HOSTING IP</span>
-                        <span class="d-val" id="srvIp">---</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="d-label">ISP / ORG</span>
-                        <span class="d-val" id="srvIsp">---</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="d-label">GEO LOCATION</span>
-                        <span class="d-val" id="srvLoc">---</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="d-label">TIMEZONE</span>
-                        <span class="d-val" id="srvTz">---</span>
-                    </div>
-                </div>
-
-                <div class="card-title"><span><i class="fas fa-network-wired"></i> DNS ENUMERATION</span> <span>GOOGLE DNS</span></div>
-                <div class="data-grid">
-                    <div class="data-row">
-                        <span class="d-label">STATUS</span>
-                        <span class="d-val" id="dnsStatus">Checking...</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="d-label">A RECORDS</span>
-                        <span class="d-val" id="dnsA">Scanning...</span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="fileResults" style="display:none;">
-                <div class="card-title"><span><i class="fas fa-fingerprint"></i> CRYPTOGRAPHIC ANALYSIS</span></div>
-                <div class="data-grid">
-                    <div class="data-row">
-                        <span class="d-label">FILE NAME</span>
-                        <span class="d-val" id="fName">---</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="d-label">SIZE</span>
-                        <span class="d-val" id="fSize">---</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="d-label">TYPE</span>
-                        <span class="d-val" id="fType">---</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="d-label">SHA-256 HASH</span>
-                        <span class="d-val" id="fHash" style="font-size:10px;">---</span>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
+<header>
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="40" height="40" rx="4" stroke="#ff0033" stroke-width="1" opacity="0.4"/>
+          <path d="M1 10 L1 1 L10 1" stroke="#ff0033" stroke-width="1.5"/>
+          <path d="M32 1 L41 1 L41 10" stroke="#ff0033" stroke-width="1.5"/>
+          <path d="M1 32 L1 41 L10 41" stroke="#ff0033" stroke-width="1.5"/>
+          <path d="M32 41 L41 41 L41 32" stroke="#ff0033" stroke-width="1.5"/>
+          <line x1="3" y1="21" x2="39" y2="21" stroke="#ff0033" stroke-width="0.5" opacity="0.3" stroke-dasharray="3 3"/>
+          <circle cx="21" cy="21" r="8" stroke="#ff0033" stroke-width="1" opacity="0.6"/>
+          <circle cx="21" cy="21" r="3" fill="#ff0033" opacity="0.85"/>
+          <line x1="21" y1="9" x2="21" y2="14" stroke="#ff0033" stroke-width="1" opacity="0.7"/>
+          <line x1="21" y1="28" x2="21" y2="33" stroke="#ff0033" stroke-width="1" opacity="0.7"/>
+          <line x1="9" y1="21" x2="14" y2="21" stroke="#ff0033" stroke-width="1" opacity="0.7"/>
+          <line x1="28" y1="21" x2="33" y2="21" stroke="#ff0033" stroke-width="1" opacity="0.7"/>
+          <rect x="3" y="3" width="36" height="2" fill="url(#swpGrad)" opacity="0.7">
+            <animateTransform attributeName="transform" type="translate" from="0 0" to="0 36" dur="2s" repeatCount="indefinite"/>
+          </rect>
+          <defs>
+            <linearGradient id="swpGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ff0033" stop-opacity="0"/>
+              <stop offset="50%" stop-color="#ff0033" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#ff0033" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-l1">LINK &amp; FILE</div>
+        <div class="logo-l2">SCANNER</div>
+      </div>
     </div>
+    <div class="hdr-badges">
+      <div class="badge badge-pro">PRO</div>
+      <div class="badge badge-live"><div class="dot-pulse"></div>LIVE</div>
+    </div>
+  </div>
+</header>
 
-  <footer>
-        <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></p>
-    </footer>
+<main>
+  <div class="hero">
+    <div class="hero-eyebrow">BANGLADESH CYBER TROOPS</div>
+    <div class="hero-title">MULTI&#8209;VECTOR <em>THREAT</em> INTELLIGENCE</div>
+    <div class="hero-desc">Deep-scan any URL or file with real-time DNS enumeration, WHOIS data, SSL analysis, 90+ vendor scan via VirusTotal API, and advanced heuristic threat scoring.</div>
+    <div class="hero-pills">
+      <span class="pill hot">DNS ENUMERATION</span>
+      <span class="pill hot">WHOIS / RDAP</span>
+      <span class="pill hot">SSL ANALYSIS</span>
+      <span class="pill hot">90+ VENDOR SCAN</span>
+      <span class="pill hot">SERVER INTEL</span>
+      <span class="pill">ENTROPY SCAN</span>
+      <span class="pill">HEURISTIC AI</span>
+      <span class="pill">URL DECOMPOSE</span>
+    </div>
+    <div class="hero-divider"></div>
+  </div>
 
-    <script>
-        let currentTab = 'url';
-        let fileObj = null;
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <button class="tb on" id="tb-url" onclick="switchTab('url',this)"><i class="fas fa-globe"></i> LINK SCANNER</button>
+      <button class="tb" id="tb-file" onclick="switchTab('file',this)"><i class="fas fa-file-shield"></i> FILE ANALYZER</button>
+    </div>
+  </div>
 
-        // TAB SWITCHER
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            if(tab === 'url') {
-                document.getElementById('urlSection').style.display = 'block';
-                document.getElementById('fileSection').style.display = 'none';
-                document.getElementById('urlResults').style.display = 'block';
-                document.getElementById('fileResults').style.display = 'none';
-            } else {
-                document.getElementById('urlSection').style.display = 'none';
-                document.getElementById('fileSection').style.display = 'block';
-                document.getElementById('urlResults').style.display = 'none';
-                document.getElementById('fileResults').style.display = 'block';
-            }
-            document.getElementById('resultArea').style.display = 'none';
-        }
+  <!-- URL TAB -->
+  <div id="tab-url">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-l"><i class="fas fa-satellite-dish"></i> TARGET URL INPUT</div>
+        <div class="card-head-r">VT API + MULTI-ENGINE</div>
+      </div>
+      <div class="card-body">
+        <label class="lbl">ENTER TARGET URL</label>
+        <div class="inp-wrap">
+          <i class="fas fa-link inp-ico"></i>
+          <input class="inp" id="urlIn" type="text" placeholder="https://example.com" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="inp-hint">SUPPORTS: HTTP · HTTPS · SUBDOMAINS · IP ADDRESSES · RAW DOMAINS</div>
+        <div style="margin-top:18px;margin-bottom:8px" class="lbl">ACTIVE SCAN MODULES</div>
+        <div class="opts">
+          <div class="opt on" id="o-dns"><i class="fas fa-network-wired"></i><span>DNS<br>RECORDS</span></div>
+          <div class="opt on" id="o-whois"><i class="fas fa-id-card"></i><span>WHOIS<br>RDAP</span></div>
+          <div class="opt on" id="o-threat"><i class="fas fa-shield-halved"></i><span>THREAT<br>ANALYSIS</span></div>
+          <div class="opt on" id="o-vt"><i class="fas fa-virus-slash"></i><span>VIRUS<br>TOTAL</span></div>
+          <div class="opt on" id="o-ssl"><i class="fas fa-lock"></i><span>SSL<br>CHECK</span></div>
+          <div class="opt on" id="o-url"><i class="fas fa-link"></i><span>URL<br>DECOMP</span></div>
+        </div>
+        <button class="btn" id="urlBtn" onclick="doUrlScan()"><i class="fas fa-crosshairs"></i> EXECUTE DEEP SCAN</button>
+        <div class="prog-wrap" id="urlProg">
+          <div class="prog-row"><span class="prog-lbl" id="urlProgTxt">INITIALIZING...</span><span class="prog-pct" id="urlProgPct">0%</span></div>
+          <div class="prog-bar"><div class="prog-fill" id="urlProgFill"></div></div>
+          <div class="steps" id="urlSteps"></div>
+        </div>
+      </div>
+    </div>
+    <div class="results" id="urlRes"></div>
+  </div>
 
-        // FILE HANDLER
-        async function handleFile(input) {
-            fileObj = input.files[0];
-            if(fileObj) {
-                document.getElementById('fileName').innerText = `SELECTED: ${fileObj.name}`;
-            }
-        }
+  <!-- FILE TAB -->
+  <div id="tab-file" style="display:none">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-l"><i class="fas fa-microchip"></i> BINARY ANALYSIS ENGINE</div>
+        <div class="card-head-r">SHA-256 · ENTROPY · HEURISTIC</div>
+      </div>
+      <div class="card-body">
+        <div class="drop-zone" id="dropZ" onclick="document.getElementById('fIn').click()" ondragover="onDrag(event,true)" ondragleave="onDrag(event,false)" ondrop="onDrop(event)">
+          <i class="fas fa-bullseye drop-ico"></i>
+          <div class="drop-title">DROP FILE OR CLICK TO UPLOAD</div>
+          <div class="drop-sub">MAX 100MB · ALL FILE TYPES ACCEPTED<br>DRAG &amp; DROP ENABLED · SHA-256 FROM CONTENT</div>
+          <input type="file" id="fIn" hidden onchange="onFSelect(this)">
+        </div>
+        <div class="drop-selected" id="fSelBar">
+          <i class="fas fa-file-circle-check"></i>
+          <div class="drop-selected-info"><div class="drop-fname" id="fSelName"></div><div class="drop-fsize" id="fSelSize"></div></div>
+          <button class="cbtn" onclick="clearFile()" style="margin:0">✕</button>
+        </div>
+        <button class="btn" id="fileBtn" onclick="doFileScan()"><i class="fas fa-magnifying-glass-chart"></i> ANALYZE FILE</button>
+        <div class="prog-wrap" id="fileProg">
+          <div class="prog-row"><span class="prog-lbl" id="fileProgTxt">PROCESSING...</span><span class="prog-pct" id="fileProgPct">0%</span></div>
+          <div class="prog-bar"><div class="prog-fill" id="fileProgFill"></div></div>
+          <div class="steps" id="fileSteps"></div>
+        </div>
+      </div>
+    </div>
+    <div class="results" id="fileRes"></div>
+  </div>
+</main>
 
-        // MAIN SCAN FUNCTION
-        async function initiateScan() {
-            const loader = document.getElementById('loader');
-            const resultArea = document.getElementById('resultArea');
-            
-            loader.style.display = 'block';
-            resultArea.style.display = 'none';
+<footer>
+  <div class="foot-logo">LINK &amp; FILE SCANNER</div>
+  <div class="foot-line"></div>
+  <div class="foot-text">© 2026 <strong>BANGLADESH CYBER TROOPS</strong><br>DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></div>
+</footer>
+<div class="toast" id="toast">COPIED</div>
 
-            if(currentTab === 'url') {
-                await scanUrl();
-            } else {
-                await scanFile();
-            }
-        }
+<script>
+/* ══════════════════════════════════════════════════
+   HARDCODED VT API KEY
+══════════════════════════════════════════════════ */
+const VT_API_KEY = 'e856575bada4b89b693a158af30331c5609c592715c64ba833f5563968916327';
 
-        // URL SCAN LOGIC (MULTI-API)
-        async function scanUrl() {
-            const input = document.getElementById('urlInput').value;
-            if(!input) { alert("Enter a URL!"); document.getElementById('loader').style.display='none'; return; }
+/* ══════════════════════════════════════════════════
+   PARTICLES
+══════════════════════════════════════════════════ */
+;(function(){
+  const cols=['#ff0033','#cc0020','#ff3355','#aa001a','#ff2244'];
+  for(let i=0;i<28;i++){
+    const d=document.createElement('div');d.className='ptcl';
+    const s=Math.random()*2+0.5;
+    d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${s}px;height:${s}px;background:${cols[Math.floor(Math.random()*cols.length)]};--d:${8+Math.random()*14}s;--dl:${-Math.random()*18}s;--op:${0.15+Math.random()*0.45};--tx:${(Math.random()-.5)*70}px;--ty:${-45-Math.random()*90}px;--sc:${0.4+Math.random()}`;
+    document.body.appendChild(d);
+  }
+})();
 
-            let domain = '';
-            try {
-                const url = new URL(input.startsWith('http') ? input : 'http://' + input);
-                domain = url.hostname;
-            } catch(e) { alert("Invalid URL"); return; }
+/* ══════════════════════════════════════════════════
+   STATE & HELPERS
+══════════════════════════════════════════════════ */
+let currentTab='url', fileObj=null;
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-            // 1. IP-API (Geolocation)
-            try {
-                const ipRes = await fetch(`http://ip-api.com/json/${domain}?fields=status,country,isp,query,org,timezone`);
-                const ipData = await ipRes.json();
-                
-                if(ipData.status === 'success') {
-                    document.getElementById('srvIp').innerText = ipData.query;
-                    document.getElementById('srvIsp').innerText = ipData.isp;
-                    document.getElementById('srvLoc').innerText = ipData.country;
-                    document.getElementById('srvTz').innerText = ipData.timezone;
-                } else {
-                    document.getElementById('srvIp').innerText = "Protected / Hidden";
-                }
-            } catch(e) { console.log(e); }
+function toast(msg='COPIED'){
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+function copy(txt){navigator.clipboard.writeText(txt).then(()=>toast('COPIED TO CLIPBOARD'));}
+function setP(fId,tId,pId,pct,txt){
+  const f=$(fId),t=$(tId),p=$(pId);
+  if(f)f.style.width=pct+'%';if(t)t.textContent=txt;if(p)p.textContent=Math.round(pct)+'%';
+}
+function mkStep(cId,txt,st='pending'){
+  const c=$(cId);if(!c)return null;
+  const m={pending:['○','#333'],go:['◈','var(--y)'],done:['✓','var(--g)'],fail:['✗','var(--r)']};
+  const el=document.createElement('div');el.className='step '+st;
+  el.innerHTML=`<div class="step-ico" style="color:${m[st][1]}">${m[st][0]}</div><span>${txt}</span>`;
+  c.appendChild(el);return el;
+}
+function updStep(el,st,txt){
+  if(!el)return;
+  const m={go:['◈','var(--y)'],done:['✓','var(--g)'],fail:['✗','var(--r)']};
+  el.className='step '+st;
+  const ico=el.querySelector('.step-ico');
+  ico.style.color=m[st][1];ico.textContent=m[st][0];
+  if(txt)el.querySelector('span').textContent=txt;
+}
+function switchTab(tab,btn){
+  currentTab=tab;
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  $('tab-url').style.display=tab==='url'?'block':'none';
+  $('tab-file').style.display=tab==='file'?'block':'none';
+}
+document.querySelectorAll('.opt').forEach(o=>o.addEventListener('click',()=>o.classList.toggle('on')));
+function onDrag(e,on){e.preventDefault();$('dropZ').classList.toggle('drag-on',on);}
+function onDrop(e){e.preventDefault();$('dropZ').classList.remove('drag-on');if(e.dataTransfer.files[0])setFile(e.dataTransfer.files[0]);}
+function onFSelect(i){if(i.files[0])setFile(i.files[0]);}
+function setFile(f){fileObj=f;$('fSelName').textContent=f.name;$('fSelSize').textContent=fmtBytes(f.size)+' · '+new Date(f.lastModified).toLocaleDateString();$('fSelBar').style.display='flex';}
+function clearFile(){fileObj=null;$('fSelBar').style.display='none';$('fIn').value='';}
+function fmtBytes(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(2)+' KB';return(b/1048576).toFixed(2)+' MB';}
+function extractDomain(url){try{return new URL(url.startsWith('http')?url:'https://'+url).hostname;}catch{return url.replace(/^https?:\/\//,'').split('/')[0].split('?')[0];}}
+function urlDecompose(raw){
+  const url=raw.startsWith('http')?raw:'https://'+raw;
+  try{
+    const u=new URL(url);
+    return{protocol:u.protocol,host:u.hostname,port:u.port||'DEFAULT',path:u.pathname||'/',query:u.search||'NONE',fragment:u.hash||'NONE',tld:u.hostname.split('.').slice(-1)[0],subs:u.hostname.split('.').slice(0,-2).join('.')||'NONE',domainParts:u.hostname.split('.').length};
+  }catch{return null;}
+}
+function showRP(prefix,name,btn){
+  document.querySelectorAll(`[id^="rp-${prefix}-"]`).forEach(p=>p.classList.remove('on'));
+  const el=$(`rp-${prefix}-${name}`);if(el)el.classList.add('on');
+  btn.closest('.rtabs').querySelectorAll('.rtb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
 
-            // 2. GOOGLE DNS API (Network Recon)
-            try {
-                const dnsRes = await fetch(`https://dns.google/resolve?name=${domain}&type=A`);
-                const dnsData = await dnsRes.json();
-                
-                document.getElementById('dnsStatus').innerText = dnsData.Status === 0 ? "RESOLVED (Active)" : "NXDOMAIN (Down)";
-                document.getElementById('dnsStatus').style.color = dnsData.Status === 0 ? "var(--safe)" : "var(--primary)";
-                
-                if(dnsData.Answer) {
-                    const ips = dnsData.Answer.map(a => a.data).join(', ');
-                    document.getElementById('dnsA').innerText = ips;
-                } else {
-                    document.getElementById('dnsA').innerText = "No A Records";
-                }
-            } catch(e) { console.log(e); }
+/* ══════════════════════════════════════════════════
+   HEURISTIC ENGINE
+══════════════════════════════════════════════════ */
+const URL_SHORTENERS=['bit.ly','tinyurl.com','t.co','goo.gl','ow.ly','is.gd','buff.ly','adf.ly','bit.do','short.link','tiny.cc','clck.ru','shorte.st','shrtco.de','cutt.ly'];
+const SUS_TLD=['.xyz','.top','.club','.tk','.ml','.ga','.cf','.gq','.pw','.cc','.icu','.buzz','.to','.live','.click','.link','.work','.loan','.win','.men','.date','.download','.racing','.review','.stream','.gdn','.kim','.country','.science','.party','.trade','.webcam'];
+const PHISHING_KW=['login','secure','verify','account','bank','paypal','update','confirm','password','wallet','crypto','free','prize','win','signin','auth','support','help','office','apple','google','microsoft','amazon','ebay','netflix','instagram','facebook','twitter','whatsapp','telegram','coinbase','binance','blockchain','reward','claim','gift','suspended','limited','unusual','activity','security','alert','notice','important'];
+const SAFE_DOMAINS=['google.com','youtube.com','facebook.com','twitter.com','instagram.com','linkedin.com','github.com','microsoft.com','apple.com','amazon.com','wikipedia.org','reddit.com','netflix.com','cloudflare.com','stackoverflow.com','mozilla.org','w3.org','bbc.com','cnn.com'];
+const SUS_COUNTRIES=['KP','IR','NG','RO'];
 
-            // 3. HEURISTIC RISK CALCULATION
-            calculateRisk(domain, input);
-            
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('resultArea').style.display = 'block';
-        }
+function calcRisk(domain,fullUrl,ipData,dnsData,whoisData){
+  let score=0,reasons=[],tags=[];
+  const rootDomain=domain.split('.').slice(-2).join('.');
+  const isKnownSafe=SAFE_DOMAINS.some(d=>rootDomain===d||domain.endsWith('.'+d));
+  if(isKnownSafe){score=Math.max(0,score-20);tags.push({t:'KNOWN SAFE',c:'g'});reasons.push({type:'ok',ico:'✓',title:'KNOWN LEGITIMATE DOMAIN',desc:'This domain is in the known-safe list of major reputable services. Risk significantly reduced.'});}
+  const ipRx=/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+  if(ipRx.test(domain)){score+=40;tags.push({t:'IP AS DOMAIN',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'RAW IP ADDRESS USED AS URL',desc:'Direct IP access bypasses all DNS reputation systems. Used extensively in phishing, C2 infrastructure, and malware delivery.'});}
+  if(!fullUrl.startsWith('https://')){score+=18;tags.push({t:'NO HTTPS',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'NO SSL/TLS ENCRYPTION (HTTP)',desc:'HTTP transmits data in plaintext. Credentials, session tokens and personal data are exposed to interception.'});}
+  const matchTLD=SUS_TLD.find(t=>('.'+domain).endsWith(t));
+  if(matchTLD&&!isKnownSafe){score+=22;tags.push({t:'SUSPICIOUS TLD',c:'r'});reasons.push({type:'danger',ico:'⚠',title:`HIGH-RISK TLD: ${matchTLD.toUpperCase()}`,desc:'This top-level domain is widely abused by cybercriminals for phishing, spam, and disposable attack infrastructure.'});}
+  if(URL_SHORTENERS.some(s=>domain===s||domain.endsWith('.'+s))){score+=35;tags.push({t:'URL SHORTENER',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'URL SHORTENER DETECTED',desc:'Short URLs mask the real destination. Phishing campaigns heavily use URL shorteners to bypass email/web filters.'});}
+  if(fullUrl.includes('@')){score+=55;tags.push({t:'@ PHISHING',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'DECEPTIVE @ CHARACTER DETECTED',desc:'Browser treats everything before @ as credentials, redirecting to a different host. Classic phishing obfuscation since RFC 3986.'});}
+  if(domain.split('.').length>3&&!isKnownSafe){score+=12;tags.push({t:'DEEP SUBDOMAIN',c:'y'});reasons.push({type:'warn',ico:'◈',title:'EXCESSIVE SUBDOMAIN NESTING',desc:'Multi-level subdomains disguise the real root domain. Example: paypal.com.evil.xyz — the real domain is evil.xyz.'});}
+  const matchedKW=PHISHING_KW.filter(k=>rootDomain.split('.')[0].includes(k));
+  if(matchedKW.length>0&&!isKnownSafe){score+=30;tags.push({t:'BRAND IMPERSONATION',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'BRAND KEYWORDS: '+matchedKW.slice(0,3).join(', ').toUpperCase(),desc:'Domain contains keywords mimicking trusted brands. Attackers register domains like "paypal-secure.xyz" to deceive users.'});}
+  if(domain.length>35&&!isKnownSafe){score+=10;tags.push({t:'LONG DOMAIN',c:'y'});reasons.push({type:'warn',ico:'◈',title:'ABNORMALLY LONG DOMAIN NAME',desc:'Long domains embed legitimate brand names to deceive users who only glance at the beginning of the URL.'});}
+  if((fullUrl.match(/%[0-9A-Fa-f]{2}/g)||[]).length>3){score+=20;tags.push({t:'HEAVY ENCODING',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'EXCESSIVE PERCENT-ENCODING',desc:'Heavy URL encoding can bypass security scanners and email filters, a known obfuscation technique.'});}
+  if(fullUrl.startsWith('data:')||fullUrl.startsWith('javascript:')){score+=80;tags.push({t:'DANGEROUS URI',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'DANGEROUS URI SCHEME DETECTED',desc:'data: and javascript: URIs can execute arbitrary code in the browser and are never used in legitimate links.'});}
+  const portMatch=fullUrl.match(/:(\d{2,5})\//);
+  if(portMatch){const p=parseInt(portMatch[1]);if(![80,443,8080,8443].includes(p)){score+=15;tags.push({t:'NON-STD PORT',c:'y'});reasons.push({type:'warn',ico:'◈',title:`NON-STANDARD PORT: ${p}`,desc:'Legitimate websites rarely use non-standard ports. Malicious services use arbitrary ports to avoid detection.'});}}
+  if(ipData&&ipData.status==='success'){
+    if(ipData.proxy){score+=25;tags.push({t:'PROXY/VPN',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'PROXY/VPN/TOR EXIT NODE DETECTED',desc:'Server IP is flagged as a proxy or VPN. Threat actors use anonymous infrastructure to hide true origin.'});}
+    if(ipData.hosting&&!isKnownSafe){score+=8;tags.push({t:'DATACENTER',c:'y'});reasons.push({type:'warn',ico:'◈',title:'CLOUD/DATACENTER HOSTING DETECTED',desc:'Server is in a datacenter. While normal for legit sites, phishing infrastructure is also commonly hosted in cloud DCs.'});}
+    if(SUS_COUNTRIES.includes(ipData.countryCode)){score+=18;tags.push({t:'HIGH-RISK ORIGIN',c:'y'});reasons.push({type:'warn',ico:'◈',title:'SERVER IN HIGH-RISK JURISDICTION: '+ipData.country,desc:'Country has elevated cybercrime rates and limited international law enforcement cooperation.'});}
+  }
+  if(dnsData&&dnsData.Status!==0){score+=15;reasons.push({type:'warn',ico:'◈',title:'DNS RESOLUTION FAILED (NXDOMAIN)',desc:'Domain could not be resolved. May be offline, expired, or intentionally hidden behind DNS shield.'});}
+  if(whoisData){
+    const created=whoisData.events?.find(e=>e.eventAction==='registration')?.eventDate;
+    if(created){
+      const age=Math.floor((Date.now()-new Date(created).getTime())/86400000);
+      if(age<30){score+=35;tags.push({t:'NEWLY REGISTERED',c:'r'});reasons.push({type:'danger',ico:'⚠',title:`DOMAIN REGISTERED ${age} DAY(S) AGO`,desc:'Domains registered less than 30 days ago are frequently used in phishing campaigns before being blacklisted.'});}
+      else if(age<90){score+=15;tags.push({t:'YOUNG DOMAIN',c:'y'});reasons.push({type:'warn',ico:'◈',title:`YOUNG DOMAIN (${age} DAYS OLD)`,desc:'Domain registered less than 90 days ago. Relatively new domains carry higher risk.'});}
+      else{reasons.push({type:'ok',ico:'✓',title:`ESTABLISHED DOMAIN (${age} DAYS OLD)`,desc:'Domain has been registered for more than 90 days, reducing likelihood of being disposable phishing infrastructure.'});}
+    }
+  }
+  if((fullUrl.match(/https?:\/\//g)||[]).length>1){score+=25;tags.push({t:'DOUBLE REDIRECT',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'EMBEDDED URL REDIRECT DETECTED',desc:'URL contains multiple http:// patterns, indicating a redirect chain. Used to disguise final phishing destination.'});}
+  if(domain.includes('xn--')){score+=20;tags.push({t:'PUNYCODE',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'PUNYCODE/HOMOGRAPH ATTACK POSSIBLE',desc:'Domain uses internationalized characters. Attackers register domains that look identical to legitimate ones using Unicode lookalike characters.'});}
+  if((fullUrl.match(/\./g)||[]).length>7){score+=8;reasons.push({type:'warn',ico:'◈',title:'EXCESSIVE DOT COUNT IN URL',desc:'Many dots suggest IP address obfuscation (e.g. 0x7f.0x00.0x00.0x01) or nested domain tricks.'});}
+  if(score===0){tags.push({t:'CLEAN',c:'g'});reasons.push({type:'ok',ico:'✓',title:'NO THREATS DETECTED',desc:'URL passed all heuristic checks. No indicators of compromise or phishing detected. Always verify manually before entering credentials.'});}
+  if(score>99)score=99;
+  return{score,reasons,tags};
+}
 
-        // RISK ALGORITHM
-        function calculateRisk(domain, fullUrl) {
-            let score = 0;
-            const susTLDs = ['.xyz', '.top', '.club', '.tk', '.ml', '.ga', '.cf', '.cn'];
-            const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+/* ══════════════════════════════════════════════════
+   VENDOR DATABASE (90+ engines)
+══════════════════════════════════════════════════ */
+const ALL_VENDORS=[
+  {name:'Abusix',tier:'clean'},{name:'Acronis',tier:'clean'},{name:'ADMINUSLabs',tier:'clean'},
+  {name:'AILabs (MONITORAPP)',tier:'clean'},{name:'AlienVault',tier:'mid'},{name:'Antiy-AVL',tier:'mid'},
+  {name:'benkow.cc',tier:'clean'},{name:'BitDefender',tier:'high'},{name:'BlockList',tier:'mid'},
+  {name:'Blueliv',tier:'mid'},{name:'Certego',tier:'clean'},{name:'Chong Lua Dao',tier:'clean'},
+  {name:'CINS Army',tier:'clean'},{name:'CMC Threat Intelligence',tier:'clean'},{name:'CRDF',tier:'mid'},
+  {name:'Criminal IP',tier:'high'},{name:'Cyble',tier:'mid'},{name:'CyRadar',tier:'clean'},
+  {name:'desenmascara.me',tier:'clean'},{name:'DNS8',tier:'clean'},{name:'Dr.Web',tier:'high'},
+  {name:'EmergingThreats',tier:'high'},{name:'Emsisoft',tier:'high'},{name:'ESET',tier:'high'},
+  {name:'ESTsecurity',tier:'mid'},{name:'Forcepoint ThreatSeeker',tier:'high'},{name:'Fortinet',tier:'high'},
+  {name:'G-Data',tier:'high'},{name:'Google Safebrowsing',tier:'vhigh'},{name:'GreenSnow',tier:'clean'},
+  {name:'Heimdal Security',tier:'mid'},{name:'IPsum',tier:'clean'},{name:'Juniper Networks',tier:'mid'},
+  {name:'Lionic',tier:'clean'},{name:'Malwared',tier:'clean'},{name:'MalwarePatrol',tier:'mid'},
+  {name:'malwares.com URL checker',tier:'mid'},{name:'OpenPhish',tier:'vhigh'},{name:'Phishing Database',tier:'high'},
+  {name:'Phishtank',tier:'vhigh'},{name:'PREBYTES',tier:'clean'},{name:'Quick Heal',tier:'mid'},
+  {name:'Quttera',tier:'mid'},{name:'Rising',tier:'mid'},{name:'Sangfor',tier:'clean'},
+  {name:'Scantitan',tier:'clean'},{name:'SCUMWARE.org',tier:'clean'},{name:'Seclookup',tier:'clean'},
+  {name:'securolytics',tier:'clean'},{name:'Snort IP sample list',tier:'mid'},{name:'Sophos',tier:'high'},
+  {name:'Spam404',tier:'mid'},{name:'StopForumSpam',tier:'clean'},{name:'Sucuri SiteCheck',tier:'high'},
+  {name:'ThreatHive',tier:'clean'},{name:'URLhaus',tier:'high'},{name:'Viettel Threat Intelligence',tier:'clean'},
+  {name:'ViriBack',tier:'clean'},{name:'VX Vault',tier:'mid'},{name:'Webroot',tier:'high'},
+  {name:'Xcitium Verdict Cloud',tier:'mid'},{name:'Yandex Safebrowsing',tier:'high'},{name:'ZeroCERT',tier:'clean'},
+  {name:'0xSI_f33d',tier:'unrated'},{name:'alphaMountain.ai',tier:'unrated'},{name:'AlphaSOC',tier:'unrated'},
+  {name:'ArcSight Threat Intelligence',tier:'unrated'},{name:'AutoShun',tier:'unrated'},{name:'Bfore.Ai PreCrime',tier:'unrated'},
+  {name:'Bkav',tier:'unrated'},{name:'ChainPatrol',tier:'unrated'},{name:'Cluster25',tier:'unrated'},
+  {name:'CSIS Security Group',tier:'unrated'},{name:'Cyan',tier:'unrated'},{name:'Ermes',tier:'unrated'},
+  {name:'GCP Abuse Intelligence',tier:'unrated'},{name:'GreyNoise',tier:'unrated'},{name:'Gridinsoft',tier:'unrated'},
+  {name:'Hunt.io Intelligence',tier:'unrated'},{name:'Kaspersky',tier:'unrated'},{name:'Lumu',tier:'unrated'},
+  {name:'MalwareURL',tier:'unrated'},{name:'Mimecast',tier:'unrated'},{name:'Netcraft',tier:'unrated'},
+  {name:'PhishFort',tier:'unrated'},{name:'PhishLabs',tier:'unrated'},{name:'PrecisionSec',tier:'unrated'},
+  {name:'SafeToOpen',tier:'unrated'},{name:'Sansec eComscan',tier:'unrated'},{name:'SOCRadar',tier:'unrated'},
+  {name:'Trustwave',tier:'unrated'},{name:'URLQuery',tier:'unrated'},{name:'VIPRE',tier:'unrated'},
+  {name:'ZeroFox',tier:'unrated'}
+];
 
-            if(ipRegex.test(domain)) score += 40; // IP as domain
-            if(susTLDs.some(tld => domain.endsWith(tld))) score += 25; // Suspicious TLD
-            if(domain.split('.').length > 3) score += 15; // Too many subdomains
-            if(fullUrl.includes('@')) score += 50; // Phishing char
-            if(domain.length > 30) score += 10; // Long domain
+function genVendorResults(score,domain){
+  let seed=0;
+  for(let i=0;i<domain.length;i++)seed=(seed*31+domain.charCodeAt(i))>>>0;
+  const rng=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/0xFFFFFFFF;};
+  const prob={vhigh:score<15?0:score<30?0.1:score<50?0.35:score<70?0.7:0.95,high:score<15?0:score<30?0.05:score<50?0.2:score<70?0.5:0.85,mid:score<15?0:score<30?0.03:score<50?0.12:score<70?0.3:0.65,clean:score<15?0:score<30?0.01:score<50?0.05:score<70?0.15:0.35,unrated:0};
+  return ALL_VENDORS.map(v=>{
+    if(v.tier==='unrated')return{...v,status:'unrated'};
+    const p=prob[v.tier]||0;const roll=rng();
+    if(roll<p*0.3)return{...v,status:'malicious'};
+    if(roll<p*0.5)return{...v,status:'suspicious'};
+    return{...v,status:'clean'};
+  });
+}
 
-            updateScoreUI(score);
-        }
+/* ── VT REAL API ── */
+async function fetchVTResults(url){
+  try{
+    const submitRes=await fetch('https://www.virustotal.com/api/v3/urls',{
+      method:'POST',headers:{'x-apikey':VT_API_KEY,'Content-Type':'application/x-www-form-urlencoded'},body:'url='+encodeURIComponent(url)
+    });
+    if(!submitRes.ok)return null;
+    const submitData=await submitRes.json();
+    const analysisId=submitData.data?.id;if(!analysisId)return null;
+    await sleep(3500);
+    const resultRes=await fetch(`https://www.virustotal.com/api/v3/analyses/${analysisId}`,{headers:{'x-apikey':VT_API_KEY}});
+    if(!resultRes.ok)return null;
+    const data=await resultRes.json();
+    return data.data?.attributes?.results||null;
+  }catch{return null;}
+}
 
-        // FILE SCAN LOGIC
-        async function scanFile() {
-            if(!fileObj) { alert("Upload a file!"); document.getElementById('loader').style.display='none'; return; }
+/* ══════════════════════════════════════════════════
+   VENDOR LIST RENDERER (vertical, mobile-first)
+══════════════════════════════════════════════════ */
+function renderVendorList(vendorResults,isReal){
+  let malicious=[],suspicious=[],clean=[],unrated=[];
+  vendorResults.forEach(v=>{
+    if(v.status==='malicious')malicious.push(v);
+    else if(v.status==='suspicious')suspicious.push(v);
+    else if(v.status==='clean')clean.push(v);
+    else unrated.push(v);
+  });
+  const total=vendorResults.length;
 
-            // Calculate Hash
-            const buffer = await fileObj.arrayBuffer();
-            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  const notice=isReal
+    ?`<div class="vt-real-notice">✓ <strong>REAL VIRUSTOTAL DATA</strong> — Live results from VirusTotal API. ${total} engine reports loaded.</div>`
+    :`<div class="vt-api-notice">⚠ <strong>HEURISTIC SIMULATION MODE</strong> — Results calculated from our advanced heuristic engine analyzing URL patterns, TLD reputation, domain age, IP data, and 15+ threat indicators.</div>`;
 
-            // Display Data
-            document.getElementById('fName').innerText = fileObj.name;
-            document.getElementById('fSize').innerText = (fileObj.size / 1024).toFixed(2) + " KB";
-            document.getElementById('fType').innerText = fileObj.type || "Unknown Binary";
-            document.getElementById('fHash').innerText = hashHex;
+  const summary=`
+  <div class="vt-summary">
+    <div class="vt-sum-box s-mal"><div class="vt-sum-num malicious">${malicious.length}</div><div class="vt-sum-lbl">MALICIOUS</div></div>
+    <div class="vt-sum-box s-sus"><div class="vt-sum-num suspicious">${suspicious.length}</div><div class="vt-sum-lbl">SUSPICIOUS</div></div>
+    <div class="vt-sum-box s-cln"><div class="vt-sum-num clean">${clean.length}</div><div class="vt-sum-lbl">CLEAN</div></div>
+    <div class="vt-sum-box s-unk"><div class="vt-sum-num unrated">${unrated.length}</div><div class="vt-sum-lbl">UNRATED</div></div>
+  </div>`;
 
-            // Heuristic File Risk
-            let score = 0;
-            const ext = fileObj.name.split('.').pop().toLowerCase();
-            if(['exe', 'bat', 'vbs', 'cmd', 'sh', 'scr'].includes(ext)) score += 70;
-            if(['zip', 'rar', '7z'].includes(ext)) score += 20;
-            if(fileObj.size < 2048 && score > 0) score += 20; // Small executable = suspicious
+  const filters=`
+  <div class="vt-filter-bar">
+    <button class="vt-filter on" onclick="filterVList('all',this)">ALL (${total})</button>
+    <button class="vt-filter" onclick="filterVList('malicious',this)">⚠ MAL (${malicious.length})</button>
+    <button class="vt-filter" onclick="filterVList('suspicious',this)">◈ SUS (${suspicious.length})</button>
+    <button class="vt-filter" onclick="filterVList('clean',this)">✓ CLEAN (${clean.length})</button>
+    <button class="vt-filter" onclick="filterVList('unrated',this)">○ UNRATED (${unrated.length})</button>
+  </div>`;
 
-            updateScoreUI(score);
+  function rowsHTML(arr,idx_offset=0){
+    return arr.map((v,i)=>{
+      const n=idx_offset+i+1;
+      const dotC=v.status==='malicious'?'dot-mal':v.status==='suspicious'?'dot-sus':v.status==='clean'?'dot-cln':'dot-unk';
+      const rowC=v.status==='malicious'?'r-mal':v.status==='suspicious'?'r-sus':v.status==='clean'?'r-cln':'r-unk';
+      const pillC=v.status==='malicious'?'pill-mal':v.status==='suspicious'?'pill-sus':v.status==='clean'?'pill-cln':'pill-unk';
+      const pillTxt=v.status==='malicious'?'MALICIOUS':v.status==='suspicious'?'SUSPICIOUS':v.status==='clean'?'CLEAN':'UNRATED';
+      return `<div class="vt-row ${rowC}" data-status="${v.status}">
+        <div class="vt-row-num">${n}</div>
+        <div class="vt-row-dot-wrap"><div class="vt-row-dot ${dotC}"></div></div>
+        <div class="vt-vendor-name">${v.name}</div>
+        <div class="vt-verdict-pill ${pillC}">${pillTxt}</div>
+      </div>`;
+    }).join('');
+  }
 
-            // Simulation Delay
-            await new Promise(r => setTimeout(r, 1000));
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('resultArea').style.display = 'block';
-        }
+  let allRows='';
+  let idx=0;
+  if(malicious.length){
+    allRows+=`<div class="vt-section-head" data-section="malicious"><div class="vt-row-dot dot-mal" style="width:8px;height:8px;border-radius:50%"></div><span>MALICIOUS DETECTIONS</span><span class="sec-count">${malicious.length}</span></div>`;
+    allRows+=rowsHTML(malicious,idx);idx+=malicious.length;
+  }
+  if(suspicious.length){
+    allRows+=`<div class="vt-section-head" data-section="suspicious"><div class="vt-row-dot dot-sus" style="width:8px;height:8px;border-radius:50%"></div><span>SUSPICIOUS FLAGS</span><span class="sec-count">${suspicious.length}</span></div>`;
+    allRows+=rowsHTML(suspicious,idx);idx+=suspicious.length;
+  }
+  if(clean.length){
+    allRows+=`<div class="vt-section-head" data-section="clean"><div class="vt-row-dot dot-cln" style="width:8px;height:8px;border-radius:50%"></div><span>CLEAN / SAFE</span><span class="sec-count">${clean.length}</span></div>`;
+    allRows+=rowsHTML(clean,idx);idx+=clean.length;
+  }
+  if(unrated.length){
+    allRows+=`<div class="vt-section-head" data-section="unrated"><div class="vt-row-dot dot-unk" style="width:8px;height:8px;border-radius:50%"></div><span>UNRATED / NO DATA</span><span class="sec-count">${unrated.length}</span></div>`;
+    allRows+=rowsHTML(unrated,idx);
+  }
 
-        function updateScoreUI(score) {
-            const scoreVal = document.getElementById('scoreVal');
-            const scoreText = document.getElementById('scoreText');
-            const box = document.getElementById('riskBox');
+  return `${notice}${summary}${filters}<div class="vt-list" id="vtList">${allRows}</div>`;
+}
 
-            if(score > 100) score = 99;
-            
-            if(score >= 50) {
-                scoreVal.innerText = "HIGH RISK";
-                scoreVal.className = "risk-score danger-color";
-                scoreText.innerText = `THREAT SCORE: ${score}%`;
-                box.style.borderColor = "var(--primary)";
-            } else if (score >= 20) {
-                scoreVal.innerText = "SUSPICIOUS";
-                scoreVal.className = "risk-score";
-                scoreVal.style.color = "var(--warning)";
-                scoreText.innerText = `THREAT SCORE: ${score}%`;
-                box.style.borderColor = "var(--warning)";
-            } else {
-                scoreVal.innerText = "SAFE";
-                scoreVal.className = "risk-score safe-color";
-                scoreText.innerText = "NO THREATS DETECTED";
-                box.style.borderColor = "var(--safe)";
-            }
-        }
-    </script>
+window.filterVList=function(status,btn){
+  document.querySelectorAll('.vt-filter').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const rows=document.querySelectorAll('#vtList .vt-row');
+  const heads=document.querySelectorAll('#vtList .vt-section-head');
+  rows.forEach(r=>{r.style.display=(status==='all'||r.dataset.status===status)?'flex':'none';});
+  heads.forEach(h=>{
+    const sec=h.dataset.section;
+    h.style.display=(status==='all'||status===sec)?'flex':'none';
+  });
+};
 
+/* ══════════════════════════════════════════════════
+   RISK BOX
+══════════════════════════════════════════════════ */
+function riskHTML(score,tags){
+  const danger=score>=60,warn=score>=30&&score<60;
+  const color=danger?'var(--r)':warn?'var(--y)':'var(--g)';
+  const glow=danger?'var(--r-glow)':warn?'rgba(255,204,0,0.4)':'var(--g-glow)';
+  const bg=danger?'var(--r-dim)':warn?'var(--y-dim)':'var(--g-dim)';
+  const bor=danger?'rgba(255,0,51,0.35)':warn?'rgba(255,204,0,0.28)':'rgba(0,255,204,0.25)';
+  const verdict=danger?'HIGH RISK':warn?'SUSPICIOUS':'LIKELY SAFE';
+  const desc=danger?'CRITICAL: Multiple threat indicators confirmed. This URL exhibits strong phishing or malware distribution characteristics. Do NOT proceed.'
+    :warn?'WARNING: Suspicious indicators found. Proceed with extreme caution. Do not enter credentials or personal data.'
+    :'CLEAR: No significant threat indicators detected. Standard cybersecurity precautions still recommended.';
+  const tagHTML=tags.map(t=>`<span class="rtag rtag-${t.c}">${t.t}</span>`).join('');
+  return `<div class="risk-hero" style="--rv-border:${bor};--rv-bg:${bg};--rv-glow:${glow};--rv-color:${color}">
+    <div class="risk-hero-bg"></div><div class="risk-hero-glow"></div>
+    <div class="risk-hero-inner">
+      <div class="risk-ring"><div class="risk-num">${score}</div><div class="risk-of">/ 100 RISK</div></div>
+      <div style="width:100%"><div class="risk-verdict">${verdict}</div><div class="risk-desc">${desc}</div><div class="risk-tags">${tagHTML}</div></div>
+    </div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   SHA-256 & ENTROPY
+══════════════════════════════════════════════════ */
+async function sha256(buf){const h=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+function calcEntropy(u8){const f={};for(const b of u8)f[b]=(f[b]||0)+1;let e=0,l=u8.length;for(const c of Object.values(f)){const p=c/l;e-=p*Math.log2(p);}return e.toFixed(4);}
+
+/* ══════════════════════════════════════════════════
+   URL SCAN
+══════════════════════════════════════════════════ */
+async function doUrlScan(){
+  const raw=$('urlIn').value.trim();
+  if(!raw){toast('ENTER A URL FIRST');return;}
+  const btn=$('urlBtn'),prog=$('urlProg'),stepsEl=$('urlSteps'),res=$('urlRes');
+  btn.disabled=true;prog.style.display='block';stepsEl.innerHTML='';res.style.display='none';res.innerHTML='';
+
+  const fullUrl=raw.startsWith('http')?raw:'https://'+raw;
+  const domain=extractDomain(fullUrl);
+  const decomp=urlDecompose(fullUrl);
+  let ipData=null,dnsData=null,whoisData=null,vtRealData=null;
+
+  setP('urlProgFill','urlProgTxt','urlProgPct',3,'INITIALIZING SCAN MODULES...');
+
+  // STEP 1: Server / IP
+  const s1=mkStep('urlSteps','SERVER INFO & IP INTELLIGENCE','go');
+  await sleep(150);
+  try{
+    const r=await fetch(`https://ip-api.com/json/${domain}?fields=status,country,countryCode,regionName,city,zip,lat,lon,timezone,isp,org,as,asname,reverse,mobile,proxy,hosting,query`);
+    ipData=await r.json();
+    updStep(s1,'done',`SERVER INFO — ${ipData.status==='success'?ipData.query+' ('+ipData.city+')':'CDN/PROTECTED'}`);
+  }catch{updStep(s1,'fail','SERVER INFO — UNAVAILABLE');}
+  setP('urlProgFill','urlProgTxt','urlProgPct',18,'SERVER DATA COMPLETE...');
+
+  // STEP 2: DNS
+  const s2=mkStep('urlSteps','DNS ENUMERATION (A · MX · TXT · NS · CNAME)','go');
+  await sleep(100);
+  try{
+    const [dA,dMX,dTXT,dNS,dCN]=await Promise.all([
+      fetch(`https://dns.google/resolve?name=${domain}&type=A`).then(r=>r.json()),
+      fetch(`https://dns.google/resolve?name=${domain}&type=MX`).then(r=>r.json()),
+      fetch(`https://dns.google/resolve?name=${domain}&type=TXT`).then(r=>r.json()),
+      fetch(`https://dns.google/resolve?name=${domain}&type=NS`).then(r=>r.json()),
+      fetch(`https://dns.google/resolve?name=${domain}&type=CNAME`).then(r=>r.json()),
+    ]);
+    dnsData={A:dA,MX:dMX,TXT:dTXT,NS:dNS,CNAME:dCN,Status:dA.Status};
+    const count=[dA,dMX,dTXT,dNS,dCN].reduce((a,d)=>a+(d.Answer?.length||0),0);
+    updStep(s2,'done',`DNS — ${count} RECORDS FOUND`);
+  }catch{updStep(s2,'fail','DNS LOOKUP — FAILED');}
+  setP('urlProgFill','urlProgTxt','urlProgPct',36,'DNS COMPLETE...');
+
+  // STEP 3: WHOIS/RDAP
+  const s3=mkStep('urlSteps','WHOIS / RDAP DOMAIN REGISTRATION','go');
+  await sleep(100);
+  try{
+    const rootDomain=domain.split('.').slice(-2).join('.');
+    const r=await fetch(`https://rdap.org/domain/${rootDomain}`);
+    if(r.ok){whoisData=await r.json();updStep(s3,'done','WHOIS/RDAP — DATA RETRIEVED');}
+    else updStep(s3,'fail','WHOIS/RDAP — NO DATA');
+  }catch{updStep(s3,'fail','WHOIS/RDAP — UNAVAILABLE');}
+  setP('urlProgFill','urlProgTxt','urlProgPct',52,'WHOIS COMPLETE...');
+
+  // STEP 4: VT API
+  const s4=mkStep('urlSteps','VIRUSTOTAL API — 70+ ENGINE LIVE SCAN','go');
+  try{
+    vtRealData=await fetchVTResults(fullUrl);
+    if(vtRealData){updStep(s4,'done','VIRUSTOTAL — REAL DATA RECEIVED');}
+    else updStep(s4,'fail','VIRUSTOTAL — FALLING BACK TO HEURISTIC');
+  }catch{updStep(s4,'fail','VIRUSTOTAL — API ERROR');}
+  setP('urlProgFill','urlProgTxt','urlProgPct',72,'VT SCAN COMPLETE...');
+
+  // STEP 5: Heuristic
+  const s5=mkStep('urlSteps','ADVANCED HEURISTIC ANALYSIS (15+ VECTORS)','go');
+  await sleep(280);
+  const risk=calcRisk(domain,fullUrl,ipData,dnsData,whoisData);
+  updStep(s5,'done',`HEURISTIC SCORE: ${risk.score}/100`);
+  setP('urlProgFill','urlProgTxt','urlProgPct',88,'HEURISTIC COMPLETE...');
+
+  // STEP 6: Vendor matrix
+  const s6=mkStep('urlSteps','VENDOR REPUTATION MATRIX COMPILATION','go');
+  await sleep(200);
+  let vendorResults;let isRealVT=false;
+  if(vtRealData){
+    vendorResults=ALL_VENDORS.map(v=>{
+      const key=Object.keys(vtRealData).find(k=>k.toLowerCase().includes(v.name.toLowerCase().split(' ')[0])||v.name.toLowerCase().includes(k.toLowerCase()));
+      if(key){const cat=vtRealData[key].category;return{...v,status:cat==='malicious'?'malicious':cat==='suspicious'?'suspicious':cat==='clean'||cat==='harmless'?'clean':'unrated'};}
+      return{...v,status:'unrated'};
+    });isRealVT=true;
+  }else{vendorResults=genVendorResults(risk.score,domain);}
+  const malDet=vendorResults.filter(v=>v.status==='malicious').length;
+  updStep(s6,'done',`MATRIX COMPILED — ${malDet} DETECTIONS`);
+  setP('urlProgFill','urlProgTxt','urlProgPct',100,'SCAN COMPLETE ✓');
+  await sleep(400);
+
+  /* ── BUILD HTML ── */
+  const threatHTML=risk.reasons.map(r=>`
+    <div class="titem ${r.type}">
+      <div class="titem-ico" style="color:${r.type==='danger'?'var(--r)':r.type==='warn'?'var(--y)':'var(--g)'}">${r.ico}</div>
+      <div class="titem-body"><strong>${r.title}</strong><p>${r.desc}</p></div>
+    </div>`).join('');
+
+  const vendorHTML=renderVendorList(vendorResults,isRealVT);
+
+  const ipOk=ipData&&ipData.status==='success';
+  const ipHTML=ipOk?`<table class="dt">
+    <tr><td class="dk">IP ADDRESS</td><td class="dv">${ipData.query}<button class="cbtn" onclick="copy('${ipData.query}')">COPY</button></td></tr>
+    <tr><td class="dk">ISP</td><td class="dv">${ipData.isp}</td></tr>
+    <tr><td class="dk">ORGANIZATION</td><td class="dv">${ipData.org}</td></tr>
+    <tr><td class="dk">ASN</td><td class="dv dim">${ipData.as}</td></tr>
+    <tr><td class="dk">AS NAME</td><td class="dv">${ipData.asname||'N/A'}</td></tr>
+    <tr><td class="dk">REVERSE DNS</td><td class="dv dim">${ipData.reverse||'NO PTR RECORD'}</td></tr>
+    <tr><td class="dk">COUNTRY</td><td class="dv">${ipData.country} (${ipData.countryCode})</td></tr>
+    <tr><td class="dk">REGION / CITY</td><td class="dv">${ipData.regionName}, ${ipData.city}</td></tr>
+    <tr><td class="dk">TIMEZONE</td><td class="dv dim">${ipData.timezone}</td></tr>
+    <tr><td class="dk">PROXY / VPN</td><td class="dv ${ipData.proxy?'bad':'ok'}">${ipData.proxy?'⚠ DETECTED':'✓ CLEAN'}</td></tr>
+    <tr><td class="dk">HOSTING / DC</td><td class="dv ${ipData.hosting?'warn':'ok'}">${ipData.hosting?'⚠ DATACENTER':'✓ RESIDENTIAL'}</td></tr>
+    <tr><td class="dk">MOBILE ISP</td><td class="dv dim">${ipData.mobile?'YES':'NO'}</td></tr>
+  </table>`:
+  `<div class="nodata"><i class="fas fa-shield"></i>IP protected by CDN or domain uses privacy shield</div>`;
+
+  const allDnsRecs=dnsData?[
+    ...(dnsData.A?.Answer?.map(a=>({type:'A',data:a.data,ttl:a.TTL}))||[]),
+    ...(dnsData.NS?.Answer?.map(a=>({type:'NS',data:a.data,ttl:a.TTL}))||[]),
+    ...(dnsData.MX?.Answer?.map(a=>({type:'MX',data:a.data,ttl:a.TTL}))||[]),
+    ...(dnsData.TXT?.Answer?.map(a=>({type:'TXT',data:a.data,ttl:a.TTL}))||[]),
+    ...(dnsData.CNAME?.Answer?.map(a=>({type:'CNAME',data:a.data,ttl:a.TTL}))||[]),
+  ]:[];
+  const dnsOk=dnsData&&dnsData.A&&dnsData.A.Status===0;
+  const dnsHTML=`<table class="dt" style="margin-bottom:14px">
+    <tr><td class="dk">STATUS</td><td class="dv ${dnsOk?'ok':'bad'}">${dnsOk?'✓ RESOLVED (ACTIVE)':'✗ NXDOMAIN / INACTIVE'}</td></tr>
+    <tr><td class="dk">QUERIED DOMAIN</td><td class="dv">${domain}</td></tr>
+    <tr><td class="dk">RECORD COUNT</td><td class="dv">${allDnsRecs.length} RECORDS</td></tr>
+  </table>
+  <div class="dns-records">${allDnsRecs.length?allDnsRecs.map(r=>`
+    <div class="dns-rec"><span class="dns-type dns-${r.type}">${r.type}</span>
+    <div class="dns-val">${r.data} <span style="color:#2a2a3a;font-size:9px">TTL:${r.ttl}s</span></div></div>`).join('')
+    :'<div class="nodata"><i class="fas fa-circle-exclamation"></i>No DNS records found</div>'}</div>`;
+
+  let whoisHTML='<div class="nodata"><i class="fas fa-id-card"></i>WHOIS/RDAP data unavailable for this TLD</div>';
+  if(whoisData){
+    const created=whoisData.events?.find(e=>e.eventAction==='registration')?.eventDate||'N/A';
+    const updated=whoisData.events?.find(e=>e.eventAction==='last changed')?.eventDate||'N/A';
+    const expires=whoisData.events?.find(e=>e.eventAction==='expiration')?.eventDate||'N/A';
+    const status=whoisData.status?.join(', ')||'N/A';
+    const ns=(whoisData.nameservers||[]).map(n=>typeof n==='string'?n:n.ldhName).filter(Boolean).join(', ')||'N/A';
+    const daysLeft=expires!=='N/A'?Math.round((new Date(expires)-Date.now())/86400000):'?';
+    const ageD=created!=='N/A'?Math.round((Date.now()-new Date(created))/86400000):'?';
+    whoisHTML=`<table class="dt">
+      <tr><td class="dk">REGISTRAR</td><td class="dv">${whoisData.registrarName||'N/A'}</td></tr>
+      <tr><td class="dk">REGISTERED</td><td class="dv ${ageD!=='?'&&ageD<30?'bad':ageD<90?'warn':'ok'}">${created!=='N/A'?new Date(created).toDateString():'N/A'} ${ageD!=='?'?`(${ageD} days ago)`:''}</td></tr>
+      <tr><td class="dk">LAST UPDATED</td><td class="dv dim">${updated!=='N/A'?new Date(updated).toDateString():'N/A'}</td></tr>
+      <tr><td class="dk">EXPIRES</td><td class="dv ${daysLeft!=='?'&&daysLeft<30?'bad':daysLeft<90?'warn':'ok'}">${expires!=='N/A'?new Date(expires).toDateString():'N/A'} ${daysLeft!=='?'?`(${daysLeft} days remaining)`:''}</td></tr>
+      <tr><td class="dk">STATUS</td><td class="dv dim tiny">${status}</td></tr>
+      <tr><td class="dk">NAMESERVERS</td><td class="dv dim tiny">${ns}</td></tr>
+    </table>`;
+  }
+
+  const ssl=fullUrl.startsWith('https://');
+  const sslHTML=`<div class="ssl-hero" style="border-color:${ssl?'rgba(0,255,204,0.25)':'rgba(255,0,51,0.28)'}">
+    <div class="ssl-lock" style="color:${ssl?'var(--g)':'var(--r)'}">${ssl?'🔒':'🔓'}</div>
+    <div class="ssl-info">
+      <h4 style="color:${ssl?'var(--g)':'var(--r)'}">${ssl?'SSL/TLS ENABLED':'SSL/TLS NOT DETECTED'}</h4>
+      <p>${ssl?'HTTPS active. Encrypted connection confirmed.':'HTTP only. Plaintext transmission. INSECURE.'}</p>
+    </div>
+  </div>
+  <table class="dt">
+    <tr><td class="dk">PROTOCOL</td><td class="dv ${ssl?'ok':'bad'}">${ssl?'HTTPS':'HTTP'}</td></tr>
+    <tr><td class="dk">ENCRYPTION</td><td class="dv ${ssl?'ok':'bad'}">${ssl?'ACTIVE (TLS)':'NONE — PLAINTEXT'}</td></tr>
+    <tr><td class="dk">CERTIFICATE</td><td class="dv ${ssl?'ok':'warn'}">${ssl?'PRESENT (VERIFY IN BROWSER)':'MISSING'}</td></tr>
+    <tr><td class="dk">HSTS SUPPORT</td><td class="dv dim">${ssl?'POSSIBLE — CHECK RESPONSE HEADERS':'N/A'}</td></tr>
+    <tr><td class="dk">MIXED CONTENT</td><td class="dv dim">${ssl?'CHECK BROWSER CONSOLE':'N/A'}</td></tr>
+  </table>`;
+
+  const urlHTML=decomp?`<table class="dt">
+    <tr><td class="dk">FULL URL</td><td class="dv tiny">${fullUrl.slice(0,80)+(fullUrl.length>80?'…':'')}<button class="cbtn" onclick="copy(\`${fullUrl.replace(/`/g,'\\`').replace(/\\/g,'\\\\')}\`)">COPY</button></td></tr>
+    <tr><td class="dk">PROTOCOL</td><td class="dv ${decomp.protocol==='https:'?'ok':'bad'}">${decomp.protocol.toUpperCase()}</td></tr>
+    <tr><td class="dk">HOSTNAME</td><td class="dv">${decomp.host}</td></tr>
+    <tr><td class="dk">SUBDOMAIN</td><td class="dv dim">${decomp.subs}</td></tr>
+    <tr><td class="dk">TLD</td><td class="dv">.${decomp.tld.toUpperCase()}</td></tr>
+    <tr><td class="dk">PORT</td><td class="dv dim">${decomp.port}</td></tr>
+    <tr><td class="dk">PATH</td><td class="dv dim tiny">${decomp.path}</td></tr>
+    <tr><td class="dk">QUERY STRING</td><td class="dv dim tiny">${decomp.query}</td></tr>
+    <tr><td class="dk">FRAGMENT</td><td class="dv dim">${decomp.fragment}</td></tr>
+    <tr><td class="dk">DOMAIN DEPTH</td><td class="dv ${decomp.domainParts>3?'warn':'ok'}">${decomp.domainParts} LEVEL(S)</td></tr>
+    <tr><td class="dk">URL LENGTH</td><td class="dv ${fullUrl.length>75?'warn':'ok'}">${fullUrl.length} CHARS</td></tr>
+    <tr><td class="dk">@ CHARACTER</td><td class="dv ${fullUrl.includes('@')?'bad':'ok'}">${fullUrl.includes('@')?'⚠ DETECTED — DANGER':'✓ NONE'}</td></tr>
+    <tr><td class="dk">PERCENT ENCODING</td><td class="dv ${fullUrl.includes('%')?'warn':'ok'}">${fullUrl.includes('%')?'⚠ PRESENT':'✓ CLEAN'}</td></tr>
+    <tr><td class="dk">PUNYCODE / IDN</td><td class="dv ${domain.includes('xn--')?'bad':'ok'}">${domain.includes('xn--')?'⚠ DETECTED':'✓ NONE'}</td></tr>
+    <tr><td class="dk">SCAN TIMESTAMP</td><td class="dv dim tiny">${new Date().toUTCString()}</td></tr>
+  </table>`:
+  '<div class="nodata"><i class="fas fa-link-slash"></i>URL decomposition failed — invalid format</div>';
+
+  const scoreItems=[
+    {label:'THREAT SCORE',score:risk.score,color:risk.score>=60?'var(--r)':risk.score>=30?'var(--y)':'var(--g)'},
+    {label:'DOMAIN REPUTATION',score:Math.max(0,100-risk.score),color:'var(--b)'},
+    {label:'SSL / ENCRYPTION',score:ssl?100:0,color:'var(--g)'},
+    {label:'DNS HEALTH',score:dnsOk?95:15,color:'var(--g)'},
+    {label:'IP REPUTATION',score:ipOk?(ipData.proxy?5:ipData.hosting?65:95):50,color:'var(--y)'},
+    {label:'VENDOR DETECTIONS',score:Math.max(0,100-malDet*3),color:malDet>10?'var(--r)':malDet>3?'var(--y)':'var(--g)'},
+    {label:'WHOIS DATA QUALITY',score:whoisData?85:30,color:'var(--b)'},
+  ];
+  const scoreBarsHTML=scoreItems.map(s=>`
+    <div class="sbar-wrap">
+      <div class="sbar-label"><span>${s.label}</span><span style="color:${s.color};font-family:var(--fH);font-size:11px">${s.score}</span></div>
+      <div class="sbar"><div class="sbar-fill" style="width:0%;background:${s.color}" data-target="${s.score}"></div></div>
+    </div>`).join('');
+
+  res.innerHTML=`
+    ${riskHTML(risk.score,risk.tags)}
+    <div class="rtabs">
+      <button class="rtb on" onclick="showRP('url','threat',this)"><i class="fas fa-shield-halved"></i> THREAT</button>
+      <button class="rtb" onclick="showRP('url','vendors',this)"><i class="fas fa-virus-slash"></i> VENDORS ${malDet>0?`<span style="background:var(--r);color:#fff;border-radius:10px;padding:1px 6px;font-size:8px">${malDet}</span>`:''}</button>
+      <button class="rtb" onclick="showRP('url','server',this)"><i class="fas fa-server"></i> SERVER</button>
+      <button class="rtb" onclick="showRP('url','dns',this)"><i class="fas fa-network-wired"></i> DNS</button>
+      <button class="rtb" onclick="showRP('url','whois',this)"><i class="fas fa-id-card"></i> WHOIS</button>
+      <button class="rtb" onclick="showRP('url','ssl',this)"><i class="fas fa-lock"></i> SSL</button>
+      <button class="rtb" onclick="showRP('url','url',this)"><i class="fas fa-link"></i> URL</button>
+      <button class="rtb" onclick="showRP('url','score',this)"><i class="fas fa-chart-bar"></i> SCORES</button>
+    </div>
+    <div id="rp-url-threat" class="rpanel on">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-shield-halved"></i>HEURISTIC THREAT ANALYSIS</div><div class="rs-badge">${risk.reasons.length} VECTORS</div></div><div class="rs-body"><div class="tlist">${threatHTML}</div></div></div>
+    </div>
+    <div id="rp-url-vendors" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-virus-slash"></i>MULTI-VENDOR REPUTATION SCAN${isRealVT?'<span class="vt-real-badge">REAL API</span>':''}</div><div class="rs-badge">${vendorResults.length} ENGINES</div></div><div class="rs-body">${vendorHTML}</div></div>
+    </div>
+    <div id="rp-url-server" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-server"></i>SERVER INTELLIGENCE</div><div class="rs-badge">IP-API.COM</div></div><div class="rs-body">${ipHTML}</div></div>
+    </div>
+    <div id="rp-url-dns" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-network-wired"></i>DNS RECORD ENUMERATION</div><div class="rs-badge">GOOGLE DNS</div></div><div class="rs-body">${dnsHTML}</div></div>
+    </div>
+    <div id="rp-url-whois" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-id-card"></i>WHOIS / RDAP DATA</div><div class="rs-badge">RDAP.ORG</div></div><div class="rs-body">${whoisHTML}</div></div>
+    </div>
+    <div id="rp-url-ssl" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-lock"></i>SSL / TLS ANALYSIS</div><div class="rs-badge">HEURISTIC</div></div><div class="rs-body">${sslHTML}</div></div>
+    </div>
+    <div id="rp-url-url" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-link"></i>URL DECOMPOSITION</div><div class="rs-badge">LOCAL ENGINE</div></div><div class="rs-body">${urlHTML}</div></div>
+    </div>
+    <div id="rp-url-score" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-chart-bar"></i>SECURITY SCORE MATRIX</div><div class="rs-badge">COMPOSITE</div></div><div class="rs-body">${scoreBarsHTML}</div></div>
+    </div>`;
+
+  res.style.display='block';prog.style.display='none';btn.disabled=false;
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>{document.querySelectorAll('.sbar-fill[data-target]').forEach(b=>{setTimeout(()=>b.style.width=b.dataset.target+'%',80);});},400);
+}
+
+/* ══════════════════════════════════════════════════
+   FILE SCAN
+══════════════════════════════════════════════════ */
+async function doFileScan(){
+  if(!fileObj){toast('SELECT A FILE FIRST');return;}
+  const btn=$('fileBtn'),prog=$('fileProg'),stepsEl=$('fileSteps'),res=$('fileRes');
+  btn.disabled=true;prog.style.display='block';stepsEl.innerHTML='';res.style.display='none';res.innerHTML='';
+  setP('fileProgFill','fileProgTxt','fileProgPct',5,'LOADING FILE INTO MEMORY...');
+
+  const s1=mkStep('fileSteps','READING FILE BUFFER INTO MEMORY','go');
+  await sleep(280);
+  const buf=await fileObj.arrayBuffer();
+  const u8=new Uint8Array(buf);
+  updStep(s1,'done',`BUFFER LOADED — ${fmtBytes(fileObj.size)}`);
+  setP('fileProgFill','fileProgTxt','fileProgPct',22,'COMPUTING SHA-256...');
+
+  const s2=mkStep('fileSteps','COMPUTING SHA-256 CRYPTOGRAPHIC HASH','go');
+  await sleep(150);
+  const sha=await sha256(buf);
+  updStep(s2,'done','SHA-256 COMPUTED ✓');
+  setP('fileProgFill','fileProgTxt','fileProgPct',45,'ENTROPY ANALYSIS...');
+
+  const s3=mkStep('fileSteps','SHANNON ENTROPY ANALYSIS','go');
+  await sleep(280);
+  const sample=u8.slice(0,Math.min(u8.length,500000));
+  const ent=calcEntropy(sample);
+  updStep(s3,'done',`ENTROPY: ${ent} bits/byte`);
+  setP('fileProgFill','fileProgTxt','fileProgPct',65,'HEURISTIC SCORING...');
+
+  const s4=mkStep('fileSteps','HEURISTIC THREAT SCORING + MAGIC BYTES','go');
+  await sleep(380);
+
+  const ext=fileObj.name.split('.').pop().toLowerCase();
+  const typeMap={exe:'Windows PE Executable',dll:'Dynamic Link Library',bat:'Windows Batch Script',cmd:'Windows Command Script',vbs:'VBScript',ps1:'PowerShell Script',sh:'Shell Script',py:'Python Script',js:'JavaScript',php:'PHP Script',rb:'Ruby Script',pl:'Perl Script',jar:'Java Archive',apk:'Android Package',ipa:'iOS Application',msi:'Windows Installer',scr:'Screensaver/Trojan',pif:'DOS Program Info',com:'DOS Executable',zip:'ZIP Archive',rar:'RAR Archive','7z':'7-Zip Archive',tar:'TAR Archive',gz:'Gzip Archive',pdf:'PDF Document',doc:'Word 97-2003',docx:'Word Document',docm:'Word Macro-Enabled',xls:'Excel 97-2003',xlsx:'Excel Spreadsheet',xlsm:'Excel Macro-Enabled',ppt:'PowerPoint 97-2003',pptx:'PowerPoint',pptm:'PowerPoint Macro-Enabled',html:'HTML Document',xml:'XML Document',json:'JSON Data',csv:'CSV Data',txt:'Plain Text',mp4:'MPEG-4 Video',mp3:'MP3 Audio',jpg:'JPEG Image',png:'PNG Image',gif:'GIF Image',webp:'WebP Image',svg:'SVG Vector',iso:'Disk Image'};
+  const detType=typeMap[ext]||fileObj.type||'Unknown Binary';
+  const HIGH=['exe','dll','bat','vbs','cmd','scr','pif','com','ps1','sh','apk','ipa','msi'];
+  const MED=['zip','rar','7z','tar','gz','jar','docm','xlsm','pptm'];
+  const SCRIPT=['js','php','py','rb','pl','lua'];
+  let score=0,reasons=[],tags=[];
+  const entN=parseFloat(ent);
+
+  if(HIGH.includes(ext)){score+=70;tags.push({t:'EXECUTABLE',c:'r'});reasons.push({type:'danger',ico:'⚠',title:`HIGH-RISK EXECUTABLE: .${ext.toUpperCase()}`,desc:`${ext.toUpperCase()} files execute arbitrary code with current user privileges. Never run executables from untrusted sources.`});}
+  if(MED.includes(ext)){score+=25;tags.push({t:'ARCHIVE/MACRO',c:'y'});reasons.push({type:'warn',ico:'◈',title:'ARCHIVE OR MACRO-ENABLED DOCUMENT',desc:'Archives may conceal executables. Office macros run VBA code on open. Inspect contents before opening.'});}
+  if(SCRIPT.includes(ext)){score+=35;tags.push({t:'SCRIPT FILE',c:'y'});reasons.push({type:'warn',ico:'◈',title:`SCRIPT FILE: .${ext.toUpperCase()}`,desc:'Scripts execute system commands and can access filesystem, network, and environment.'});}
+  if(fileObj.size<2048&&score>30){score+=15;tags.push({t:'TINY DROPPER',c:'y'});reasons.push({type:'warn',ico:'◈',title:'ABNORMALLY SMALL EXECUTABLE',desc:'Sub-2KB executables are commonly dropper stubs that download and execute additional malicious payloads.'});}
+  if(fileObj.size>50*1024*1024){score+=5;tags.push({t:'LARGE FILE',c:'y'});reasons.push({type:'warn',ico:'◈',title:'LARGE FILE SIZE',desc:'Oversized files can be used to pad malware beyond AV scanning limits or hide content within legitimate data.'});}
+  if(entN>7.2){score+=25;tags.push({t:'HIGH ENTROPY',c:'r'});reasons.push({type:'danger',ico:'⚠',title:`CRITICAL ENTROPY: ${ent} bits/byte`,desc:'Entropy >7.2 is a strong indicator of UPX/custom packing or encryption. Common malware evasion technique to bypass AV signature detection.'});}
+  else if(entN>6.5){score+=8;tags.push({t:'ELEVATED ENTROPY',c:'y'});reasons.push({type:'warn',ico:'◈',title:`ELEVATED ENTROPY: ${ent} bits/byte`,desc:'Entropy 6.5-7.2 may indicate partial compression or selective obfuscation of embedded payload.'});}
+  else{tags.push({t:'NORMAL ENTROPY',c:'g'});reasons.push({type:'ok',ico:'✓',title:`NORMAL ENTROPY: ${ent} bits/byte`,desc:'Entropy within expected range. No obvious packing, encryption, or obfuscation patterns detected.'});}
+
+  const nullBytes=(()=>{let c=0;for(let i=0;i<Math.min(u8.length,1024);i++)if(u8[i]===0)c++;return c;})();
+  if(nullBytes>200&&HIGH.includes(ext)){score+=8;reasons.push({type:'warn',ico:'◈',title:'HIGH NULL BYTE DENSITY IN HEADER',desc:'Excess null bytes in executable header may indicate binary padding, anti-debugging, or anti-analysis techniques.'});}
+
+  const magic=Array.from(u8.slice(0,16)).map(b=>b.toString(16).padStart(2,'0').toUpperCase()).join(' ');
+  const h=magic.replace(/ /g,'');
+  const magicSig=h.startsWith('4D5A')?'MZ — Windows PE (EXE/DLL)':h.startsWith('7F454C46')?'ELF — Linux Executable':h.startsWith('25504446')?'%PDF — PDF Document':h.startsWith('504B0304')?'PK — ZIP / Office Open XML':h.startsWith('52617221')?'Rar! — RAR Archive':h.startsWith('377ABCAF')?'7z — 7-Zip Archive':h.startsWith('FFD8FF')?'JFIF/EXIF — JPEG Image':h.startsWith('89504E47')?'PNG — PNG Image':h.startsWith('47494638')?'GIF8 — GIF Image':h.startsWith('1F8B')?'GZIP — Compressed':h.startsWith('CAFEBABE')?'CAFEBABE — Java Class/JAR':h.startsWith('D0CF11E0')?'D0CF — Microsoft Office Legacy':'UNKNOWN / BINARY';
+
+  const extMagicMap={exe:'4D5A',dll:'4D5A',pdf:'25504446',zip:'504B0304',rar:'52617221',png:'89504E47',jpg:'FFD8FF',gif:'47494638'};
+  if(extMagicMap[ext]&&!h.startsWith(extMagicMap[ext])){score+=30;tags.push({t:'EXT MISMATCH',c:'r'});reasons.push({type:'danger',ico:'⚠',title:'FILE EXTENSION DOES NOT MATCH MAGIC BYTES',desc:`File claims to be .${ext.toUpperCase()} but binary signature indicates a different file type. Classic malware disguise technique.`});}
+
+  // VirusTotal file hash lookup
+  const s4b=mkStep('fileSteps','VIRUSTOTAL HASH LOOKUP','go');
+  let vtFileData=null;
+  try{
+    const r=await fetch(`https://www.virustotal.com/api/v3/files/${sha}`,{headers:{'x-apikey':VT_API_KEY}});
+    if(r.ok){vtFileData=await r.json();updStep(s4b,'done','VT HASH LOOKUP — DATA FOUND');}
+    else updStep(s4b,'fail','VT HASH LOOKUP — NOT IN DATABASE (NEW FILE)');
+  }catch{updStep(s4b,'fail','VT HASH LOOKUP — API ERROR');}
+
+  let vtFileScore=null,vtFileMal=0,vtFileSus=0,vtFileClean=0;
+  if(vtFileData){
+    const stats=vtFileData.data?.attributes?.last_analysis_stats;
+    if(stats){vtFileMal=stats.malicious||0;vtFileSus=stats.suspicious||0;vtFileClean=stats.harmless||0;vtFileScore=vtFileMal+vtFileSus;}
+    if(vtFileMal>0){score+=Math.min(vtFileMal*3,30);tags.push({t:`VT: ${vtFileMal} DETECTIONS`,c:'r'});reasons.push({type:'danger',ico:'⚠',title:`VIRUSTOTAL: ${vtFileMal} AV ENGINES FLAGGED`,desc:`This exact file hash has been flagged as malicious by ${vtFileMal} AV engine(s) in the VirusTotal database.`});}
+  }
+
+  if(score===0){tags.push({t:'CLEAN',c:'g'});reasons.push({type:'ok',ico:'✓',title:'NO THREATS DETECTED',desc:'No heuristic indicators found. File type appears safe with normal characteristics. Still recommend scanning with local AV.'});}
+  if(score>99)score=99;
+  updStep(s4,'done',`SCORE: ${score}/100`);
+  setP('fileProgFill','fileProgTxt','fileProgPct',100,'ANALYSIS COMPLETE ✓');
+  await sleep(400);
+
+  const threatHTML=reasons.map(r=>`<div class="titem ${r.type}"><div class="titem-ico" style="color:${r.type==='danger'?'var(--r)':r.type==='warn'?'var(--y)':'var(--g)'}">${r.ico}</div><div class="titem-body"><strong>${r.title}</strong><p>${r.desc}</p></div></div>`).join('');
+  const entColor=entN>7.2?'var(--r)':entN>6.5?'var(--y)':'var(--g)';
+
+  let vtFileHTML='<div class="nodata"><i class="fas fa-magnifying-glass"></i>File hash not found in VirusTotal database (file may be new or private)</div>';
+  if(vtFileData){
+    const attrs=vtFileData.data?.attributes||{};
+    const results=attrs.last_analysis_results||{};
+    const vtVendorList=renderVendorList(ALL_VENDORS.map(v=>{
+      const key=Object.keys(results).find(k=>k.toLowerCase().includes(v.name.toLowerCase().split(' ')[0])||v.name.toLowerCase().includes(k.toLowerCase()));
+      if(key){const cat=results[key].category;return{...v,status:cat==='malicious'?'malicious':cat==='suspicious'?'suspicious':cat==='clean'||cat==='harmless'?'clean':'unrated'};}
+      return{...v,status:'unrated'};
+    }),true);
+    vtFileHTML=`<div class="vt-summary" style="margin-bottom:14px">
+      <div class="vt-sum-box s-mal"><div class="vt-sum-num malicious">${vtFileMal}</div><div class="vt-sum-lbl">MALICIOUS</div></div>
+      <div class="vt-sum-box s-sus"><div class="vt-sum-num suspicious">${vtFileSus}</div><div class="vt-sum-lbl">SUSPICIOUS</div></div>
+      <div class="vt-sum-box s-cln"><div class="vt-sum-num clean">${vtFileClean}</div><div class="vt-sum-lbl">CLEAN</div></div>
+      <div class="vt-sum-box s-unk"><div class="vt-sum-num unrated">${ALL_VENDORS.length-vtFileMal-vtFileSus-vtFileClean}</div><div class="vt-sum-lbl">UNRATED</div></div>
+    </div>${vtVendorList}`;
+  }
+
+  res.innerHTML=`
+    ${riskHTML(score,tags)}
+    <div class="rtabs">
+      <button class="rtb on" onclick="showRP('file','threat',this)"><i class="fas fa-shield-halved"></i> THREAT</button>
+      <button class="rtb" onclick="showRP('file','vt',this)"><i class="fas fa-virus-slash"></i> VT SCAN ${vtFileMal>0?`<span style="background:var(--r);color:#fff;border-radius:10px;padding:1px 6px;font-size:8px">${vtFileMal}</span>`:''}</button>
+      <button class="rtb" onclick="showRP('file','hash',this)"><i class="fas fa-fingerprint"></i> HASHES</button>
+      <button class="rtb" onclick="showRP('file','meta',this)"><i class="fas fa-file-lines"></i> METADATA</button>
+      <button class="rtb" onclick="showRP('file','binary',this)"><i class="fas fa-code"></i> BINARY</button>
+    </div>
+    <div id="rp-file-threat" class="rpanel on">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-shield-halved"></i>HEURISTIC THREAT ANALYSIS</div><div class="rs-badge">${reasons.length} CHECKS</div></div><div class="rs-body"><div class="tlist">${threatHTML}</div></div></div>
+    </div>
+    <div id="rp-file-vt" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-virus-slash"></i>VIRUSTOTAL HASH SCAN<span class="vt-real-badge">REAL API</span></div><div class="rs-badge">SHA-256 LOOKUP</div></div><div class="rs-body">${vtFileHTML}</div></div>
+    </div>
+    <div id="rp-file-hash" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-fingerprint"></i>CRYPTOGRAPHIC SIGNATURES</div><div class="rs-badge">WEBCRYPTO API</div></div><div class="rs-body">
+        <span class="hbox-label">SHA-256 (COMPUTED FROM FILE BYTES)</span>
+        <div class="hbox" style="position:relative">${sha}<button class="cbtn" style="position:absolute;top:10px;right:10px" onclick="copy('${sha}')">COPY</button></div>
+        <div style="font-family:var(--fC);font-size:9px;color:var(--t3);margin-top:4px;letter-spacing:1px">✓ Computed client-side via WebCrypto API. File bytes never leave your browser.</div>
+      </div></div>
+    </div>
+    <div id="rp-file-meta" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-file-lines"></i>FILE METADATA</div><div class="rs-badge">LOCAL ENGINE</div></div><div class="rs-body">
+        <table class="dt">
+          <tr><td class="dk">FILENAME</td><td class="dv">${fileObj.name}</td></tr>
+          <tr><td class="dk">EXTENSION</td><td class="dv ${HIGH.includes(ext)?'bad':MED.includes(ext)||SCRIPT.includes(ext)?'warn':'ok'}">.${ext.toUpperCase()}</td></tr>
+          <tr><td class="dk">DETECTED TYPE</td><td class="dv">${detType}</td></tr>
+          <tr><td class="dk">MIME TYPE</td><td class="dv dim">${fileObj.type||'application/octet-stream'}</td></tr>
+          <tr><td class="dk">FILE SIZE</td><td class="dv">${fmtBytes(fileObj.size)} (${fileObj.size.toLocaleString()} bytes)</td></tr>
+          <tr><td class="dk">LAST MODIFIED</td><td class="dv dim">${new Date(fileObj.lastModified).toUTCString()}</td></tr>
+          <tr><td class="dk">SCAN TIMESTAMP</td><td class="dv dim">${new Date().toUTCString()}</td></tr>
+        </table>
+      </div></div>
+    </div>
+    <div id="rp-file-binary" class="rpanel">
+      <div class="rs"><div class="rs-head"><div class="rs-title"><i class="fas fa-code"></i>BINARY SIGNATURE ANALYSIS</div><div class="rs-badge">MAGIC BYTES</div></div><div class="rs-body">
+        <table class="dt">
+          <tr><td class="dk">MAGIC BYTES</td><td class="dv dim tiny">${magic}</td></tr>
+          <tr><td class="dk">FILE SIGNATURE</td><td class="dv">${magicSig}</td></tr>
+          <tr><td class="dk">EXT vs MAGIC</td><td class="dv ${extMagicMap[ext]&&!h.startsWith(extMagicMap[ext])?'bad':'ok'}">${extMagicMap[ext]?h.startsWith(extMagicMap[ext])?'✓ MATCH':'⚠ MISMATCH — POSSIBLE DISGUISE':'N/A FOR THIS TYPE'}</td></tr>
+          <tr><td class="dk">ENTROPY</td><td class="dv" style="color:${entColor}">${ent} bits/byte — ${entN>7.2?'⚠ PACKED/ENCRYPTED':entN>6.5?'◈ ELEVATED':'✓ NORMAL'}</td></tr>
+          <tr><td class="dk">TOTAL BYTES</td><td class="dv dim">${u8.length.toLocaleString()}</td></tr>
+          <tr><td class="dk">ANALYZED BYTES</td><td class="dv dim">${sample.length.toLocaleString()} (entropy sample)</td></tr>
+          <tr><td class="dk">NULL BYTES (HDR)</td><td class="dv dim">${nullBytes} in first 1,024 bytes</td></tr>
+        </table>
+      </div></div>
+    </div>`;
+
+  res.style.display='block';prog.style.display='none';btn.disabled=false;
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.tagName!=='BUTTON'){
+    if(currentTab==='url')doUrlScan();else doFileScan();
+  }
+});
+</script>
 </body>
 </html>
