@@ -1,379 +1,578 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCT Website Cloner | Ultra Fast</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WEB CLONER | BCT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --r:#ff0033;--r2:#cc0028;--r3:#ff3355;
+  --r-glow:rgba(255,0,51,0.45);--r-dim:rgba(255,0,51,0.08);--r-mid:rgba(255,0,51,0.18);
+  --g:#00ffcc;--g-glow:rgba(0,255,204,0.4);--g-dim:rgba(0,255,204,0.08);
+  --y:#ffcc00;--y-dim:rgba(255,204,0,0.1);--y-glow:rgba(255,204,0,0.4);
+  --b:#0099ff;--b-dim:rgba(0,153,255,0.1);--b-glow:rgba(0,153,255,0.4);
+  --pu:#cc66ff;--pu-dim:rgba(204,102,255,0.1);
+  --bg:#000000;--p1:#07070f;--p2:#0d0d18;
+  --bor:rgba(255,0,51,0.18);--bor2:rgba(255,255,255,0.06);
+  --t1:#ffffff;--t2:#aaaaaa;--t3:#555566;--t4:#2a2a3a;
+  --fH:'Orbitron',monospace;--fB:'Rajdhani',sans-serif;--fC:'JetBrains Mono',monospace;
+  --r12:12px;--r7:7px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--fB);min-height:100vh;overflow-x:hidden}
 
-        :root {
-            --primary: #ff0000;
-            --primary-glow: #ff4d4d;
-            --bg-dark: #0a0a0a;
-            --bg-card: #141414;
-            --text-white: #ffffff;
-            --text-dim: #b3b3b3;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -8%,rgba(200,0,30,0.24) 0%,transparent 58%),
+    radial-gradient(ellipse 50% 40% at -5% 45%,rgba(130,0,20,0.13) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 40% at 105% 80%,rgba(100,0,15,0.11) 0%,transparent 55%),
+    linear-gradient(170deg,#0a0006 0%,#000000 40%,#05000a 100%)}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,0,51,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,0,51,0.022) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 5%,transparent 80%)}
+.scanlines{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.022) 2px,rgba(0,0,0,0.022) 4px);
+  animation:scanMove 10s linear infinite}
+@keyframes scanMove{0%{background-position:0 0}100%{background-position:0 100px}}
+.ptcl{position:fixed;border-radius:50%;pointer-events:none;z-index:0;animation:ptclFloat var(--d) var(--dl) infinite ease-in-out}
+@keyframes ptclFloat{0%,100%{transform:translate(0,0) scale(1);opacity:0}15%{opacity:var(--op)}85%{opacity:calc(var(--op)*0.25)}50%{transform:translate(var(--tx),var(--ty)) scale(var(--sc))}}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) var(--bg-dark);
-        }
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:500;background:rgba(2,0,5,0.95);border-bottom:1px solid var(--bor);backdrop-filter:blur(30px) saturate(140%);-webkit-backdrop-filter:blur(30px)}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,51,0.7),rgba(255,60,100,0.35),rgba(255,0,51,0.7),transparent);opacity:0.5}
+.hdr{max-width:980px;margin:0 auto;padding:0 18px;height:66px;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:14px;text-decoration:none}
+.logo-icon{width:46px;height:46px;flex-shrink:0;position:relative}
+.logo-icon svg{width:100%;height:100%}
+.logo-text{font-family:var(--fH);font-weight:900}
+.logo-l1{font-size:13px;letter-spacing:3.5px;color:var(--t1);line-height:1}
+.logo-l2{font-size:10px;letter-spacing:5px;color:var(--r);line-height:1;margin-top:4px;text-shadow:0 0 14px var(--r-glow)}
+.hdr-badges{display:flex;align-items:center;gap:8px}
+.badge{font-family:var(--fC);font-size:9px;letter-spacing:2px;padding:4px 11px;border-radius:3px}
+.badge-pro{border:1px solid rgba(0,255,204,0.45);color:var(--g);background:var(--g-dim)}
+.badge-live{border:1px solid rgba(255,0,51,0.55);color:var(--r);background:var(--r-dim);display:flex;align-items:center;gap:6px}
+.dot-pulse{width:6px;height:6px;border-radius:50%;background:var(--r);animation:dPulse 1.4s ease infinite}
+@keyframes dPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,0,51,0.8)}70%{box-shadow:0 0 0 6px transparent}}
 
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-white);
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+/* ── LAYOUT ── */
+main{max-width:980px;margin:0 auto;padding:26px 16px 90px;position:relative;z-index:1}
 
-        /* Full Screen Loader */
-        #loader-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            backdrop-filter: blur(10px);
-        }
+/* ── HERO ── */
+.hero{padding:36px 0 26px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden}
+.hero-bg-txt{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:var(--fH);font-size:90px;font-weight:900;color:rgba(255,0,51,0.016);letter-spacing:12px;white-space:nowrap;pointer-events:none;user-select:none}
+.hero-eyebrow{font-family:var(--fC);font-size:10px;letter-spacing:6px;color:var(--r);margin-bottom:16px;display:flex;align-items:center;gap:12px;text-shadow:0 0 16px var(--r-glow)}
+.hero-eyebrow::before{content:'';flex:1;max-width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--r))}
+.hero-eyebrow::after{content:'';flex:1;max-width:50px;height:1px;background:linear-gradient(90deg,var(--r),transparent)}
+.hero-title{font-family:var(--fH);font-weight:900;font-size:clamp(18px,4.5vw,34px);letter-spacing:2px;line-height:1.12}
+.hero-title em{font-style:normal;color:var(--r);text-shadow:0 0 40px var(--r-glow),0 0 80px rgba(255,0,51,0.16)}
+.hero-desc{margin-top:13px;font-size:13px;color:var(--t2);max-width:560px;line-height:1.72}
 
-        .scanner {
-            width: 200px;
-            height: 2px;
-            background: var(--primary);
-            box-shadow: 0 0 20px var(--primary-glow);
-            position: relative;
-            animation: scan 2s infinite;
-        }
+/* ── FEATURE GRID ── */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:24px;width:100%}
+.feat{background:var(--p1);border:1px solid var(--bor2);border-radius:10px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;position:relative;overflow:hidden;transition:border-color 0.3s,box-shadow 0.3s}
+.feat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,51,0.4),transparent)}
+.feat:hover{border-color:rgba(255,0,51,0.28);box-shadow:0 0 20px rgba(255,0,51,0.05)}
+.feat-ico{width:34px;height:34px;border-radius:50%;border:1px solid var(--bor);display:flex;align-items:center;justify-content:center;background:var(--r-dim)}
+.feat-ico i{color:var(--r);font-size:13px}
+.feat-name{font-family:var(--fH);font-size:8px;letter-spacing:1.5px;color:var(--t2)}
+.feat-desc{font-family:var(--fC);font-size:7.5px;color:var(--t3);line-height:1.5}
+.hero-divider{width:100%;height:1px;margin-top:26px;background:linear-gradient(90deg,transparent,var(--bor) 20%,rgba(255,0,51,0.3) 50%,var(--bor) 80%,transparent)}
 
-        @keyframes scan {
-            0% { top: -50px; opacity: 0; }
-            50% { opacity: 1; }
-            100% { top: 50px; opacity: 0; }
-        }
+/* ── CARD ── */
+.card{background:var(--p1);border:1px solid var(--bor);border-radius:var(--r12);overflow:hidden;position:relative;margin-bottom:20px}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,51,0.65) 50%,transparent)}
+.card::after{content:'';position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 32px 32px 0;border-color:transparent rgba(255,0,51,0.1) transparent transparent}
+.card-head{padding:14px 20px;border-bottom:1px solid var(--bor2);background:linear-gradient(90deg,rgba(255,0,51,0.04),transparent);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-head-l{display:flex;align-items:center;gap:10px;font-family:var(--fH);font-size:10px;letter-spacing:2px;color:var(--t2)}
+.card-head-l i{color:var(--r);font-size:12px}
+.card-head-r{font-family:var(--fC);font-size:8px;letter-spacing:2px;color:var(--t3);border:1px solid var(--bor2);padding:3px 10px;border-radius:3px}
+.card-body{padding:22px 20px}
 
-        .loading-text {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--primary);
-            margin-top: 20px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
+/* ── INPUT ── */
+.lbl{font-family:var(--fC);font-size:8.5px;letter-spacing:3px;color:var(--t3);margin-bottom:9px;display:block}
+.inp-wrap{position:relative;margin-bottom:8px}
+.inp{width:100%;background:#030308;border:1px solid #1c1c2c;border-radius:8px;padding:16px 16px 16px 52px;color:var(--t1);font-family:var(--fC);font-size:13px;letter-spacing:0.5px;transition:all 0.3s}
+.inp::placeholder{color:#222230}
+.inp:focus{outline:none;border-color:rgba(255,0,51,0.55);background:#050510;box-shadow:0 0 0 3px rgba(255,0,51,0.08),0 0 30px rgba(255,0,51,0.05)}
+.inp-ico{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:var(--r);font-size:15px;pointer-events:none}
+.inp-hint{font-family:var(--fC);font-size:8px;letter-spacing:1.5px;color:var(--t3);margin-bottom:18px;margin-top:6px}
 
-        /* Main UI */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+/* ── PROXY TAGS ── */
+.proxy-bar{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.proxy-tag{font-family:var(--fC);font-size:7.5px;letter-spacing:1px;padding:4px 10px;border-radius:3px;border:1px solid #1a1a28;color:var(--t4);display:flex;align-items:center;gap:5px;transition:all 0.3s}
+.proxy-tag i{font-size:8px}
+.proxy-tag.active{border-color:rgba(0,255,204,0.3);color:var(--g);background:rgba(0,255,204,0.05)}
+.proxy-tag.trying{border-color:rgba(255,204,0,0.3);color:var(--y);background:rgba(255,204,0,0.05);animation:proxyBlink 0.9s ease infinite}
+@keyframes proxyBlink{0%,100%{opacity:1}50%{opacity:0.45}}
 
-        header {
-            text-align: center;
-            padding: 40px 0;
-        }
+/* ── MODULE TOGGLES ── */
+.modules-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.mod{border:1px solid #1a1a28;background:#020208;border-radius:var(--r7);padding:12px 8px;cursor:pointer;transition:all 0.22s;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;user-select:none;position:relative;overflow:hidden}
+.mod::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,51,0.35),transparent);opacity:0;transition:opacity 0.2s}
+.mod:hover{border-color:#2a2a3c;background:#050510}
+.mod.on{border-color:rgba(255,0,51,0.4);background:var(--r-dim);box-shadow:0 0 22px rgba(255,0,51,0.06)}
+.mod.on::after{opacity:1}
+.mod-ico{width:33px;height:33px;border-radius:50%;border:1px solid #1a1a28;display:flex;align-items:center;justify-content:center;transition:all 0.22s}
+.mod i{font-size:13px;color:var(--t3);transition:0.2s}
+.mod.on .mod-ico{border-color:rgba(255,0,51,0.35);background:rgba(255,0,51,0.07)}
+.mod.on i{color:var(--r)}
+.mod-name{font-family:var(--fC);font-size:8px;letter-spacing:1.5px;color:var(--t3);transition:0.2s}
+.mod-sub{font-family:var(--fC);font-size:7.5px;color:var(--t4)}
+.mod.on .mod-name{color:rgba(255,110,130,0.9)}
 
-        header h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 8vw, 3.5rem);
-            color: var(--primary);
-            text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-            letter-spacing: 2px;
-        }
+/* ── BUTTON ── */
+.btn{width:100%;padding:17px;background:linear-gradient(135deg,#aa001a 0%,#ff0033 55%,#cc0026 100%);color:#fff;border:none;font-family:var(--fH);font-weight:800;font-size:11px;letter-spacing:3.5px;cursor:pointer;border-radius:8px;position:relative;overflow:hidden;transition:all 0.3s;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.btn-shine{position:absolute;inset:1px;background:linear-gradient(135deg,rgba(255,255,255,0.14),transparent 55%);border-radius:7px;pointer-events:none}
+.btn-sweep{position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent);transition:0.65s;pointer-events:none}
+.btn:hover .btn-sweep{left:100%}
+.btn:hover{box-shadow:0 8px 45px rgba(255,0,51,0.55),0 0 70px rgba(255,0,51,0.14);transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:0.32;cursor:not-allowed;transform:none;box-shadow:none}
+.btn i{margin-right:9px}
 
-        .input-section {
-            background: var(--bg-card);
-            border: 1px solid #333;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
-            transition: var(--transition);
-        }
+/* ── PROGRESS ── */
+.prog-wrap{display:none;margin-top:22px}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.prog-lbl{font-family:var(--fC);font-size:9px;letter-spacing:2px;color:var(--t3)}
+.prog-pct{font-family:var(--fC);font-size:11px;color:var(--r);font-weight:700}
+.prog-bar{height:3px;background:#0d0d18;border-radius:3px;overflow:hidden;margin-bottom:16px;position:relative}
+.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,#770014,var(--r),#ff4466);border-radius:3px;transition:width 0.45s ease;box-shadow:0 0 12px var(--r-glow)}
+.steps{display:flex;flex-direction:column}
+.step{display:flex;align-items:center;gap:12px;padding:9px 0;font-family:var(--fC);font-size:9.5px;border-bottom:1px solid #0b0b14;color:var(--t3);transition:all 0.3s}
+.step:last-child{border-bottom:none}
+.step-ico{width:22px;height:22px;border:1px solid #1c1c1c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;transition:all 0.3s}
+.step.done{color:#3a3a4a}.step.done .step-ico{border-color:rgba(0,255,204,0.35);color:var(--g);background:rgba(0,255,204,0.05)}
+.step.go{color:#cccccc}.step.go .step-ico{border-color:rgba(255,204,0,0.45);color:var(--y);background:rgba(255,204,0,0.05);animation:spinIco 1s linear infinite}
+.step.fail{color:#3a3a4a}.step.fail .step-ico{border-color:rgba(255,0,51,0.4);color:var(--r)}
+@keyframes spinIco{100%{transform:rotate(360deg)}}
 
-        .input-section:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
-        }
+/* ── RESULTS ── */
+.results{display:none;animation:rIn 0.55s cubic-bezier(.22,1,.36,1) both}
+@keyframes rIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 
-        .input-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
+/* ── STAT GRID ── */
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.stat-box{border-radius:10px;padding:16px;text-align:center;position:relative;overflow:hidden;border:1px solid #0f0f1a;background:#020208}
+.stat-box::before{content:'';position:absolute;inset:0;opacity:0.07;pointer-events:none}
+.stat-box::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sb-html::before{background:radial-gradient(ellipse at 50% 0%,var(--r),transparent 70%)}
+.sb-html::after{background:linear-gradient(90deg,transparent,var(--r),transparent)}
+.sb-css::before{background:radial-gradient(ellipse at 50% 0%,var(--b),transparent 70%)}
+.sb-css::after{background:linear-gradient(90deg,transparent,var(--b),transparent)}
+.sb-js::before{background:radial-gradient(ellipse at 50% 0%,var(--y),transparent 70%)}
+.sb-js::after{background:linear-gradient(90deg,transparent,var(--y),transparent)}
+.sb-total::before{background:radial-gradient(ellipse at 50% 0%,var(--g),transparent 70%)}
+.sb-total::after{background:linear-gradient(90deg,transparent,var(--g),transparent)}
+.stat-num{font-family:var(--fH);font-size:20px;font-weight:900;line-height:1.1;margin-bottom:5px}
+.stat-lbl{font-family:var(--fC);font-size:7.5px;letter-spacing:2px;color:var(--t3)}
+.stat-sub{font-family:var(--fC);font-size:8px;color:var(--t4);margin-top:3px}
+.cn-r{color:var(--r);text-shadow:0 0 18px var(--r-glow)}
+.cn-b{color:var(--b);text-shadow:0 0 18px var(--b-glow)}
+.cn-y{color:var(--y);text-shadow:0 0 18px var(--y-glow)}
+.cn-g{color:var(--g);text-shadow:0 0 18px var(--g-glow)}
 
-        input {
-            flex: 1;
-            min-width: 280px;
-            background: #000;
-            border: 1px solid #444;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-size: 1.1rem;
-            outline: none;
-            transition: var(--transition);
-        }
+/* ── OUTPUT TABS ── */
+.rtabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.rtb{padding:8px 14px;border:1px solid #1a1a28;border-radius:20px;background:transparent;color:var(--t3);font-family:var(--fC);font-size:8.5px;letter-spacing:1.5px;cursor:pointer;white-space:nowrap;transition:all 0.22s;display:flex;align-items:center;gap:6px}
+.rtb i{font-size:10px}
+.rtb .cnt{background:rgba(255,255,255,0.06);border:1px solid #1a1a28;border-radius:10px;padding:1px 6px;font-size:7.5px}
+.rtb.on{border-color:rgba(255,0,51,0.45);color:var(--r);background:var(--r-dim)}
+.rtb.on .cnt{background:rgba(255,0,51,0.12);border-color:rgba(255,0,51,0.3)}
+.rtb:not(.on):hover{border-color:#2a2a3a;color:#777}
+.rpanel{display:none}
+.rpanel.on{display:block;animation:rIn 0.3s ease both}
 
-        input:focus {
-            border-color: var(--primary);
-        }
+/* ── CODE CARD ── */
+.ccard{background:var(--p1);border:1px solid var(--bor2);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.ccard-head{padding:12px 16px;background:rgba(255,255,255,0.01);border-bottom:1px solid #0e0e1a;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.ccard-title{font-family:var(--fH);font-size:9px;letter-spacing:2px;color:var(--t2);display:flex;align-items:center;gap:8px}
+.ccard-title i{color:var(--r)}
+.ccard-actions{display:flex;gap:6px}
+.cbtn{background:transparent;border:1px solid #1e1e2c;color:#555577;padding:5px 12px;border-radius:4px;font-family:var(--fC);font-size:8px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:5px}
+.cbtn:hover{border-color:rgba(255,0,51,0.4);color:var(--r)}
+.cbtn.dl:hover{border-color:rgba(0,255,204,0.35);color:var(--g)}
+.cbtn i{font-size:9px}
+.ccard-body{position:relative}
+.ccard-body pre{background:#010106;padding:18px 16px;max-height:440px;overflow:auto;font-family:var(--fC);font-size:11.5px;line-height:1.68;margin:0;white-space:pre-wrap;word-break:break-all}
+#pre-html{color:#cc8888;border-left:3px solid var(--r)}
+#pre-css{color:#8888cc;border-left:3px solid var(--b)}
+#pre-js{color:#bbbb77;border-left:3px solid var(--y)}
+.ccard-footer{font-family:var(--fC);font-size:8px;color:var(--t3);letter-spacing:1px;padding:8px 16px;border-top:1px solid #0d0d18;background:rgba(0,0,0,0.35);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
 
-        button.main-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-family: 'Orbitron', sans-serif;
-            cursor: pointer;
-            transition: var(--transition);
-            text-transform: uppercase;
-        }
+/* ── ASSET LIST ── */
+.alist{display:flex;flex-direction:column;border:1px solid #0f0f1a;border-radius:9px;overflow:hidden;margin-bottom:10px}
+.alist-row{display:flex;align-items:center;border-bottom:1px solid #0d0d16;background:#030308;position:relative;overflow:hidden;transition:background 0.15s}
+.alist-row:last-child{border-bottom:none}
+.alist-row:hover{background:#06060f}
+.alist-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ac,#1a1a2a)}
+.alist-row.ac-css{--ac:var(--b)}
+.alist-row.ac-js{--ac:var(--y)}
+.alist-row.ac-img{--ac:var(--g)}
+.alist-row.ac-font{--ac:var(--pu)}
+.alist-row.ac-css::after{content:'';position:absolute;left:3px;top:0;bottom:0;width:50px;background:linear-gradient(90deg,rgba(0,153,255,0.06),transparent);pointer-events:none}
+.alist-row.ac-js::after{content:'';position:absolute;left:3px;top:0;bottom:0;width:50px;background:linear-gradient(90deg,rgba(255,204,0,0.06),transparent);pointer-events:none}
+.alist-row.ac-img::after{content:'';position:absolute;left:3px;top:0;bottom:0;width:50px;background:linear-gradient(90deg,rgba(0,255,204,0.05),transparent);pointer-events:none}
+.alist-row.ac-font::after{content:'';position:absolute;left:3px;top:0;bottom:0;width:50px;background:linear-gradient(90deg,rgba(204,102,255,0.06),transparent);pointer-events:none}
+.alist-num{font-family:var(--fC);font-size:9px;color:#2a2a3a;width:28px;text-align:center;padding:13px 0 13px 8px;flex-shrink:0}
+.atype{font-family:var(--fC);font-size:7.5px;letter-spacing:1px;padding:3px 7px;border-radius:3px;margin:0 8px;flex-shrink:0}
+.at-css{background:rgba(0,153,255,0.1);border:1px solid rgba(0,153,255,0.28);color:var(--b)}
+.at-js{background:rgba(255,204,0,0.09);border:1px solid rgba(255,204,0,0.28);color:var(--y)}
+.at-img{background:rgba(0,255,204,0.07);border:1px solid rgba(0,255,204,0.22);color:var(--g)}
+.at-font{background:rgba(204,102,255,0.09);border:1px solid rgba(204,102,255,0.22);color:var(--pu)}
+.aurl{font-family:var(--fC);font-size:9.5px;color:#666677;flex:1;padding:13px 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.astatus{font-family:var(--fC);font-size:8px;padding:3px 8px;border-radius:3px;margin-right:10px;flex-shrink:0}
+.as-ok{background:rgba(0,255,204,0.06);border:1px solid rgba(0,255,204,0.22);color:var(--g)}
+.as-map{background:rgba(255,204,0,0.06);border:1px solid rgba(255,204,0,0.22);color:var(--y)}
+.alist-section{padding:8px 14px;background:#01010a;border-bottom:1px solid #0d0d16;display:flex;align-items:center;gap:8px}
+.alist-section span{font-family:var(--fH);font-size:8px;letter-spacing:2px;color:var(--t3)}
+.alist-section .sdot{width:7px;height:7px;border-radius:50%}
+.alist-section .scount{margin-left:auto;font-family:var(--fC);font-size:8px;color:var(--t4);border:1px solid #1a1a1a;padding:1px 7px;border-radius:3px}
+.nodata{text-align:center;padding:30px;font-family:var(--fC);font-size:10px;color:var(--t3)}
+.nodata i{font-size:20px;display:block;margin-bottom:10px;color:#1a1a2a}
 
-        button.main-btn:hover {
-            background: #cc0000;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#0a0a14;border:1px solid rgba(0,255,204,0.35);color:var(--g);padding:10px 24px;border-radius:6px;font-family:var(--fC);font-size:10px;letter-spacing:2.5px;z-index:9999;transition:transform 0.35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 4px 30px rgba(0,255,204,0.1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-        /* Tabs System */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+/* ── FOOTER ── */
+footer{text-align:center;padding:50px 20px 36px;position:relative;z-index:1}
+footer::before{content:'';display:block;width:100%;height:1px;margin-bottom:36px;background:linear-gradient(90deg,transparent,var(--bor) 20%,rgba(255,0,51,0.28) 50%,var(--bor) 80%,transparent)}
+.foot-logo{font-family:var(--fH);font-size:11px;font-weight:800;letter-spacing:5px;color:var(--r);text-shadow:0 0 22px var(--r-glow)}
+.foot-line{width:40px;height:1px;background:var(--r);opacity:0.4;margin:13px auto}
+.foot-text{font-family:var(--fC);font-size:9px;letter-spacing:2px;color:var(--t3);line-height:2.6}
+.foot-text strong{color:var(--r);font-weight:400}
 
-        .tab {
-            padding: 12px 25px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: bold;
-            color: var(--text-dim);
-        }
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#000}
+::-webkit-scrollbar-thumb{background:#1c1c28;border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--r)}
 
-        .tab.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-        }
-
-        /* Code Panels */
-        .panel {
-            display: none;
-            background: var(--bg-card);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid #333;
-            animation: slideUp 0.4s ease;
-        }
-
-        .panel.active { display: block; }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .toolbar {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .btn-tool {
-            background: #252525;
-            color: white;
-            border: 1px solid #444;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: 0.2s;
-        }
-
-        .btn-tool:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        pre {
-            background: #050505;
-            padding: 20px;
-            border-radius: 10px;
-            max-height: 500px;
-            overflow: auto;
-            color: #ff9999;
-            font-family: 'Consolas', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-            border-left: 4px solid var(--primary);
-        }
-
-        /* Responsive Mobile */
-        @media (max-width: 600px) {
-            header h1 { font-size: 1.8rem; }
-            .input-group { flex-direction: column; }
-            button.main-btn { width: 100%; }
-            .tabs { gap: 8px; }
-            .tab { padding: 8px 15px; font-size: 0.9rem; }
-        }
-    </style>
+@media(max-width:500px){
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .modules-row{grid-template-columns:repeat(3,1fr)}
+  .hero-bg-txt{display:none}
+  .card-body{padding:16px}
+  .ccard-body pre{font-size:10.5px}
+}
+</style>
 </head>
 <body>
+<div class="scanlines"></div>
 
-    <!-- Loader Overlay -->
-    <div id="loader-overlay">
-        <div class="scanner"></div>
-        <div class="loading-text" id="loadStatus">INITIALIZING...</div>
-        <div id="fileCount" style="margin-top: 10px; color: var(--text-dim);"></div>
+<header>
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-icon">
+        <!-- Web Cloner SVG Icon: layered document pages + clone arrow + animated scan -->
+        <svg viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sweepCl" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ff0033" stop-opacity="0"/>
+              <stop offset="50%" stop-color="#ff0033" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#ff0033" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Back page (offset, faded) -->
+          <rect x="13" y="5" width="20" height="26" rx="2" fill="none" stroke="#ff0033" stroke-width="0.9" opacity="0.22"/>
+
+          <!-- Front page body -->
+          <rect x="8" y="9" width="20" height="27" rx="2" fill="#080010" stroke="#ff0033" stroke-width="1.2" opacity="0.88"/>
+
+          <!-- Folded corner on front page -->
+          <path d="M23 9 L28 9 L28 14 Z" fill="none" stroke="#ff0033" stroke-width="0.9" opacity="0.45"/>
+          <line x1="23" y1="9" x2="23" y2="14" stroke="#ff0033" stroke-width="0.7" opacity="0.25"/>
+          <line x1="23" y1="14" x2="28" y2="14" stroke="#ff0033" stroke-width="0.7" opacity="0.25"/>
+
+          <!-- Code lines on front page -->
+          <line x1="12" y1="18" x2="21" y2="18" stroke="#ff0033" stroke-width="1.3" opacity="0.75" stroke-linecap="round"/>
+          <line x1="12" y1="22" x2="25" y2="22" stroke="#ff0033" stroke-width="1.3" opacity="0.55" stroke-linecap="round"/>
+          <line x1="12" y1="26" x2="19" y2="26" stroke="#ff0033" stroke-width="1.3" opacity="0.38" stroke-linecap="round"/>
+          <line x1="12" y1="30" x2="23" y2="30" stroke="#ff0033" stroke-width="1.3" opacity="0.22" stroke-linecap="round"/>
+
+          <!-- Clone arrow pointing right -->
+          <line x1="30" y1="22.5" x2="40" y2="22.5" stroke="#ff0033" stroke-width="1.4" stroke-linecap="round" opacity="0.85"/>
+          <path d="M36.5 18.5 L40.5 22.5 L36.5 26.5" stroke="#ff0033" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+
+          <!-- Small cloned page at arrow tip -->
+          <rect x="2" y="31" width="12" height="12" rx="1.5" fill="none" stroke="#ff0033" stroke-width="0.8" opacity="0.35"/>
+          <line x1="4" y1="34" x2="12" y2="34" stroke="#ff0033" stroke-width="0.7" opacity="0.3" stroke-linecap="round"/>
+          <line x1="4" y1="37" x2="10" y2="37" stroke="#ff0033" stroke-width="0.7" opacity="0.2" stroke-linecap="round"/>
+
+          <!-- Animated scan sweep line over front page -->
+          <rect x="8" y="9" width="20" height="2" fill="url(#sweepCl)" opacity="0.95">
+            <animateTransform attributeName="transform" type="translate" from="0 0" to="0 27" dur="2.4s" repeatCount="indefinite"/>
+          </rect>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-l1">WEB</div>
+        <div class="logo-l2">CLONER</div>
+      </div>
     </div>
-
-    <div class="container">
-        <header>
-            <h3>WEB CLONER</h3>
-            <p style="color: var(--text-dim); margin-top: 10px;">Fastest Frontend Asset Extraction Tool</p>
-        </header>
-
-        <div class="input-section">
-            <div class="input-group">
-                <input type="url" id="targetUrl" placeholder="Enter target website URL (https://...)" required>
-                <button class="main-btn" onclick="cloneWebsite()">
-                    <i class="fas fa-bolt"></i> Clone Now
-                </button>
-            </div>
-        </div>
-
-        <div class="tabs">
-            <div class="tab active" data-target="html-panel">HTML Source</div>
-            <div class="tab" data-target="css-panel">CSS Styles</div>
-            <div class="tab" data-target="js-panel">JS Scripts</div>
-        </div>
-
-        <!-- HTML Panel -->
-        <div class="panel active" id="html-panel">
-            <div class="toolbar">
-                <button class="btn-tool" onclick="copyCode('htmlCode')"><i class="fas fa-copy"></i> Copy</button>
-                <button class="btn-tool" onclick="downloadFile('index.html', 'htmlCode')"><i class="fas fa-download"></i> Download</button>
-            </div>
-            <pre id="htmlCode">// HTML output will appear here...</pre>
-        </div>
-
-        <!-- CSS Panel -->
-        <div class="panel" id="css-panel">
-            <div class="toolbar">
-                <button class="btn-tool" onclick="copyCode('cssCode')"><i class="fas fa-copy"></i> Copy</button>
-                <button class="btn-tool" onclick="downloadFile('style.css', 'cssCode')"><i class="fas fa-download"></i> Download</button>
-            </div>
-            <pre id="cssCode">// Combined CSS output will appear here...</pre>
-        </div>
-
-        <!-- JS Panel -->
-        <div class="panel" id="js-panel">
-            <div class="toolbar">
-                <button class="btn-tool" onclick="copyCode('jsCode')"><i class="fas fa-copy"></i> Copy</button>
-                <button class="btn-tool" onclick="downloadFile('script.js', 'jsCode')"><i class="fas fa-download"></i> Download</button>
-            </div>
-            <pre id="jsCode">// Combined JS output will appear here...</pre>
-        </div>
+    <div class="hdr-badges">
+      <div class="badge badge-pro">PRO</div>
+      <div class="badge badge-live"><div class="dot-pulse"></div>LIVE</div>
     </div>
+  </div>
+</header>
+<br>
+  <!-- INPUT CARD -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-l"><i class="fas fa-satellite-dish"></i> TARGET WEBSITE INPUT</div>
+      <div class="card-head-r">MULTI-PROXY ENGINE</div>
+    </div>
+    <div class="card-body">
+      <label class="lbl">ENTER TARGET URL</label>
+      <div class="inp-wrap">
+        <i class="fas fa-globe inp-ico"></i>
+        <input class="inp" id="targetUrl" type="url" placeholder="https://example.com" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="inp-hint">SUPPORTS: HTTP · HTTPS · SUBDOMAINS · ANY PUBLIC WEBSITE</div>
 
-    <script>
-        const proxy = "https://api.allorigins.win/raw?url=";
+      <div class="proxy-bar">
+        <div class="proxy-tag" id="px0"><i class="fas fa-circle"></i>PROXY-1 allorigins</div>
+        <div class="proxy-tag" id="px1"><i class="fas fa-circle"></i>PROXY-2 corsproxy</div>
+        <div class="proxy-tag" id="px2"><i class="fas fa-circle"></i>PROXY-3 codetabs</div>
+      </div>
 
-        // Tab Switch Logic
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.onclick = () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.target).classList.add('active');
-            }
-        });
+      <label class="lbl">EXTRACTION MODULES</label>
+      <div class="modules-row">
+        <div class="mod on" id="opt-html"><div class="mod-ico"><i class="fas fa-code"></i></div><div class="mod-name">HTML</div><div class="mod-sub">Source</div></div>
+        <div class="mod on" id="opt-css"><div class="mod-ico"><i class="fas fa-palette"></i></div><div class="mod-name">CSS</div><div class="mod-sub">Styles</div></div>
+        <div class="mod on" id="opt-js"><div class="mod-ico"><i class="fas fa-bolt"></i></div><div class="mod-name">JS</div><div class="mod-sub">Scripts</div></div>
+      </div>
 
-        async function cloneWebsite() {
-            const url = document.getElementById('targetUrl').value.trim();
-            if (!url) return alert("Please enter a valid URL!");
+      <button class="btn" id="cloneBtn" onclick="doClone()">
+        <span class="btn-shine"></span><span class="btn-sweep"></span>
+        <i class="fas fa-clone"></i> EXTRACT ASSETS
+      </button>
 
-            const loader = document.getElementById('loader-overlay');
-            const statusText = document.getElementById('loadStatus');
-            const fileCount = document.getElementById('fileCount');
+      <div class="prog-wrap" id="cloneProg">
+        <div class="prog-top">
+          <span class="prog-lbl" id="progTxt">CONNECTING...</span>
+          <span class="prog-pct" id="progPct">0%</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+        <div class="steps" id="cloneSteps"></div>
+      </div>
+    </div>
+  </div>
 
-            loader.style.display = 'flex';
-            statusText.textContent = "CONNECTING TO TARGET...";
+  <div class="results" id="cloneRes"></div>
+</main>
 
-            try {
-                // Phase 1: Fetch HTML
-                const response = await fetch(proxy + encodeURIComponent(url));
-                const html = await response.text();
-                document.getElementById('htmlCode').textContent = html;
-                
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
+<footer>
+  <div class="foot-logo">WEB CLONER</div>
+  <div class="foot-line"></div>
+  <div class="foot-text">© 2026 <strong>BANGLADESH CYBER TROOPS</strong><br>DEVELOPED BY <strong>TROOPS IT SOLUTIONS</strong></div>
+</footer>
+<div class="toast" id="toast">COPIED</div>
 
-                // Extract CSS & JS URLs
-                const cssLinks = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'))
-                                    .map(l => new URL(l.getAttribute('href'), url).href);
-                const jsLinks = Array.from(doc.querySelectorAll('script[src]'))
-                                    .map(s => new URL(s.getAttribute('src'), url).href);
+<script>
+;(function(){
+  const cols=['#ff0033','#cc0020','#ff3355','#aa001a','#ff2244'];
+  for(let i=0;i<26;i++){
+    const d=document.createElement('div');d.className='ptcl';
+    const s=Math.random()*2.2+0.4;
+    d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${s}px;height:${s}px;background:${cols[i%cols.length]};--d:${9+Math.random()*15}s;--dl:${-Math.random()*20}s;--op:${0.12+Math.random()*0.4};--tx:${(Math.random()-.5)*80}px;--ty:${-50-Math.random()*100}px;--sc:${0.35+Math.random()}`;
+    document.body.appendChild(d);
+  }
+})();
 
-                // Phase 2: Parallel Fetching for Speed
-                statusText.textContent = "EXTRACTING ASSETS...";
-                fileCount.textContent = `Found ${cssLinks.length} CSS and ${jsLinks.length} JS files`;
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-                // Fetch all CSS in parallel
-                const cssData = await Promise.all(cssLinks.map(link => 
-                    fetch(proxy + encodeURIComponent(link)).then(r => r.text()).catch(e => `/* Error loading ${link} */`)
-                ));
-                document.getElementById('cssCode').textContent = cssData.join("\n\n") || "/* No external CSS found */";
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+function fmtBytes(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB';}
+function countLines(s){return s.split('\n').length;}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-                // Fetch all JS in parallel
-                statusText.textContent = "COMPILING SCRIPTS...";
-                const jsData = await Promise.all(jsLinks.map(link => 
-                    fetch(proxy + encodeURIComponent(link)).then(r => r.text()).catch(e => `/* Error loading ${link} */`)
-                ));
-                document.getElementById('jsCode').textContent = jsData.join("\n\n") || "/* No external JS found */";
+function setP(pct,txt){$('progFill').style.width=pct+'%';$('progTxt').textContent=txt;$('progPct').textContent=Math.round(pct)+'%';}
+function mkStep(txt,st='go'){
+  const c=$('cloneSteps'),m={go:['◈','var(--y)'],done:['✓','var(--g)'],fail:['✗','var(--r)']};
+  const el=document.createElement('div');el.className='step '+st;
+  el.innerHTML=`<div class="step-ico" style="color:${m[st][1]}">${m[st][0]}</div><span>${txt}</span>`;
+  c.appendChild(el);return el;
+}
+function updStep(el,st,txt){
+  if(!el)return;
+  const m={go:['◈','var(--y)'],done:['✓','var(--g)'],fail:['✗','var(--r)']};
+  el.className='step '+st;
+  const ico=el.querySelector('.step-ico');ico.style.color=m[st][1];ico.textContent=m[st][0];
+  if(txt)el.querySelector('span').textContent=txt;
+}
+function showRP(name,btn){
+  document.querySelectorAll('[id^="rp-"]').forEach(p=>p.classList.remove('on'));
+  const el=$('rp-'+name);if(el)el.classList.add('on');
+  btn.closest('.rtabs').querySelectorAll('.rtb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
 
-                statusText.textContent = "SUCCESS!";
-                setTimeout(() => loader.style.display = 'none', 1000);
+document.querySelectorAll('.mod').forEach(m=>m.addEventListener('click',()=>m.classList.toggle('on')));
 
-            } catch (err) {
-                alert("Error cloning site. The site might be blocking requests.");
-                loader.style.display = 'none';
-            }
-        }
+/* PROXY ENGINE */
+const PROXIES=[
+  u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+];
+function setPx(idx,state){
+  document.querySelectorAll('.proxy-tag').forEach((t,i)=>{t.classList.remove('active','trying');if(i===idx)t.classList.add(state);});
+}
+function resetPx(){document.querySelectorAll('.proxy-tag').forEach(t=>t.classList.remove('active','trying'));}
 
-        function copyCode(id) {
-            const text = document.getElementById(id).textContent;
-            navigator.clipboard.writeText(text);
-            alert("Code Copied!");
-        }
+async function fetchProxy(url,timeout=13000){
+  for(let i=0;i<PROXIES.length;i++){
+    setPx(i,'trying');
+    try{
+      const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),timeout);
+      const res=await fetch(PROXIES[i](url),{signal:ctrl.signal});
+      clearTimeout(tid);
+      if(res.ok){const text=await res.text();if(text&&text.trim().length>10){setPx(i,'active');return{text,pi:i};}}
+    }catch(e){}
+  }
+  resetPx();throw new Error('ALL_PROXIES_FAILED');
+}
 
-        function downloadFile(filename, id) {
-            const text = document.getElementById(id).textContent;
-            const blob = new Blob([text], { type: 'text/plain' });
-            const element = document.createElement('a');
-            element.href = URL.createObjectURL(blob);
-            element.download = filename;
-            element.click();
-        }
-    </script>
+function resolveUrl(href,base){
+  if(!href)return null;href=href.trim();
+  if(href.startsWith('data:')||href.startsWith('blob:'))return null;
+  if(href.startsWith('//'))return'https:'+href;
+  if(/^https?:\/\//i.test(href))return href;
+  try{return new URL(href,base).href;}catch{return null;}
+}
+
+window.copyCode=function(id){const el=$(id);if(!el)return;navigator.clipboard.writeText(el.textContent).then(()=>toast('COPIED TO CLIPBOARD'));};
+window.dlCode=function(fn,id){const el=$(id);if(!el)return;const blob=new Blob([el.textContent],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;a.click();toast('DOWNLOADING — '+fn.toUpperCase());};
+window.dlAssets=function(){
+  if(!window._ad)return;const{css,js,img,font,base}=window._ad;
+  let out=`ASSET MAP EXPORT\nSOURCE: ${base}\nDATE: ${new Date().toUTCString()}\n${'─'.repeat(60)}\n\n`;
+  const sec=(t,a)=>{if(a.length){out+=`[ ${t} — ${a.length} ]\n`;a.forEach((u,i)=>out+=`  ${i+1}. ${u}\n`);out+='\n';}};
+  sec('CSS STYLESHEETS',css);sec('JS SCRIPTS',js);sec('IMAGES',img);sec('FONTS',font);
+  const blob=new Blob([out],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='asset-map.txt';a.click();toast('ASSET MAP EXPORTED');
+};
+
+async function doClone(){
+  let raw=$('targetUrl').value.trim();
+  if(!raw){toast('ENTER A TARGET URL FIRST');return;}
+  if(!/^https?:\/\//i.test(raw))raw='https://'+raw;
+  const btn=$('cloneBtn'),prog=$('cloneProg'),res=$('cloneRes');
+  const wH=$('opt-html').classList.contains('on');
+  const wC=$('opt-css').classList.contains('on');
+  const wJ=$('opt-js').classList.contains('on');
+  btn.disabled=true;prog.style.display='block';$('cloneSteps').innerHTML='';
+  res.style.display='none';res.innerHTML='';resetPx();
+  let htmlText='',cssBlocks=[],jsBlocks=[];
+  let cssLinks=[],jsLinks=[],imgLinks=[],fontLinks=[];
+  let cssOk=0,cssErr=0,jsOk=0,jsErr=0,pi=0;
+
+  setP(3,'CONNECTING TO TARGET...');
+
+  const s1=mkStep('FETCHING HTML SOURCE VIA PROXY ENGINE');
+  await sleep(60);
+  try{const{text,pi:p}=await fetchProxy(raw);htmlText=text;pi=p;updStep(s1,'done',`HTML — ${fmtBytes(text.length)} via PROXY-${p+1}`);}
+  catch(e){updStep(s1,'fail','ALL PROXIES FAILED — SITE MAY BLOCK REQUESTS');setP(100,'FAILED');btn.disabled=false;toast('FETCH FAILED');return;}
+  setP(18,'PARSING DOM...');
+
+  const s2=mkStep('PARSING DOM TREE & MAPPING ALL ASSETS');
+  await sleep(50);
+  const doc=(new DOMParser()).parseFromString(htmlText,'text/html');
+  cssLinks=[...new Set(Array.from(doc.querySelectorAll('link[rel="stylesheet"],link[as="style"]')).map(l=>resolveUrl(l.getAttribute('href'),raw)).filter(Boolean))];
+  jsLinks=[...new Set(Array.from(doc.querySelectorAll('script[src]')).map(s=>resolveUrl(s.getAttribute('src'),raw)).filter(Boolean))];
+  imgLinks=[...new Set(Array.from(doc.querySelectorAll('img[src],img[data-src]')).map(i=>resolveUrl(i.getAttribute('src')||i.getAttribute('data-src'),raw)).filter(Boolean))];
+  fontLinks=[...new Set(Array.from(doc.querySelectorAll('link[rel="preload"][as="font"],link[href*="fonts"]')).map(l=>resolveUrl(l.getAttribute('href'),raw)).filter(Boolean))];
+  Array.from(doc.querySelectorAll('style')).forEach(s=>{for(const m of s.textContent.matchAll(/@import\s+url\(['"]?([^'")\s]+)['"]?\)/g)){const u=resolveUrl(m[1],raw);if(u&&!cssLinks.includes(u))cssLinks.push(u);}});
+  updStep(s2,'done',`MAPPED — ${cssLinks.length} CSS · ${jsLinks.length} JS · ${imgLinks.length} IMG · ${fontLinks.length} FONT`);
+  setP(32,'FETCHING CSS...');
+
+  if(wC&&cssLinks.length>0){
+    const s3=mkStep(`PARALLEL FETCH — ${cssLinks.length} STYLESHEET(S)`);
+    const r=await Promise.all(cssLinks.map(async l=>{try{const{text}=await fetchProxy(l,10000);cssOk++;return`/* ══ ${l} ══ */\n${text}`;}catch{cssErr++;return`/* FAILED: ${l} */`;}}) );
+    cssBlocks=r;updStep(s3,'done',`CSS — ${cssOk} OK · ${cssErr} FAILED`);
+  }
+  setP(62,'FETCHING JS...');
+
+  if(wJ&&jsLinks.length>0){
+    const s4=mkStep(`PARALLEL FETCH — ${jsLinks.length} SCRIPT(S)`);
+    const r=await Promise.all(jsLinks.map(async l=>{try{const{text}=await fetchProxy(l,10000);jsOk++;return`/* ══ ${l} ══ */\n${text}`;}catch{jsErr++;return`/* FAILED: ${l} */`;}}) );
+    jsBlocks=r;updStep(s4,'done',`JS — ${jsOk} OK · ${jsErr} FAILED`);
+  }
+  setP(88,'COMPILING...');
+
+  const s5=mkStep('COMPILING FINAL OUTPUT');await sleep(160);
+  const fullCss=cssBlocks.join('\n\n')||'/* No external CSS found */';
+  const fullJs=jsBlocks.join('\n\n')||'/* No external JS found */';
+  const totalB=htmlText.length+fullCss.length+fullJs.length;
+  updStep(s5,'done',`COMPLETE — TOTAL ${fmtBytes(totalB)}`);
+  setP(100,'EXTRACTION COMPLETE ✓');await sleep(360);
+
+  function aRow(n,type,cls,atCls,url,stat,sc){return`<div class="alist-row ac-${cls}"><div class="alist-num">${n}</div><span class="atype at-${atCls}">${type}</span><div class="aurl" title="${url}">${url}</div><span class="astatus ${sc}">${stat}</span></div>`;}
+  function aSec(col,label,count){return`<div class="alist-section"><div class="sdot" style="background:${col}"></div><span>${label}</span><span class="scount">${count}</span></div>`;}
+
+  let aHtml='',aIdx=1;
+  if(cssLinks.length){aHtml+=aSec('var(--b)','CSS STYLESHEETS',cssLinks.length);cssLinks.forEach(u=>{aHtml+=aRow(aIdx++,'CSS','css','css',u,'FETCHED','as-ok');});}
+  if(jsLinks.length){aHtml+=aSec('var(--y)','JS SCRIPTS',jsLinks.length);jsLinks.forEach(u=>{aHtml+=aRow(aIdx++,'JS','js','js',u,'FETCHED','as-ok');});}
+  if(imgLinks.length){aHtml+=aSec('var(--g)','IMAGES',Math.min(imgLinks.length,60));imgLinks.slice(0,60).forEach(u=>{aHtml+=aRow(aIdx++,'IMG','img','img',u,'MAPPED','as-map');});}
+  if(fontLinks.length){aHtml+=aSec('var(--pu)','FONTS',fontLinks.length);fontLinks.forEach(u=>{aHtml+=aRow(aIdx++,'FONT','font','font',u,'MAPPED','as-map');});}
+  if(!aHtml)aHtml=`<div class="nodata"><i class="fas fa-folder-open"></i>No external assets detected</div>`;
+
+  const host=raw.replace(/^https?:\/\//,'').split('/')[0];
+  res.innerHTML=`
+  <div class="stat-grid">
+    <div class="stat-box sb-html"><div class="stat-num cn-r">${fmtBytes(htmlText.length)}</div><div class="stat-lbl">HTML SIZE</div><div class="stat-sub">${countLines(htmlText).toLocaleString()} lines</div></div>
+    <div class="stat-box sb-css"><div class="stat-num cn-b">${cssLinks.length}</div><div class="stat-lbl">CSS FILES</div><div class="stat-sub">${cssOk} ok · ${cssErr} failed</div></div>
+    <div class="stat-box sb-js"><div class="stat-num cn-y">${jsLinks.length}</div><div class="stat-lbl">JS FILES</div><div class="stat-sub">${jsOk} ok · ${jsErr} failed</div></div>
+    <div class="stat-box sb-total"><div class="stat-num cn-g">${fmtBytes(totalB)}</div><div class="stat-lbl">TOTAL SIZE</div><div class="stat-sub">${imgLinks.length} img · ${fontLinks.length} font</div></div>
+  </div>
+  <div class="rtabs">
+    <button class="rtb on" onclick="showRP('html',this)"><i class="fas fa-code"></i> HTML <span class="cnt">${countLines(htmlText).toLocaleString()}L</span></button>
+    <button class="rtb" onclick="showRP('css',this)"><i class="fas fa-palette"></i> CSS <span class="cnt">${cssLinks.length}</span></button>
+    <button class="rtb" onclick="showRP('js',this)"><i class="fas fa-bolt"></i> JS <span class="cnt">${jsLinks.length}</span></button>
+    <button class="rtb" onclick="showRP('assets',this)"><i class="fas fa-folder-tree"></i> ASSETS <span class="cnt">${aIdx-1}</span></button>
+  </div>
+  <div id="rp-html" class="rpanel on">
+    <div class="ccard">
+      <div class="ccard-head"><div class="ccard-title"><i class="fas fa-code"></i> HTML SOURCE — ${host}</div><div class="ccard-actions"><button class="cbtn" onclick="copyCode('pre-html')"><i class="fas fa-copy"></i> COPY</button><button class="cbtn dl" onclick="dlCode('index.html','pre-html')"><i class="fas fa-download"></i> DOWNLOAD</button></div></div>
+      <div class="ccard-body"><pre id="pre-html">${esc(htmlText)}</pre></div>
+      <div class="ccard-footer"><span>${countLines(htmlText).toLocaleString()} LINES · ${fmtBytes(htmlText.length)}</span><span>PROXY-${pi+1} · ${new Date().toUTCString()}</span></div>
+    </div>
+  </div>
+  <div id="rp-css" class="rpanel">
+    <div class="ccard">
+      <div class="ccard-head"><div class="ccard-title"><i class="fas fa-palette"></i> COMBINED CSS — ${cssLinks.length} FILE(S)</div><div class="ccard-actions"><button class="cbtn" onclick="copyCode('pre-css')"><i class="fas fa-copy"></i> COPY</button><button class="cbtn dl" onclick="dlCode('styles.css','pre-css')"><i class="fas fa-download"></i> DOWNLOAD</button></div></div>
+      <div class="ccard-body"><pre id="pre-css">${esc(fullCss)}</pre></div>
+      <div class="ccard-footer"><span>${countLines(fullCss).toLocaleString()} LINES · ${fmtBytes(fullCss.length)}</span><span>${cssOk} OK · ${cssErr} FAILED</span></div>
+    </div>
+  </div>
+  <div id="rp-js" class="rpanel">
+    <div class="ccard">
+      <div class="ccard-head"><div class="ccard-title"><i class="fas fa-bolt"></i> COMBINED JS — ${jsLinks.length} FILE(S)</div><div class="ccard-actions"><button class="cbtn" onclick="copyCode('pre-js')"><i class="fas fa-copy"></i> COPY</button><button class="cbtn dl" onclick="dlCode('scripts.js','pre-js')"><i class="fas fa-download"></i> DOWNLOAD</button></div></div>
+      <div class="ccard-body"><pre id="pre-js">${esc(fullJs)}</pre></div>
+      <div class="ccard-footer"><span>${countLines(fullJs).toLocaleString()} LINES · ${fmtBytes(fullJs.length)}</span><span>${jsOk} OK · ${jsErr} FAILED</span></div>
+    </div>
+  </div>
+  <div id="rp-assets" class="rpanel">
+    <div class="ccard">
+      <div class="ccard-head"><div class="ccard-title"><i class="fas fa-folder-tree"></i> COMPLETE ASSET MAP</div><div class="ccard-actions"><button class="cbtn dl" onclick="dlAssets()"><i class="fas fa-download"></i> EXPORT TXT</button></div></div>
+      <div class="ccard-body" style="padding:0"><div class="alist">${aHtml}</div></div>
+      <div class="ccard-footer"><span>${cssLinks.length} CSS · ${jsLinks.length} JS · ${imgLinks.length} IMG · ${fontLinks.length} FONT</span><span>TOTAL ${aIdx-1} ASSETS</span></div>
+    </div>
+  </div>`;
+
+  res.style.display='block';prog.style.display='none';btn.disabled=false;
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+  window._ad={css:cssLinks,js:jsLinks,img:imgLinks,font:fontLinks,base:raw};
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='targetUrl')doClone();});
+</script>
 </body>
 </html>
