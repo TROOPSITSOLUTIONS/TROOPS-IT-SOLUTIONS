@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BCT Threat Reporter Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --r:#ff0033;--r2:#cc0022;--r3:#ff4455;
+  --rg:rgba(255,0,51,.65);--rd:rgba(255,0,51,.09);
+  --g:#00ffcc;--gg:rgba(0,255,204,.45);
+  --y:#ffd700;--yg:rgba(255,215,0,.45);
+  --b:#0099ff;--bg:rgba(0,153,255,.45);
+  --bgr:#03000a;--c1:#07010f;
+  --bor:rgba(255,0,51,.22);--bor2:rgba(255,0,51,.08);
+  --t1:#fff;--t2:#ddd;--t3:#55556a;
+  --fH:'Orbitron',monospace;--fB:'Rajdhani',sans-serif;--fC:'JetBrains Mono',monospace;
+  --glow:0 0 20px rgba(255,0,51,.35),0 0 60px rgba(255,0,51,.1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bgr);color:var(--t1);font-family:var(--fB);min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 110% 55% at 50% -5%,rgba(255,0,40,.28) 0%,transparent 52%),
+    radial-gradient(ellipse 60% 55% at -5% 55%,rgba(180,0,30,.18) 0%,transparent 52%),
+    radial-gradient(ellipse 55% 50% at 105% 85%,rgba(140,0,20,.14) 0%,transparent 52%),
+    linear-gradient(165deg,#0c0003 0%,#03000a 45%,#07000e 100%);}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,0,51,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,0,51,.022) 1px,transparent 1px);
+  background-size:48px 48px;mask-image:radial-gradient(ellipse 92% 92% at 50% 50%,black 10%,transparent 78%);}
+.scanlines{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.016) 2px,rgba(0,0,0,.016) 4px);
+  animation:scanmv 10s linear infinite;}
+@keyframes scanmv{0%{background-position:0 0}100%{background-position:0 80px}}
+
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:500;background:rgba(3,0,10,.97);border-bottom:1px solid var(--bor);backdrop-filter:blur(32px) saturate(160%)}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,51,.9) 30%,rgba(255,60,90,.5) 50%,rgba(255,0,51,.9) 70%,transparent)}
+.hdr{max-width:1160px;margin:0 auto;padding:0 16px;height:62px;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:13px}
+.logo-icon{width:46px;height:46px;flex-shrink:0}
+.logo-icon svg{width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(255,0,51,.75)) drop-shadow(0 0 4px rgba(255,0,51,.4))}
+.shield-pulse{animation:shieldPulse 2.4s ease infinite}
+@keyframes shieldPulse{0%,100%{opacity:.9}50%{opacity:.55}}
+.logo-text{font-family:var(--fH);font-weight:900}
+.logo-l1{font-size:12px;letter-spacing:4px;color:var(--t1);line-height:1}
+.logo-l2{font-size:7.5px;letter-spacing:5px;color:var(--r);line-height:1;margin-top:5px;text-shadow:0 0 18px var(--rg)}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.hbadge{font-family:var(--fC);font-size:7.5px;letter-spacing:2px;padding:5px 10px;border-radius:4px}
+.hb-g{border:1px solid rgba(0,255,204,.35);color:var(--g);background:rgba(0,255,204,.06)}
+.hb-live{border:1px solid rgba(255,0,51,.5);color:var(--r);background:rgba(255,0,51,.08);display:flex;align-items:center;gap:5px}
+.dp{width:6px;height:6px;border-radius:50%;background:var(--r);animation:dpp 1.4s ease infinite;box-shadow:0 0 6px var(--r)}
+@keyframes dpp{0%,100%{box-shadow:0 0 0 0 rgba(255,0,51,.9)}70%{box-shadow:0 0 0 5px transparent}}
+
+/* ── MAIN ── */
+main{flex:1;max-width:1160px;margin:0 auto;padding:18px 14px 70px;width:100%;position:relative;z-index:1}
+.two-col{display:grid;grid-template-columns:390px 1fr;gap:14px;align-items:start}
+
+/* ── PANEL ── */
+.panel{background:linear-gradient(145deg,rgba(8,1,16,.98),rgba(5,0,11,.95));border:1px solid rgba(255,0,51,.16);border-radius:16px;overflow:hidden;position:relative;margin-bottom:12px;box-shadow:0 8px 40px rgba(0,0,0,.5),0 2px 0 rgba(255,0,51,.1) inset}
+.panel:last-child{margin-bottom:0}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,51,.8) 40%,rgba(255,60,80,.4) 60%,transparent)}
+.panel::after{content:'';position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 30px 30px 0;border-color:transparent rgba(255,0,51,.1) transparent transparent}
+.ph{padding:11px 17px;border-bottom:1px solid rgba(255,0,51,.09);background:linear-gradient(90deg,rgba(255,0,51,.07),transparent);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ph-l{font-family:var(--fH);font-size:7.5px;letter-spacing:3px;color:#ffffff;display:flex;align-items:center;gap:8px}
+.ph-l i{color:var(--r);font-size:11px;text-shadow:0 0 10px var(--rg)}
+.ph-r{font-family:var(--fC);font-size:7px;letter-spacing:2px;color:rgba(255,0,51,.7);border:1px solid rgba(255,0,51,.2);padding:3px 9px;border-radius:4px;background:rgba(255,0,51,.06)}
+.pb{padding:16px}
+
+/* ── FORM ELEMENTS ── */
+.fl{margin-bottom:13px}
+.fl:last-child{margin-bottom:0}
+.lbl{font-family:var(--fC);font-size:7px;letter-spacing:3px;color:#ffffff;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.lbl i{color:var(--r);font-size:10px}
+.req{color:var(--r);margin-left:2px}
+.inp{width:100%;background:rgba(8,0,15,.9);border:1px solid rgba(255,0,51,.14);border-radius:9px;padding:11px 13px;color:var(--t1);font-family:var(--fC);font-size:11.5px;letter-spacing:.3px;transition:all .25s;appearance:none;-webkit-appearance:none}
+.inp:focus{outline:none;border-color:rgba(255,0,51,.55);background:rgba(12,0,22,.95);box-shadow:0 0 0 3px rgba(255,0,51,.1),0 0 20px rgba(255,0,51,.07)}
+.inp::placeholder{color:rgba(255,0,51,.18);font-size:9.5px;letter-spacing:1.5px}
+select.inp{padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,0,51,.45)'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:calc(100% - 10px) center}
+select.inp option,select.inp optgroup{background:#09000f;color:var(--t1)}
+textarea.inp{resize:vertical;min-height:76px;line-height:1.6;padding-top:10px}
+.inp-wrap{position:relative}
+.inp-wrap .inp{padding-left:38px}
+.inp-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:rgba(255,0,51,.3);font-size:12px;pointer-events:none;transition:color .2s}
+.inp-wrap:focus-within .inp-ico{color:rgba(255,0,51,.7)}
+
+/* ── SCAM TYPE GRID ── */
+.scam-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.scam-card{padding:10px 6px;border-radius:9px;text-align:center;cursor:pointer;transition:all .22s;border:1px solid rgba(255,0,51,.1);background:rgba(8,0,15,.8);position:relative;overflow:hidden}
+.scam-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,51,.4),transparent);opacity:0;transition:opacity .2s}
+.scam-card:hover{border-color:rgba(255,0,51,.3);background:rgba(255,0,51,.06)}
+.scam-card:hover::before{opacity:1}
+.scam-card.active{border-color:var(--r);background:rgba(255,0,51,.1);box-shadow:0 0 16px rgba(255,0,51,.2),inset 0 1px 0 rgba(255,0,51,.2)}
+.scam-card.active::before{opacity:1}
+.scam-ico{font-size:18px;margin-bottom:5px;display:block;line-height:1}
+.scam-lbl{font-family:var(--fC);font-size:7px;letter-spacing:1px;color:#ffffff;line-height:1.4;transition:color .2s}
+.scam-card:hover .scam-lbl,.scam-card.active .scam-lbl{color:rgba(255,140,140,.85)}
+
+/* ── SEVERITY ── */
+.sev-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.sev-btn{padding:9px 4px;border-radius:8px;text-align:center;cursor:pointer;transition:all .2s;border:1px solid transparent;font-family:var(--fC);font-size:7px;letter-spacing:1px;background:rgba(8,0,15,.8)}
+.sev-btn .sev-ico{font-size:14px;display:block;margin-bottom:4px}
+.sev-btn .sev-lbl{display:block}
+.sev-btn.sev-low{border-color:rgba(0,255,204,.18);color:rgba(0,255,204,.45)}
+.sev-btn.sev-low.active{border-color:var(--g);color:var(--g);background:rgba(0,255,204,.1);box-shadow:0 0 14px rgba(0,255,204,.18)}
+.sev-btn.sev-med{border-color:rgba(255,215,0,.18);color:rgba(255,215,0,.45)}
+.sev-btn.sev-med.active{border-color:var(--y);color:var(--y);background:rgba(255,215,0,.1);box-shadow:0 0 14px rgba(255,215,0,.18)}
+.sev-btn.sev-hi{border-color:rgba(255,100,0,.18);color:rgba(255,100,0,.45)}
+.sev-btn.sev-hi.active{border-color:#ff6600;color:#ff6600;background:rgba(255,100,0,.1);box-shadow:0 0 14px rgba(255,100,0,.18)}
+.sev-btn.sev-crit{border-color:rgba(255,0,51,.18);color:rgba(255,0,51,.45)}
+.sev-btn.sev-crit.active{border-color:var(--r);color:var(--r);background:rgba(255,0,51,.1);box-shadow:0 0 14px rgba(255,0,51,.22)}
+
+/* ── GENERATE BUTTON ── */
+.btn-gen{width:100%;padding:15px;background:linear-gradient(135deg,#6a000e 0%,#b00020 25%,#ff0033 52%,#cc0025 78%,#880012 100%);color:#fff;border:none;font-family:var(--fH);font-weight:900;font-size:9.5px;letter-spacing:4px;cursor:pointer;border-radius:10px;position:relative;overflow:hidden;transition:all .35s;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);box-shadow:0 6px 30px rgba(255,0,51,.4),0 2px 0 rgba(255,100,100,.2) inset;margin-bottom:0}
+.btn-gen::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:skewX(-15deg) translateX(-120%);transition:.6s}
+.btn-gen:hover::before{transform:skewX(-15deg) translateX(220%)}
+.btn-gen:hover{box-shadow:0 10px 60px rgba(255,0,51,.55);transform:translateY(-2px)}
+.btn-gen:active{transform:translateY(0)}
+.btn-gen:disabled{opacity:.28;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ── PROGRESS STEPS ── */
+.prog-wrap{display:none;margin-top:14px}
+.prog-steps{display:flex;align-items:center;gap:0}
+.prog-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative}
+.prog-dot{width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,0,51,.2);background:rgba(5,0,10,.9);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,0,51,.2);transition:all .4s;flex-shrink:0;position:relative;z-index:1}
+.prog-step.s-done .prog-dot{border-color:var(--g);color:var(--g);background:rgba(0,255,204,.08);box-shadow:0 0 12px rgba(0,255,204,.2)}
+.prog-step.s-active .prog-dot{border-color:var(--r);color:var(--r);background:rgba(255,0,51,.08);animation:stepGlow 1s ease infinite}
+@keyframes stepGlow{0%,100%{box-shadow:0 0 6px rgba(255,0,51,.3)}50%{box-shadow:0 0 18px rgba(255,0,51,.6)}}
+.prog-lbl{font-family:var(--fC);font-size:6px;letter-spacing:1px;color:rgba(255,255,255,.32);text-align:center;line-height:1.3;max-width:52px}
+.prog-step.s-done .prog-lbl{color:rgba(0,255,204,.4)}
+.prog-step.s-active .prog-lbl{color:rgba(255,100,100,.65)}
+.prog-line{height:1px;background:rgba(255,0,51,.1);flex:1;margin-top:-19px;position:relative;z-index:0}
+.prog-line.done{background:linear-gradient(90deg,var(--g),rgba(0,255,204,.3))}
+.prog-bar{height:3px;background:rgba(10,0,18,.9);border-radius:2px;overflow:hidden;margin-top:10px;border:1px solid rgba(255,0,51,.1)}
+.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,#440010,var(--r),#ff5566);transition:width .3s ease;box-shadow:0 0 10px var(--rg)}
+.prog-txt{font-family:var(--fC);font-size:7.5px;letter-spacing:1.5px;color:rgba(255,255,255,.42);margin-top:6px;display:flex;justify-content:space-between}
+.prog-txt span:last-child{color:var(--r);font-weight:600}
+
+/* ── RESULT INFO CARDS ── */
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.info-card{background:rgba(8,0,15,.85);border:1px solid rgba(255,0,51,.1);border-radius:11px;padding:13px;overflow:hidden;position:relative}
+.info-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,var(--r),rgba(255,60,60,.3),transparent)}
+.ic-title{font-family:var(--fH);font-size:7px;letter-spacing:2.5px;color:rgba(255,255,255,.52);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ic-title i{color:var(--r);font-size:10px}
+.ir{margin-bottom:7px}
+.ir:last-child{margin-bottom:0}
+.ir-lbl{font-family:var(--fC);font-size:6.5px;letter-spacing:2.5px;color:rgba(255,255,255,.32)}
+.ir-val{font-family:var(--fC);font-size:11px;word-break:break-all;line-height:1.4;margin-top:2px}
+.ir-val.c-r{color:rgba(255,255,255,.88)}
+.ir-val.c-g{color:var(--g);text-shadow:0 0 8px var(--gg)}
+.ir-val.c-y{color:var(--y)}
+.ir-val.c-b{color:var(--b)}
+.ir-val.c-w{color:rgba(255,255,255,.78)}
+
+/* ── THREAT SCORE ── */
+.threat-card{background:rgba(8,0,15,.85);border:1px solid rgba(255,0,51,.12);border-radius:11px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:16px}
+.score-ring{position:relative;width:72px;height:72px;flex-shrink:0}
+.score-ring svg{position:absolute;inset:0}
+.score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.score-n{font-family:var(--fH);font-size:20px;font-weight:900;line-height:1}
+.score-s{font-family:var(--fC);font-size:6px;letter-spacing:1.5px;margin-top:2px}
+.score-info{flex:1}
+.score-level{font-family:var(--fH);font-size:10px;letter-spacing:2px;font-weight:800;margin-bottom:6px}
+.score-tags{display:flex;flex-wrap:wrap;gap:5px}
+.stag{font-family:var(--fC);font-size:6.5px;letter-spacing:1px;padding:3px 7px;border-radius:4px;border:1px solid}
+
+/* ── ABUSE EMAILS ── */
+.abuse-list{display:flex;flex-direction:column;gap:7px}
+.abuse-item{display:flex;align-items:center;gap:9px;padding:10px 13px;background:rgba(8,0,15,.85);border:1px solid rgba(255,0,51,.1);border-radius:9px;cursor:pointer;transition:all .22s}
+.abuse-item:hover{border-color:rgba(255,0,51,.38);background:rgba(255,0,51,.06);transform:translateX(2px)}
+.abuse-badge{font-family:var(--fC);font-size:6px;letter-spacing:1px;padding:3px 8px;border-radius:3px;flex-shrink:0;white-space:nowrap}
+.b-ip{border:1px solid rgba(0,153,255,.3);color:var(--b);background:rgba(0,153,255,.07)}
+.b-domain{border:1px solid rgba(255,215,0,.3);color:var(--y);background:rgba(255,215,0,.07)}
+.b-known{border:1px solid rgba(0,255,204,.3);color:var(--g);background:rgba(0,255,204,.07)}
+.b-pattern{border:1px solid rgba(100,100,100,.3);color:rgba(160,160,160,.6);background:rgba(100,100,100,.04)}
+.abuse-email{font-family:var(--fC);font-size:11px;color:rgba(255,255,255,.82);flex:1;word-break:break-all}
+.abuse-copy-btn{font-size:10px;color:rgba(255,0,51,.25);transition:color .2s;padding:3px;flex-shrink:0}
+.abuse-item:hover .abuse-copy-btn{color:rgba(255,0,51,.7)}
+
+/* ── EMAIL PREVIEW ── */
+.email-card{background:rgba(4,0,8,.95);border:1px solid rgba(255,0,51,.13);border-radius:11px;overflow:hidden}
+.ec-header{padding:10px 14px;background:rgba(255,0,51,.06);border-bottom:1px solid rgba(255,0,51,.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.ec-title{font-family:var(--fH);font-size:7px;letter-spacing:2.5px;color:rgba(255,255,255,.72);display:flex;align-items:center;gap:6px}
+.ec-btns{display:flex;gap:6px}
+.ec-btn{font-family:var(--fC);font-size:7px;letter-spacing:1px;padding:5px 11px;border-radius:5px;cursor:pointer;transition:all .2s;border:1px solid;display:flex;align-items:center;gap:5px;white-space:nowrap;background:transparent}
+.ec-btn.cpy{border-color:rgba(0,255,204,.25);color:rgba(0,255,204,.55)}
+.ec-btn.cpy:hover{border-color:var(--g);color:var(--g);background:rgba(0,255,204,.05)}
+.ec-btn.snd{border-color:rgba(255,0,51,.3);color:rgba(255,80,80,.6)}
+.ec-btn.snd:hover{border-color:var(--r);color:var(--r);background:rgba(255,0,51,.08)}
+.ec-btn.sndall{border-color:rgba(255,215,0,.25);color:rgba(255,215,0,.55)}
+.ec-btn.sndall:hover{border-color:var(--y);color:var(--y);background:rgba(255,215,0,.06)}
+.ec-meta{padding:10px 14px;border-bottom:1px solid rgba(255,0,51,.08);display:flex;flex-direction:column;gap:6px}
+.ec-row{display:flex;align-items:baseline;gap:10px}
+.ec-field{font-family:var(--fC);font-size:6.5px;letter-spacing:2px;color:rgba(255,255,255,.38);flex-shrink:0;min-width:42px}
+.ec-data{font-family:var(--fC);font-size:10.5px;word-break:break-all}
+.ec-to{color:rgba(0,153,255,.75)}
+.ec-subj{color:rgba(255,215,0,.7)}
+.ec-body{padding:14px;max-height:320px;overflow-y:auto;font-family:var(--fC);font-size:10.5px;color:rgba(255,255,255,.75);line-height:1.9;white-space:pre-wrap;word-break:break-word}
+
+/* ── REPORT LINKS ── */
+.rlinks-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rlink{display:flex;align-items:center;gap:9px;padding:10px 12px;background:rgba(8,0,15,.85);border:1px solid rgba(255,0,51,.1);border-radius:9px;text-decoration:none;cursor:pointer;transition:all .22s}
+.rlink:hover{border-color:rgba(255,0,51,.38);background:rgba(255,0,51,.06);transform:translateX(2px)}
+.rlink-ico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.rlink-text{flex:1;min-width:0}
+.rlink-name{font-family:var(--fC);font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.78);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rlink-desc{font-family:var(--fC);font-size:6.5px;letter-spacing:1px;color:rgba(255,255,255,.38);margin-top:2px}
+.rlink-arrow{font-size:8px;color:rgba(255,0,51,.25);flex-shrink:0;transition:color .2s}
+.rlink:hover .rlink-arrow{color:rgba(255,0,51,.7)}
+
+/* ── TERMINAL ── */
+.terminal-panel{background:rgba(2,0,5,.98);border:1px solid rgba(255,0,51,.12);border-radius:12px;overflow:hidden}
+.term-bar{padding:8px 14px;background:rgba(255,0,51,.04);border-bottom:1px solid rgba(255,0,51,.08);display:flex;align-items:center;gap:7px}
+.tdot{width:10px;height:10px;border-radius:50%}
+.td-r{background:radial-gradient(circle at 35% 35%,#ff5555,#ff3333);box-shadow:0 0 7px rgba(255,51,51,.6)}
+.td-y{background:radial-gradient(circle at 35% 35%,#ffdd44,#ffcc00);box-shadow:0 0 7px rgba(255,204,0,.4)}
+.td-g{background:radial-gradient(circle at 35% 35%,#44ee88,#00cc66);box-shadow:0 0 7px rgba(0,204,102,.4)}
+.term-title{font-family:var(--fC);font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.38);margin-left:4px}
+.terminal{padding:12px 14px;height:190px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.tline{font-family:var(--fC);font-size:10.5px;line-height:1.7;display:flex;gap:8px;align-items:baseline}
+.t-p{color:rgba(255,0,51,.35);flex-shrink:0;font-size:9px}
+.tl-info .t-v{color:#4fc3f7}
+.tl-success .t-v{color:var(--g)}
+.tl-error .t-v{color:var(--r);text-shadow:0 0 8px var(--rg)}
+.tl-warning .t-v{color:var(--y)}
+.tl-muted .t-v{color:rgba(100,80,100,.5)}
+.tl-data .t-v{color:rgba(255,255,255,.65)}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:50px 20px;border:1px dashed rgba(255,0,51,.1);border-radius:12px;margin-bottom:12px}
+.es-icon{width:70px;height:70px;margin:0 auto 16px;background:rgba(255,0,51,.05);border:1px solid rgba(255,0,51,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(255,0,51,.2)}
+.es-text{font-family:var(--fC);font-size:8px;letter-spacing:2.5px;color:rgba(255,255,255,.42);line-height:2.8}
+.es-hint{font-family:var(--fC);font-size:7px;letter-spacing:1.5px;color:rgba(0,255,204,.25);margin-top:8px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(90px);background:rgba(5,0,12,.97);border:1px solid rgba(255,0,51,.4);color:var(--r);padding:10px 22px;border-radius:7px;font-family:var(--fC);font-size:8.5px;letter-spacing:2px;z-index:9999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 8px 40px rgba(255,0,51,.22)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:rgba(0,255,204,.35);color:var(--g);box-shadow:0 8px 40px rgba(0,255,204,.1)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:#02000a}
+::-webkit-scrollbar-thumb{background:rgba(255,0,51,.2);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,0,51,.5)}
+
+/* ── DIVIDER ── */
+.sec-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,51,.15),transparent);margin:14px 0}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:28px 20px 20px;position:relative;z-index:1}
+footer::before{content:'';display:block;width:100%;height:1px;margin-bottom:20px;background:linear-gradient(90deg,transparent,rgba(255,0,51,.2) 20%,rgba(255,0,51,.35) 50%,rgba(255,0,51,.2) 80%,transparent)}
+footer p{font-family:var(--fH);font-size:.54rem;letter-spacing:2px;color:#221520}
+footer strong{color:rgba(255,0,51,.45);font-weight:400}
+
+/* ── RESPONSIVE ── */
+@media(max-width:880px){.two-col{grid-template-columns:1fr}}
+@media(max-width:560px){main{padding:12px 10px 55px}.result-grid{grid-template-columns:1fr}.rlinks-grid{grid-template-columns:1fr}.scam-grid{grid-template-columns:repeat(3,1fr)}.hdr{height:54px}}
+@media(max-width:360px){.scam-grid{grid-template-columns:repeat(2,1fr)}.sev-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="scanlines"></div>
+
+<header>
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="sg1" cx="45%" cy="25%" r="70%">
+              <stop offset="0%" stop-color="#ff5577" stop-opacity=".9"/>
+              <stop offset="100%" stop-color="#bb0018" stop-opacity=".7"/>
+            </radialGradient>
+          </defs>
+          <!-- Shield outer -->
+          <path d="M24 3 L41 10.5 L41 25 C41 35 33 42.5 24 46 C15 42.5 7 35 7 25 L7 10.5 Z" fill="rgba(3,0,10,.88)" stroke="#ff0033" stroke-width="1.1" opacity=".95"/>
+          <!-- Shield fill -->
+          <path d="M24 3 L41 10.5 L41 25 C41 35 33 42.5 24 46 C15 42.5 7 35 7 25 L7 10.5 Z" fill="url(#sg1)" opacity=".12"/>
+          <!-- Shield shine -->
+          <path d="M19 5.5 C16 7.5 14 10 13 14" fill="none" stroke="rgba(255,255,255,.2)" stroke-width=".8" stroke-linecap="round"/>
+          <!-- Crosshair target -->
+          <circle cx="24" cy="26" r="9" fill="none" stroke="#ff0033" stroke-width=".7" opacity=".55"/>
+          <circle cx="24" cy="26" r="5" fill="none" stroke="#ff0033" stroke-width=".7" opacity=".4"/>
+          <circle cx="24" cy="26" r="1.8" fill="#ff0033" opacity=".85" class="shield-pulse"/>
+          <!-- Crosshair lines -->
+          <line x1="24" y1="15" x2="24" y2="20" stroke="#ff0033" stroke-width=".7" opacity=".5"/>
+          <line x1="24" y1="32" x2="24" y2="37" stroke="#ff0033" stroke-width=".7" opacity=".5"/>
+          <line x1="13" y1="26" x2="18" y2="26" stroke="#ff0033" stroke-width=".7" opacity=".5"/>
+          <line x1="30" y1="26" x2="35" y2="26" stroke="#ff0033" stroke-width=".7" opacity=".5"/>
+          <!-- Corner bracket accents -->
+          <path d="M10 13 L10 9 L14 9" fill="none" stroke="#ff0033" stroke-width=".6" opacity=".3"/>
+          <path d="M38 13 L38 9 L34 9" fill="none" stroke="#ff0033" stroke-width=".6" opacity=".3"/>
+          <!-- Pulse ring -->
+          <circle cx="24" cy="26" r="0" fill="none" stroke="#ff0033" stroke-width=".9" opacity="0">
+            <animate attributeName="r" values="0;12" dur="2.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.6;0" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-l1">TEAM BCT</div>
+        <div class="logo-l2">THREAT REPORTER PRO</div>
+      </div>
+    </div>
+    <div class="hdr-r">
+      <div class="hbadge hb-g">OSINT v3.1</div>
+      <div class="hbadge hb-live"><div class="dp"></div>ARMED</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="two-col">
+
+    <!-- ════ LEFT: FORM ════ -->
+    <div>
+
+      <!-- Panel 1: Target -->
+      <div class="panel">
+        <div class="ph">
+          <div class="ph-l"><i class="fas fa-crosshairs"></i> TARGET INTELLIGENCE</div>
+          <div class="ph-r">REQUIRED</div>
+        </div>
+        <div class="pb">
+          <div class="fl">
+            <div class="lbl"><i class="fas fa-link"></i> MALICIOUS URL<span class="req">*</span></div>
+            <div class="inp-wrap">
+              <i class="fas fa-globe inp-ico"></i>
+              <input type="url" class="inp" id="targetUrl" placeholder="https://scam-site.xyz/login">
+            </div>
+          </div>
+          <div class="fl">
+            <div class="lbl"><i class="fas fa-building"></i> IMPERSONATED BRAND</div>
+            <div class="inp-wrap">
+              <i class="fas fa-tag inp-ico"></i>
+              <input type="text" class="inp" id="brandName" placeholder="e.g., Islami Bank, Facebook, bKash">
+            </div>
+          </div>
+          <div class="fl">
+            <div class="lbl"><i class="fas fa-link"></i> ADDITIONAL EVIDENCE URLS</div>
+            <textarea class="inp" id="evidenceUrls" placeholder="Other malicious URLs related to this campaign (one per line)..." style="min-height:60px"></textarea>
+          </div>
+          <div class="fl" style="margin-bottom:0">
+            <div class="lbl"><i class="fas fa-align-left"></i> INCIDENT DESCRIPTION</div>
+            <textarea class="inp" id="extraContext" placeholder="Describe how users are being targeted, any victims known, specific tactics used..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 2: Scam Type -->
+      <div class="panel">
+        <div class="ph">
+          <div class="ph-l"><i class="fas fa-skull-crossbones"></i> THREAT CLASSIFICATION</div>
+          <div class="ph-r" id="scamLabel">BRAND GIFT</div>
+        </div>
+        <div class="pb">
+          <div class="scam-grid" id="scamGrid">
+            <div class="scam-card active" data-type="brand_gift" onclick="selScam(this)"><span class="scam-ico">🏦</span><span class="scam-lbl">Fake Brand Gift</span></div>
+            <div class="scam-card" data-type="social_phish" onclick="selScam(this)"><span class="scam-ico">📱</span><span class="scam-lbl">Social Login Phish</span></div>
+            <div class="scam-card" data-type="bank_phish" onclick="selScam(this)"><span class="scam-ico">💳</span><span class="scam-lbl">Bank Phishing</span></div>
+            <div class="scam-card" data-type="investment_fraud" onclick="selScam(this)"><span class="scam-ico">📈</span><span class="scam-lbl">Investment Fraud</span></div>
+            <div class="scam-card" data-type="romance_scam" onclick="selScam(this)"><span class="scam-ico">❤️</span><span class="scam-lbl">Romance Scam</span></div>
+            <div class="scam-card" data-type="tech_support" onclick="selScam(this)"><span class="scam-ico">💻</span><span class="scam-lbl">Fake Tech Support</span></div>
+            <div class="scam-card" data-type="lottery" onclick="selScam(this)"><span class="scam-ico">🎰</span><span class="scam-lbl">Lottery Scam</span></div>
+            <div class="scam-card" data-type="job_offer" onclick="selScam(this)"><span class="scam-ico">💼</span><span class="scam-lbl">Job Offer Fraud</span></div>
+            <div class="scam-card" data-type="delivery_scam" onclick="selScam(this)"><span class="scam-ico">📦</span><span class="scam-lbl">Delivery Scam</span></div>
+            <div class="scam-card" data-type="malware_site" onclick="selScam(this)"><span class="scam-ico">🦠</span><span class="scam-lbl">Malware Site</span></div>
+            <div class="scam-card" data-type="general_phish" onclick="selScam(this)"><span class="scam-ico">🎣</span><span class="scam-lbl">Credential Theft</span></div>
+            <div class="scam-card" data-type="crypto_fraud" onclick="selScam(this)"><span class="scam-ico">₿</span><span class="scam-lbl">Crypto Fraud</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3: Options -->
+      <div class="panel">
+        <div class="ph">
+          <div class="ph-l"><i class="fas fa-sliders-h"></i> REPORT OPTIONS</div>
+          <div class="ph-r">CONFIG</div>
+        </div>
+        <div class="pb">
+          <div class="fl">
+            <div class="lbl"><i class="fas fa-exclamation-triangle"></i> THREAT SEVERITY</div>
+            <div class="sev-grid">
+              <div class="sev-btn sev-low" data-sev="low" onclick="selSev(this)"><span class="sev-ico">🟢</span><span class="sev-lbl">LOW</span></div>
+              <div class="sev-btn sev-med" data-sev="medium" onclick="selSev(this)"><span class="sev-ico">🟡</span><span class="sev-lbl">MEDIUM</span></div>
+              <div class="sev-btn sev-hi active" data-sev="high" onclick="selSev(this)"><span class="sev-ico">🟠</span><span class="sev-lbl">HIGH</span></div>
+              <div class="sev-btn sev-crit" data-sev="critical" onclick="selSev(this)"><span class="sev-ico">🔴</span><span class="sev-lbl">CRITICAL</span></div>
+            </div>
+          </div>
+          <div class="fl">
+            <div class="lbl"><i class="fas fa-user-shield"></i> REPORTER IDENTITY</div>
+            <select class="inp" id="reporterType">
+              <option value="researcher">Independent Threat Researcher</option>
+              <option value="security_pro">Cybersecurity Professional</option>
+              <option value="victim">Affected User / Victim</option>
+              <option value="org">Organization Representative</option>
+              <option value="ngo">Non-Profit / NGO</option>
+            </select>
+          </div>
+          <div class="fl">
+            <div class="lbl"><i class="fas fa-globe-asia"></i> TARGET COUNTRY / JURISDICTION</div>
+            <select class="inp" id="targetCountry">
+              <option value="bd">🇧🇩 Bangladesh</option>
+              <option value="us">🇺🇸 United States</option>
+              <option value="gb">🇬🇧 United Kingdom</option>
+              <option value="au">🇦🇺 Australia</option>
+              <option value="ca">🇨🇦 Canada</option>
+              <option value="in">🇮🇳 India</option>
+              <option value="pk">🇵🇰 Pakistan</option>
+              <option value="de">🇩🇪 Germany / EU</option>
+              <option value="sg">🇸🇬 Singapore</option>
+              <option value="ae">🇦🇪 UAE / Middle East</option>
+              <option value="intl">🌍 International</option>
+            </select>
+          </div>
+          <div class="fl" style="margin-bottom:0">
+            <div class="lbl"><i class="fas fa-envelope"></i> YOUR NAME / ORG (OPTIONAL)</div>
+            <input type="text" class="inp" id="reporterName" placeholder="Leave blank to stay anonymous">
+          </div>
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <button class="btn-gen" id="genBtn" onclick="executeTrace()">
+        <i class="fas fa-satellite-dish" style="margin-right:9px"></i> SCAN & COMPOSE REPORT
+      </button>
+
+      <!-- Progress -->
+      <div class="prog-wrap" id="progWrap">
+        <div class="prog-steps">
+          <div class="prog-step" id="ps0"><div class="prog-dot" id="pd0"><i class="fas fa-satellite-dish"></i></div><div class="prog-lbl">DNS<br>LOOKUP</div></div>
+          <div class="prog-line" id="pl0"></div>
+          <div class="prog-step" id="ps1"><div class="prog-dot" id="pd1"><i class="fas fa-map-marker-alt"></i></div><div class="prog-lbl">IP<br>INTEL</div></div>
+          <div class="prog-line" id="pl1"></div>
+          <div class="prog-step" id="ps2"><div class="prog-dot" id="pd2"><i class="fas fa-database"></i></div><div class="prog-lbl">RDAP<br>ABUSE</div></div>
+          <div class="prog-line" id="pl2"></div>
+          <div class="prog-step" id="ps3"><div class="prog-dot" id="pd3"><i class="fas fa-shield-alt"></i></div><div class="prog-lbl">THREAT<br>SCORE</div></div>
+          <div class="prog-line" id="pl3"></div>
+          <div class="prog-step" id="ps4"><div class="prog-dot" id="pd4"><i class="fas fa-envelope"></i></div><div class="prog-lbl">EMAIL<br>BUILD</div></div>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+        <div class="prog-txt"><span id="progTxt">INITIALIZING...</span><span id="progPct">0%</span></div>
+      </div>
+
+    </div>
+
+    <!-- ════ RIGHT: RESULTS ════ -->
+    <div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state">
+        <div class="es-icon"><i class="fas fa-satellite-dish"></i></div>
+        <div class="es-text">
+          ENTER MALICIOUS URL<br>CONFIGURE OPTIONS<br>PRESS SCAN & COMPOSE
+        </div>
+        <div class="es-hint">✦ MULTI-API OSINT ✦ RDAP ABUSE EXTRACTION ✦ LIVE INTEL ✦</div>
+      </div>
+
+      <!-- Results (hidden until scan) -->
+      <div id="resultsArea" style="display:none">
+
+        <!-- Mini stats row -->
+        <div class="result-grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:12px" id="miniStats">
+          <!-- filled by JS -->
+        </div>
+
+        <!-- IP + Domain cards -->
+        <div class="result-grid" id="infoCards">
+          <!-- filled by JS -->
+        </div>
+
+        <!-- Threat Score -->
+        <div class="threat-card" id="threatCard">
+          <!-- filled by JS -->
+        </div>
+
+        <!-- Abuse Contacts -->
+        <div class="panel">
+          <div class="ph">
+            <div class="ph-l"><i class="fas fa-at"></i> ABUSE CONTACTS FOUND</div>
+            <div class="ph-r" id="abuseCount">0 FOUND</div>
+          </div>
+          <div class="pb">
+            <div class="abuse-list" id="abuseList"><!-- filled by JS --></div>
+          </div>
+        </div>
+
+        <!-- Email Preview -->
+        <div class="panel">
+          <div class="ph">
+            <div class="ph-l"><i class="fas fa-envelope-open-text"></i> COMPOSED ABUSE REPORT</div>
+            <div class="ph-r">READY TO SEND</div>
+          </div>
+          <div class="pb" style="padding:0">
+            <div class="email-card">
+              <div class="ec-header">
+                <div class="ec-title"><i class="fas fa-envelope-open-text"></i> REPORT EMAIL</div>
+                <div class="ec-btns">
+                  <button class="ec-btn cpy" onclick="copyEmailBody()"><i class="fas fa-copy"></i> COPY BODY</button>
+                  <button class="ec-btn snd" onclick="sendEmail()"><i class="fas fa-paper-plane"></i> OPEN MAIL</button>
+                  <button class="ec-btn sndall" onclick="sendAllEmails()"><i class="fas fa-broadcast-tower"></i> SEND ALL</button>
+                </div>
+              </div>
+              <div class="ec-meta">
+                <div class="ec-row"><span class="ec-field">TO:</span><span class="ec-data ec-to" id="ecTo">—</span></div>
+                <div class="ec-row"><span class="ec-field">SUBJECT:</span><span class="ec-data ec-subj" id="ecSubj">—</span></div>
+              </div>
+              <div class="ec-body" id="ecBody">Compose a report to see the email preview here.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reporting Agencies -->
+        <div class="panel">
+          <div class="ph">
+            <div class="ph-l"><i class="fas fa-flag"></i> REPORT TO AGENCIES</div>
+            <div class="ph-r">DIRECT LINKS</div>
+          </div>
+          <div class="pb">
+            <div class="rlinks-grid" id="reportLinks"><!-- filled by JS --></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Terminal (always visible) -->
+      <div class="terminal-panel">
+        <div class="term-bar">
+          <div class="tdot td-r"></div>
+          <div class="tdot td-y"></div>
+          <div class="tdot td-g"></div>
+          <div class="term-title">BCT_THREAT_SCANNER.log</div>
+        </div>
+        <div class="terminal" id="terminal">
+          <div class="tline tl-info"><span class="t-p">›</span><span class="t-v">System armed. Enter URL to begin OSINT scan.</span></div>
+          <div class="tline tl-muted"><span class="t-p">›</span><span class="t-v">APIs: dns.google / ipapi.co / rdap.org / RDAP RIRs</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>© 2026 <strong>BANGLADESH CYBER TROOPS</strong> | THREAT REPORTER PRO BY <strong>TROOPS IT SOLUTIONS</strong></p>
+</footer>
+<div class="toast" id="toastEl"></div>
+
+<script>
+'use strict';
+
+// ════════════════════════════════════════════════════════════════════
+//  CONSTANTS & DATABASES
+// ════════════════════════════════════════════════════════════════════
+
+// 60+ known hosting/registrar abuse emails
+const KNOWN_ABUSE_DB = {
+  'cloudflare': 'abuse@cloudflare.com',
+  'cloudflarenet': 'abuse@cloudflare.com',
+  'amazon web services': 'abuse@amazonaws.com',
+  'amazon': 'abuse@amazonaws.com',
+  'amazonaws': 'abuse@amazonaws.com',
+  'aws': 'abuse@amazonaws.com',
+  'google': 'abuse@google.com',
+  'google cloud': 'abuse@google.com',
+  'googlecloud': 'abuse@google.com',
+  'microsoft': 'abuse@microsoft.com',
+  'azure': 'abuse@microsoft.com',
+  'digitalocean': 'abuse@digitalocean.com',
+  'linode': 'abuse@linode.com',
+  'akamai': 'abuse@akamai.com',
+  'fastly': 'abuse@fastly.com',
+  'vultr': 'abuse@vultr.com',
+  'hetzner': 'abuse@hetzner.com',
+  'ovh': 'abuse@ovh.net',
+  'hostgator': 'abuse@hostgator.com',
+  'bluehost': 'abuse@bluehost.com',
+  'godaddy': 'abuse@godaddy.com',
+  'namecheap': 'abuse@namecheap.com',
+  'siteground': 'abuse@siteground.com',
+  'dreamhost': 'abuse@dreamhost.com',
+  'ionos': 'abuse@ionos.com',
+  '1and1': 'abuse@ionos.com',
+  'rackspace': 'abuse@rackspace.com',
+  'leaseweb': 'abuse@leaseweb.com',
+  'hostinger': 'abuse@hostinger.com',
+  'netlify': 'abuse@netlify.com',
+  'vercel': 'abuse@vercel.com',
+  'wix': 'abuse@wix.com',
+  'squarespace': 'abuse@squarespace.com',
+  'shopify': 'abuse@shopify.com',
+  'automattic': 'abuse@automattic.com',
+  'wordpress': 'abuse@automattic.com',
+  'gandi': 'abuse@gandi.net',
+  'network solutions': 'abuse@networksolutions.com',
+  'tucows': 'abuse@tucows.com',
+  'epik': 'abuse@epik.com',
+  'porkbun': 'abuse@porkbun.com',
+  'dynadot': 'abuse@dynadot.com',
+  'hover': 'abuse@hover.com',
+  'a2 hosting': 'abuse@a2hosting.com',
+  'inmotion': 'abuse@inmotionhosting.com',
+  'alibaba': 'abuse@service.aliyun.com',
+  'aliyun': 'abuse@service.aliyun.com',
+  'alicloud': 'abuse@service.aliyun.com',
+  'tencent': 'abuse@tencent.com',
+  'huawei cloud': 'abuse@huaweicloud.com',
+  'choopa': 'abuse@choopa.com',
+  'as-choopa': 'abuse@choopa.com',
+  'datacamp': 'abuse@datacamp.com',
+  'psychz': 'abuse@psychz.net',
+  'sharktech': 'abuse@sharktech.net',
+  'hostwinds': 'abuse@hostwinds.com',
+  'frantech': 'support@frantech.ca',
+  'buyvm': 'support@frantech.ca',
+  'serverius': 'abuse@serverius.net',
+  'comcast': 'abuse@comcast.net',
+  'verizon': 'abuse@verizon.net',
+  'spectrum': 'abuse@charter.net',
+  'at&t': 'abuse@att.net',
+  'fiber telecom': 'abuse@fibertelecom.it',
+  'contabo': 'abuse@contabo.com',
+  'time4vps': 'abuse@time4vps.eu',
+  'spaceedge': 'abuse@spaceedge.net',
+  'telecom italia': 'abuse@telecomitalia.it',
+  'orange': 'abuse@orange.com',
+  'bt group': 'abuse@bt.com',
+  'deutsche telekom': 'abuse@telekom.de',
+  'vodafone': 'abuse@vodafone.com',
+  'softlayer': 'abuse@softlayer.com',
+  'ibm': 'abuse@softlayer.com',
+  'liquidweb': 'abuse@liquidweb.com',
+  'kinsta': 'abuse@kinsta.com',
+  'nexcess': 'abuse@nexcess.net',
+  'flywheel': 'abuse@getflywheel.com',
+  'wpengine': 'abuse@wpengine.com',
+  'pressable': 'abuse@pressable.com',
+  'register.com': 'abuse@register.com',
+  'web.com': 'abuse@web.com',
+};
+
+// Scam type → human label
+const SCAM_LABELS = {
+  brand_gift: 'Fake Brand/Government Gift Offer',
+  social_phish: 'Social Media Login Phishing',
+  bank_phish: 'Bank/Financial Phishing',
+  investment_fraud: 'Investment/Crypto Fraud',
+  romance_scam: 'Romance/Dating Scam',
+  tech_support: 'Fake Tech Support Scam',
+  lottery: 'Lottery/Prize Winning Scam',
+  job_offer: 'Fake Job/Work-From-Home Fraud',
+  delivery_scam: 'Package Delivery Phishing',
+  malware_site: 'Malware/Spyware Distribution',
+  general_phish: 'General Credential Theft',
+  crypto_fraud: 'Cryptocurrency/DeFi Fraud',
+};
+
+// Country → CERT/reporting agencies
+const COUNTRY_CERTS = {
+  bd: [
+    { name: 'BGD e-GOV CIRT', url: 'https://www.cirt.gov.bd/', desc: 'Bangladesh CERT', ico: '🇧🇩', color: 'rgba(0,153,255,.15)' },
+    { name: 'BTRC Complaint', url: 'https://www.btrc.gov.bd/', desc: 'Telecom Regulator', ico: '🇧🇩', color: 'rgba(0,153,255,.15)' },
+  ],
+  us: [
+    { name: 'CISA Report', url: 'https://www.cisa.gov/report', desc: 'US Cyber Agency', ico: '🇺🇸', color: 'rgba(0,60,200,.15)' },
+    { name: 'FBI IC3', url: 'https://www.ic3.gov/', desc: 'Internet Crime Center', ico: '🇺🇸', color: 'rgba(0,60,200,.15)' },
+    { name: 'FTC Report', url: 'https://reportfraud.ftc.gov/', desc: 'Federal Trade Comm.', ico: '🇺🇸', color: 'rgba(0,60,200,.15)' },
+  ],
+  gb: [
+    { name: 'NCSC Report', url: 'https://report.phishing.gov.uk/', desc: 'UK Cyber Security', ico: '🇬🇧', color: 'rgba(0,60,180,.15)' },
+    { name: 'Action Fraud', url: 'https://www.actionfraud.police.uk/', desc: 'UK Fraud Reporting', ico: '🇬🇧', color: 'rgba(0,60,180,.15)' },
+  ],
+  au: [
+    { name: 'ACSC Report', url: 'https://www.cyber.gov.au/report', desc: 'Australian CERT', ico: '🇦🇺', color: 'rgba(0,100,200,.15)' },
+    { name: 'Scamwatch', url: 'https://www.scamwatch.gov.au/', desc: 'ACCC Scams', ico: '🇦🇺', color: 'rgba(0,100,200,.15)' },
+  ],
+  ca: [
+    { name: 'CCCS Report', url: 'https://cyber.gc.ca/en/', desc: 'Canada Cyber Centre', ico: '🇨🇦', color: 'rgba(200,0,0,.12)' },
+  ],
+  in: [
+    { name: 'CERT-In', url: 'https://www.cert-in.org.in/', desc: 'India CERT', ico: '🇮🇳', color: 'rgba(255,100,0,.12)' },
+    { name: 'Cyber Crime', url: 'https://cybercrime.gov.in/', desc: 'India Cyber Portal', ico: '🇮🇳', color: 'rgba(255,100,0,.12)' },
+  ],
+  de: [
+    { name: 'BSI Report', url: 'https://www.bsi.bund.de/EN/', desc: 'German Federal BSI', ico: '🇩🇪', color: 'rgba(0,0,150,.12)' },
+    { name: 'ENISA', url: 'https://www.enisa.europa.eu/', desc: 'EU Cyber Agency', ico: '🇪🇺', color: 'rgba(0,0,150,.12)' },
+  ],
+  intl: [],
+};
+
+// Universal reporting agencies (always shown)
+const UNIVERSAL_AGENCIES = [
+  { name: 'Google SB Report', url: 'https://safebrowsing.google.com/safebrowsing/report_phish/', desc: 'Google Safe Browsing', ico: '🔍', color: 'rgba(66,133,244,.1)' },
+  { name: 'PhishTank', url: 'https://www.phishtank.com/add_web_phishing.php', desc: 'Submit Phishing URL', ico: '🐟', color: 'rgba(255,100,0,.1)' },
+  { name: 'Netcraft Report', url: 'https://report.netcraft.com/', desc: 'Netcraft Anti-Phish', ico: '🌐', color: 'rgba(0,200,150,.1)' },
+  { name: 'VirusTotal', url: 'https://www.virustotal.com/gui/home/url', desc: 'Scan URL/File', ico: '🛡️', color: 'rgba(0,150,200,.1)' },
+  { name: 'APWG eCrime', url: 'https://econsumer.gov/', desc: 'Global Ecrime Report', ico: '🌍', color: 'rgba(150,0,200,.1)' },
+  { name: 'Abuse.ch', url: 'https://urlhaus.abuse.ch/addurl/', desc: 'URLHaus Submit', ico: '⚠️', color: 'rgba(255,50,0,.1)' },
+];
+
+// Suspicious indicators
+const SUSPICIOUS_TLDS = new Set(['xyz','tk','ml','ga','cf','gq','pw','cc','su','buzz','click','link','live','online','site','website','space','win','loan','work','date','party','download','racing','trade','webcam','accountant','science','faith','review','men']);
+const PHISH_KEYWORDS = ['login','verify','secure','bank','update','confirm','account','wallet','paypal','facebook','instagram','amazon','netflix','microsoft','apple','google','signin','credential','password','urgent','suspended','alert','blocked','limited'];
+
+// ════════════════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════════════════
+let scanResults = {};
+let abuseEmails = [];
+let currentEmail = { to: '', subject: '', body: '' };
+let selectedScamType = 'brand_gift';
+let selectedSeverity = 'high';
+
+// ════════════════════════════════════════════════════════════════════
+//  UI HELPERS
+// ════════════════════════════════════════════════════════════════════
+function ge(id) { return document.getElementById(id); }
+
+function showToast(msg, isErr) {
+  const t = ge('toastEl');
+  t.textContent = msg;
+  t.className = 'toast' + (isErr ? '' : ' ok');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function clearTerminal() {
+  ge('terminal').innerHTML = '';
+}
+
+function log(msg, type = 'info') {
+  const div = document.createElement('div');
+  div.className = 'tline tl-' + type;
+  div.innerHTML = `<span class="t-p">›</span><span class="t-v">${msg}</span>`;
+  ge('terminal').appendChild(div);
+  ge('terminal').scrollTop = ge('terminal').scrollHeight;
+}
+
+function setProgress(pct, txt) {
+  ge('progFill').style.width = pct + '%';
+  ge('progPct').textContent = pct + '%';
+  ge('progTxt').textContent = txt;
+}
+
+function setStep(n, state) {
+  const ps = ge('ps' + n);
+  if (!ps) return;
+  ps.className = 'prog-step s-' + state;
+  if (n > 0) {
+    const pl = ge('pl' + (n - 1));
+    if (pl && state === 'done') pl.className = 'prog-line done';
+    if (pl && state === 'active') pl.className = 'prog-line';
+  }
+}
+
+function selScam(el) {
+  document.querySelectorAll('.scam-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedScamType = el.dataset.type;
+  ge('scamLabel').textContent = (SCAM_LABELS[selectedScamType] || '').toUpperCase().slice(0, 14);
+}
+
+function selSev(el) {
+  document.querySelectorAll('.sev-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedSeverity = el.dataset.sev;
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  FETCH WITH TIMEOUT
+// ════════════════════════════════════════════════════════════════════
+async function fetchTimeout(url, ms = 7000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(timer);
+    return r;
+  } catch (e) {
+    clearTimeout(timer);
+    throw e;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  RDAP EMAIL PARSER — Deep recursive extraction
+// ════════════════════════════════════════════════════════════════════
+function getEntityName(entity) {
+  try {
+    if (entity.vcardArray && entity.vcardArray[1]) {
+      for (const prop of entity.vcardArray[1]) {
+        if (prop[0] === 'fn') return prop[3] || '';
+        if (prop[0] === 'org') return prop[3] || '';
+      }
+    }
+  } catch (e) {}
+  return entity.handle || entity.name || '';
+}
+
+function parseAllRDAPEmails(data) {
+  const found = [];
+  const seen = new Set();
+
+  function extractFromVcard(vcard, roles, handle) {
+    if (!vcard || !vcard[1]) return;
+    let name = '';
+    const emails = [];
+    for (const prop of vcard[1]) {
+      if (!Array.isArray(prop)) continue;
+      if (prop[0] === 'fn') name = prop[3] || '';
+      if (prop[0] === 'org' && !name) name = prop[3] || '';
+      if (prop[0] === 'email' && typeof prop[3] === 'string' && prop[3].includes('@')) {
+        emails.push(prop[3].trim().toLowerCase());
+      }
+    }
+    emails.forEach(email => {
+      if (!seen.has(email)) {
+        seen.add(email);
+        found.push({ email, roles: roles || [], handle: handle || '', name });
+      }
+    });
+  }
+
+  function walkRemarks(remarks) {
+    if (!Array.isArray(remarks)) return;
+    remarks.forEach(r => {
+      if (r.description) {
+        r.description.forEach(d => {
+          const matches = String(d).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g);
+          if (matches) {
+            matches.forEach(email => {
+              email = email.toLowerCase();
+              if (!seen.has(email) && email.includes('abuse')) {
+                seen.add(email);
+                found.push({ email, roles: ['remarks'], handle: '', name: '' });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  function traverse(obj, depth) {
+    if (!obj || depth > 8 || typeof obj !== 'object') return;
+    if (Array.isArray(obj)) { obj.forEach(i => traverse(i, depth + 1)); return; }
+    if (obj.vcardArray) extractFromVcard(obj.vcardArray, obj.roles, obj.handle);
+    if (obj.remarks) walkRemarks(obj.remarks);
+    if (obj.entities) traverse(obj.entities, depth + 1);
+    if (obj.networks) traverse(obj.networks, depth + 1);
+    if (obj.autnums) traverse(obj.autnums, depth + 1);
+  }
+
+  traverse(data, 0);
+
+  // Sort: abuse-role first, then technical, then others
+  const rolePriority = r => {
+    if (r.includes('abuse')) return 0;
+    if (r.includes('technical')) return 1;
+    if (r.includes('administrative')) return 2;
+    if (r.includes('registrar')) return 3;
+    return 4;
+  };
+  found.sort((a, b) => Math.min(...a.roles.map(rolePriority)) - Math.min(...b.roles.map(rolePriority)));
+  return found;
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  THREAT SCORE
+// ════════════════════════════════════════════════════════════════════
+function calculateThreatScore(domain, fullUrl, info) {
+  let score = 10;
+  const tags = [];
+
+  const tld = domain.split('.').pop().toLowerCase();
+  if (SUSPICIOUS_TLDS.has(tld)) { score += 20; tags.push('SUSPICIOUS TLD'); }
+
+  const urlLow = fullUrl.toLowerCase();
+  let kwHits = 0;
+  PHISH_KEYWORDS.forEach(kw => { if (urlLow.includes(kw)) kwHits++; });
+  if (kwHits >= 3) { score += 18; tags.push('PHISH KEYWORDS'); }
+  else if (kwHits >= 1) { score += 10; tags.push('SUSPICIOUS KEYWORDS'); }
+
+  if ((domain.match(/-/g) || []).length >= 2) { score += 10; tags.push('HYPHENATED DOMAIN'); }
+  if (domain.replace(/[^.]/g, '').length > 2) { score += 8; tags.push('DEEP SUBDOMAIN'); }
+  if (domain.length > 28) { score += 8; tags.push('LONG DOMAIN'); }
+
+  const isp = (info.isp || '').toLowerCase();
+  const bulletproof = ['psychz','sharktech','datacamp','frantech','buyvm','as-choopa','choopa','serverius','worldstream','lir.net'];
+  if (bulletproof.some(b => isp.includes(b))) { score += 20; tags.push('BULLETPROOF HOST'); }
+
+  if (info.regDate) {
+    const regDiff = (Date.now() - new Date(info.regDate)) / 86400000;
+    if (regDiff < 7)  { score += 25; tags.push('CREATED THIS WEEK'); }
+    else if (regDiff < 30) { score += 18; tags.push('CREATED <30 DAYS'); }
+    else if (regDiff < 90) { score += 10; tags.push('CREATED <90 DAYS'); }
+  }
+
+  const country = (info.country || '').toLowerCase();
+  if (['russia','china','ukraine','romania','nigeria','ghana'].some(c => country.includes(c))) {
+    score += 8; tags.push('HIGH-RISK HOSTING COUNTRY');
+  }
+
+  if (!fullUrl.startsWith('https')) { score += 10; tags.push('NO HTTPS'); }
+
+  return { score: Math.min(score, 100), tags };
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  EMAIL TEMPLATE BUILDER
+// ════════════════════════════════════════════════════════════════════
+function buildEmail(to, data) {
+  const { domain, fullUrl, type, severity, brand, reporterType, extra, targetCountry, reporterName,
+          ip, isp, asn, city, country, domainRegistrar, regDate, nameservers } = data;
+
+  const now = new Date();
+  const dateStr = now.toUTCString();
+  const brandText = brand || 'a reputable organization';
+  const urgency = { low: '', medium: '[NOTICE]', high: '[URGENT]', critical: '[CRITICAL INCIDENT]' }[severity] || '[URGENT]';
+
+  const techBlock = `
+-- TECHNICAL DETAILS --
+Reported URL    : ${fullUrl}
+Domain          : ${domain}
+Resolved IP     : ${ip}
+ASN / ISP       : ${asn} / ${isp}
+Hosting Country : ${country} ${city ? '(' + city + ')' : ''}
+Domain Registrar: ${domainRegistrar || 'Unknown'}
+Name Servers    : ${nameservers || 'Unknown'}
+Registration    : ${regDate || 'Unknown'}
+Discovery Date  : ${dateStr}
+`;
+
+  const reporterBlock = reporterName
+    ? `Sincerely,\n${reporterName}`
+    : `Sincerely,\nIndependent Threat Researcher`;
+
+  const extraBlock = extra
+    ? `\nAdditional context provided by reporter:\n"${extra}"\n`
+    : '';
+
+  const evidencePara = `I have captured screenshots and request logs as evidence. Full forensic details are available upon request.`;
+
+  let subject = '';
+  let body = '';
+
+  if (type === 'brand_gift') {
+    subject = `${urgency} Phishing Site Impersonating ${brandText} — Immediate Takedown Required`;
+    body = `Dear Abuse Team / Hosting Provider,\n\nI am writing to report an active phishing website currently hosted on your infrastructure that is impersonating ${brandText} and deceiving thousands of users with a fraudulent gift/reward campaign.\n\nThis fraudulent website falsely claims to represent ${brandText} and promotes a fake "Government Gift", "Cashback Reward", or "Loyalty Program" offering prizes. The page reproduces official logos, brand colors, and trademarked elements to appear legitimate, then directs users to click through multiple pages — ultimately collecting their personal information, banking credentials, or mobile wallet (bKash/Nagad/Rocket) OTP codes.\n${techBlock}\nThe operators are clearly engaging in:\n- Brand impersonation and trademark infringement\n- Phishing and social engineering\n- Unauthorized collection of personally identifiable information (PII)\n- Financial fraud targeting retail consumers\n${extraBlock}\n${evidencePara}\n\nI respectfully request your team to:\n1. Suspend or terminate the domain/hosting account immediately\n2. Preserve server logs for law enforcement cooperation\n3. Block the IP address from serving further malicious content\n4. Investigate and report to relevant law enforcement\n\nTime is critical — this page is actively spreading through social media and instant messaging platforms. Each hour of uptime results in more victims. We are simultaneously reporting this to Google Safe Browsing, PhishTank, and relevant national CERTs.\n\nThank you for your urgent attention to this matter.\n\n${reporterBlock}`;
+
+  } else if (type === 'social_phish') {
+    subject = `${urgency} Active Social Media Credential Phishing — Takedown Request`;
+    body = `Dear Abuse / Trust & Safety Team,\n\nI am contacting you to report an active phishing operation hosted under your network that is specifically designed to harvest social media login credentials from unsuspecting users.\n${techBlock}\nThe site employs the following tactics:\n- Claims to offer "free mobile internet data" or "airtime giveaway" in exchange for logging in\n- Presents a pixel-perfect fake Facebook / Instagram / Google login page\n- Harvests entered credentials and redirects victims to a success page to avoid immediate detection\n- Follows up by requesting phone numbers and OTP codes for account takeover\n${extraBlock}\nThis constitutes a serious violation of:\n- Your Terms of Service regarding fraudulent activity\n- The Computer Fraud and Abuse Act (if US-hosted)\n- GDPR Article 5 (if EU-hosted) regarding lawful data processing\n- The Digital Security Act 2018 (if Bangladesh-targeting)\n\n${evidencePara}\n\nPlease immediately:\n1. Terminate the domain and hosting account\n2. Preserve all access logs for law enforcement\n3. Block all associated IP addresses\n\nThis site is being actively promoted via WhatsApp groups and Facebook Messenger targeting hundreds of thousands of users daily.\n\n${reporterBlock}`;
+
+  } else if (type === 'bank_phish') {
+    subject = `${urgency} Bank Credential Phishing — Active Financial Fraud Operation`;
+    body = `Dear Abuse Team,\n\nI am reporting a sophisticated phishing website actively targeting customers of ${brandText || 'financial institutions'} and fraudulently collecting banking credentials, card numbers, and one-time passwords (OTPs).\n${techBlock}\nThe phishing operation includes:\n- A convincing replica of ${brandText || 'the targeted bank'}'s official online banking portal\n- SSL certificate to appear trustworthy in browser address bars\n- Automated OTP relay to perform real-time account takeover\n- Collection of full card details (number, CVV, expiry, PIN)\n- Targeting customers via SMS phishing (smishing) and social media\n${extraBlock}\n${evidencePara}\n\nThis operation poses IMMEDIATE financial risk to victims. Every minute this site remains online, real customers are losing money from their bank accounts.\n\nImmediate action required:\n1. Emergency suspension of domain and all associated resources\n2. Notification to the impersonated institution\n3. Full server log preservation for financial crimes investigation\n4. Coordination with relevant financial regulatory authorities\n\nThis has been concurrently reported to the relevant financial regulator and national CERT.\n\n${reporterBlock}`;
+
+  } else if (type === 'investment_fraud') {
+    subject = `${urgency} Investment Fraud / Crypto Scam Platform — Takedown Request`;
+    body = `Dear Abuse Team,\n\nI am reporting an investment fraud platform hosted on your infrastructure that is deceiving victims into depositing cryptocurrency or fiat currency into fraudulent investment accounts.\n${techBlock}\nThe fraudulent platform operates as follows:\n- Presents fabricated trading dashboards with artificial profits to build trust\n- Claims guaranteed returns of 100-500% on cryptocurrency investments\n- Impersonates well-known investment platforms or creates convincing fakes\n- Initially allows small withdrawals to build confidence (classic "pig butchering" scam)\n- Ultimately locks accounts and demands additional "tax" or "release fees" to prevent withdrawal\n${extraBlock}\nVictims are typically recruited through social media ads, WhatsApp/Telegram groups, or romance connections.\n\n${evidencePara}\n\nThis is a sophisticated financial fraud operation causing significant monetary harm to victims globally. Please:\n1. Immediately suspend the domain and hosting account\n2. Preserve all evidence including server logs, database backups, and user records\n3. Cooperate with financial crime investigators and law enforcement\n4. Block associated IP ranges\n\n${reporterBlock}`;
+
+  } else if (type === 'romance_scam') {
+    subject = `${urgency} Romance Scam / Social Engineering Operation — Abuse Report`;
+    body = `Dear Abuse Team,\n\nI am reporting a website being used as part of an organized romance scam (also known as a "catfishing" or "pig butchering" operation) hosted on your infrastructure.\n${techBlock}\nThe operation profile:\n- Builds false romantic or friendship relationships with victims online over weeks or months\n- Directs victims to this site for gift card purchases, cryptocurrency transfers, or wire transfers\n- Uses fabricated stories of emergencies, investment opportunities, or love gifts to extract money\n- May involve sophisticated AI-generated profiles and automated messaging\n${extraBlock}\n${evidencePara}\n\nVictims of romance scams often suffer catastrophic financial and psychological harm. This type of operation typically runs through criminal networks that cycle through multiple hosting providers.\n\nPlease immediately:\n1. Suspend domain and hosting account\n2. Preserve server logs for law enforcement cooperation\n3. Share information with fraud investigations teams\n\n${reporterBlock}`;
+
+  } else if (type === 'tech_support') {
+    subject = `${urgency} Fake Tech Support Scam Website — Abuse & Takedown Report`;
+    body = `Dear Abuse Team,\n\nI am reporting an active fake technical support scam website hosted on your network that is using alarming pop-ups and browser-lock techniques to defraud unsuspecting users.\n${techBlock}\nThe scam methodology:\n- Displays urgent fake virus/malware alerts claiming the user's device is infected\n- Uses browser JavaScript tricks to create "full-screen lock" effects that appear to prevent browser closure\n- Provides a fake toll-free number claiming to be Microsoft/Apple/Google support\n- Once called, operators request remote access and charge hundreds of dollars for fictional services\n- May install actual malware during the fake "repair" process\n${extraBlock}\n${evidencePara}\n\nThis site is exploiting vulnerable users including the elderly. Please:\n1. Immediately take down this domain and hosting account\n2. Block all associated redirect chains and affiliate URLs\n3. Preserve logs for FTC/Microsoft Digital Crimes Unit cooperation\n\n${reporterBlock}`;
+
+  } else if (type === 'lottery') {
+    subject = `${urgency} Lottery/Prize Fraud Website — Abuse Report and Takedown Request`;
+    body = `Dear Abuse Team,\n\nI am reporting an active lottery and prize fraud website hosted on your infrastructure that is deceiving users into believing they have won substantial cash prizes.\n${techBlock}\nFraud methodology:\n- Falsely claims users have been randomly selected to win prizes (cash, phones, cars)\n- Requests a small "processing fee", "tax payment", or "shipping fee" to claim the prize\n- May impersonate national lotteries, government programs, or global brands\n- Collects personal identification documents under the pretense of prize verification\n- No prize is ever delivered; the fee payment and identity documents are the actual targets\n${extraBlock}\n${evidencePara}\n\nThis site is targeting financially vulnerable individuals. Immediate takedown is requested to prevent further fraud.\n\n${reporterBlock}`;
+
+  } else if (type === 'job_offer') {
+    subject = `${urgency} Fraudulent Job Offer / Work-From-Home Scam — Abuse Report`;
+    body = `Dear Abuse Team,\n\nI am reporting a fraudulent job recruitment website hosted on your infrastructure that is deceiving job seekers with fake employment opportunities.\n${techBlock}\nFraud tactics employed:\n- Posts attractive work-from-home job listings with inflated salaries\n- Collects resumes, national ID cards, and banking information during "onboarding"\n- Requests payment for "training materials", "background checks", or "equipment deposits"\n- May advance victims money as fake "advance payment for tasks" then request it back via different payment method (money laundering/advance-fee fraud)\n- Uses collected identity documents for further fraud or identity theft\n${extraBlock}\n${evidencePara}\n\nWith high unemployment rates, this type of fraud causes immense harm. Please suspend this domain and preserve evidence for law enforcement.\n\n${reporterBlock}`;
+
+  } else if (type === 'delivery_scam') {
+    subject = `${urgency} Parcel Delivery Phishing Site — Abuse Report`;
+    body = `Dear Abuse Team,\n\nI am reporting a phishing website that impersonates a legitimate courier/delivery service and is being used to collect financial details from victims expecting packages.\n${techBlock}\nScam operation:\n- Sends SMS or email messages claiming a package cannot be delivered\n- Directs victims to this site to "reschedule delivery" by paying a small "customs fee"\n- The site collects full credit card details, billing address, and sometimes 3DS verification codes\n- Impersonates ${brandText || 'DHL, FedEx, Royal Mail, or Bangladesh Post'} branding and logos\n${extraBlock}\n${evidencePara}\n\nThis smishing/phishing campaign is actively causing financial harm. Please immediately:\n1. Suspend the domain\n2. Block associated IP addresses and CDN resources\n\n${reporterBlock}`;
+
+  } else if (type === 'malware_site') {
+    subject = `${urgency} Active Malware Distribution Site — Emergency Takedown Request`;
+    body = `Dear Abuse / Security Team,\n\nI am reporting a confirmed malware distribution website currently hosted on your infrastructure. This site is actively serving malicious files that infect visitor devices.\n${techBlock}\nThreat details:\n- The site distributes malicious executables disguised as software cracks, game cheats, or free tools\n- May employ drive-by download techniques that execute without user interaction\n- Distributed malware families may include ransomware, information stealers (e.g., RedLine, Raccoon), remote access trojans (RATs), or banking trojans\n- Functions as a staging server or command-and-control (C2) infrastructure\n${extraBlock}\n${evidencePara}\n\nThis represents a CRITICAL infrastructure threat. Immediate action required:\n1. EMERGENCY suspension of domain and all hosted content\n2. Network-level blocking of the IP address\n3. Full forensic preservation of server contents\n4. Notification to national CERT and cybercrime units\n\n${reporterBlock}`;
+
+  } else if (type === 'crypto_fraud') {
+    subject = `${urgency} Cryptocurrency Fraud Platform — Immediate Takedown Required`;
+    body = `Dear Abuse Team,\n\nI am reporting a cryptocurrency fraud website hosted on your infrastructure that is operating a classic advance-fee or "rug pull" scheme targeting crypto users.\n${techBlock}\nFraud operation profile:\n- Presents itself as a legitimate DeFi platform, crypto exchange, or mining pool\n- Offers unrealistic returns (e.g., "10% daily interest", "doubling your crypto")\n- Processes real deposits but blocks withdrawals, ultimately draining victim wallets\n- May impersonate legitimate exchanges (${brandText || 'Binance, Coinbase, etc.'})\n- In "giveaway" variants, claims victims must send crypto to "verify their wallet" before receiving a larger amount\n${extraBlock}\n${evidencePara}\n\nCrypto fraud losses are typically irreversible. Please immediately:\n1. Suspend the domain and hosting account\n2. Preserve all blockchain transaction references and server logs\n3. Report to national financial intelligence units\n\n${reporterBlock}`;
+
+  } else {
+    subject = `${urgency} Malicious Phishing/Fraud Website — Abuse Report (${domain})`;
+    body = `Dear Abuse Team,\n\nI am writing to report a malicious website hosted on your infrastructure that is actively engaged in phishing and fraudulent data collection targeting internet users.\n${techBlock}\nThis site employs deceptive design and social engineering tactics to obtain sensitive personal information including login credentials, financial details, and identity documents from victims. It poses a clear and present danger to the security and privacy of users who encounter it.\n${extraBlock}\n${evidencePara}\n\nI kindly request:\n1. Immediate suspension of the domain and hosting account\n2. Preservation of server logs for law enforcement purposes\n3. Investigation of associated accounts and campaigns\n\nThank you for your cooperation in protecting the internet community.\n\n${reporterBlock}`;
+  }
+
+  return { to, subject, body };
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ════════════════════════════════════════════════════════════════════
+function renderMiniStats(ip, country, score) {
+  const sc = score.score;
+  const col = sc >= 75 ? 'c-r' : sc >= 45 ? 'c-y' : 'c-g';
+  ge('miniStats').innerHTML = `
+    <div class="info-card">
+      <div class="ic-title"><i class="fas fa-network-wired"></i> IP ADDRESS</div>
+      <div class="ir-val c-b" style="font-size:13px;word-break:break-all">${ip}</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-title"><i class="fas fa-globe"></i> HOSTING COUNTRY</div>
+      <div class="ir-val c-w" style="font-size:13px">${country}</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-title"><i class="fas fa-exclamation-circle"></i> THREAT SCORE</div>
+      <div class="ir-val ${col}" style="font-size:20px;font-family:var(--fH);font-weight:900">${sc}<span style="font-size:11px;opacity:.5">/100</span></div>
+    </div>`;
+}
+
+function renderInfoCards(r) {
+  ge('infoCards').innerHTML = `
+    <div class="info-card">
+      <div class="ic-title"><i class="fas fa-server"></i> IP INTELLIGENCE</div>
+      <div class="ir"><div class="ir-lbl">IP ADDRESS</div><div class="ir-val c-b">${r.ip}</div></div>
+      <div class="ir"><div class="ir-lbl">ASN / ORG</div><div class="ir-val c-w">${r.asn || '—'}</div></div>
+      <div class="ir"><div class="ir-lbl">ISP / HOSTING</div><div class="ir-val c-r">${r.isp || '—'}</div></div>
+      <div class="ir"><div class="ir-lbl">LOCATION</div><div class="ir-val c-w">${r.city || '—'}, ${r.region || '—'}</div></div>
+      <div class="ir"><div class="ir-lbl">COUNTRY</div><div class="ir-val c-g">${r.country || '—'}</div></div>
+      <div class="ir"><div class="ir-lbl">TIMEZONE</div><div class="ir-val c-w">${r.timezone || '—'}</div></div>
+    </div>
+    <div class="info-card">
+      <div class="ic-title"><i class="fas fa-globe-asia"></i> DOMAIN INTELLIGENCE</div>
+      <div class="ir"><div class="ir-lbl">DOMAIN</div><div class="ir-val c-r">${r.domain}</div></div>
+      <div class="ir"><div class="ir-lbl">REGISTRAR</div><div class="ir-val c-w">${r.domainRegistrar || r.registrar || '—'}</div></div>
+      <div class="ir"><div class="ir-lbl">REGISTERED</div><div class="ir-val ${r.regDate ? 'c-y' : 'c-w'}">${r.regDate || 'Unknown'}</div></div>
+      <div class="ir"><div class="ir-lbl">EXPIRES</div><div class="ir-val c-w">${r.expDate || 'Unknown'}</div></div>
+      <div class="ir"><div class="ir-lbl">NAMESERVERS</div><div class="ir-val c-w" style="font-size:9px">${r.nameservers || '—'}</div></div>
+      <div class="ir"><div class="ir-lbl">MX RECORDS</div><div class="ir-val c-w" style="font-size:9px">${r.mxRecords || '—'}</div></div>
+    </div>`;
+}
+
+function renderThreatCard(scoreData) {
+  const s = scoreData.score;
+  const col = s >= 75 ? '#ff0033' : s >= 50 ? '#ff6600' : s >= 30 ? '#ffd700' : '#00ffcc';
+  const colG = s >= 75 ? 'var(--rg)' : s >= 50 ? 'rgba(255,100,0,.6)' : s >= 30 ? 'var(--yg)' : 'var(--gg)';
+  const level = s >= 80 ? 'CRITICAL' : s >= 60 ? 'HIGH RISK' : s >= 40 ? 'MODERATE' : s >= 20 ? 'LOW RISK' : 'MINIMAL';
+  const circumference = 2 * Math.PI * 28;
+  const dash = circumference * (s / 100);
+  const tagsHtml = scoreData.tags.map(t => `<div class="stag" style="border-color:${col}44;color:${col};background:${col}11">${t}</div>`).join('');
+
+  ge('threatCard').innerHTML = `
+    <div class="score-ring" style="width:72px;height:72px">
+      <svg viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="28" stroke="rgba(255,0,51,.1)" stroke-width="5"/>
+        <circle cx="32" cy="32" r="28" stroke="${col}" stroke-width="5"
+          stroke-dasharray="${dash.toFixed(1)} ${circumference.toFixed(1)}"
+          stroke-linecap="round" transform="rotate(-90 32 32)"
+          style="filter:drop-shadow(0 0 6px ${colG})"/>
+      </svg>
+      <div class="score-num">
+        <div class="score-n" style="color:${col};text-shadow:0 0 16px ${colG}">${s}</div>
+        <div class="score-s" style="color:${col}88">SCORE</div>
+      </div>
+    </div>
+    <div class="score-info">
+      <div class="score-level" style="color:${col};text-shadow:0 0 12px ${colG}">${level}</div>
+      <div class="score-tags">${tagsHtml || '<div class="stag" style="border-color:rgba(0,255,204,.3);color:var(--g)">NO HIGH-RISK SIGNALS</div>'}</div>
+    </div>`;
+}
+
+function renderAbuseEmails() {
+  const list = ge('abuseList');
+  ge('abuseCount').textContent = abuseEmails.length + ' FOUND';
+  if (!abuseEmails.length) {
+    list.innerHTML = `<div style="font-family:var(--fC);font-size:9px;letter-spacing:1.5px;color:rgba(255,80,80,.3);padding:10px;text-align:center">NO ABUSE CONTACTS EXTRACTED — TRY MANUALLY: abuse@${scanResults.domain}</div>`;
+    return;
+  }
+  list.innerHTML = abuseEmails.map((a, i) => {
+    const bClass = { rdap_ip: 'b-ip', rdap_domain: 'b-domain', known_db: 'b-known', pattern: 'b-pattern' }[a.source] || 'b-pattern';
+    const bLabel = { rdap_ip: '✦ RDAP IP', rdap_domain: '✦ RDAP DOMAIN', known_db: '✦ VERIFIED', pattern: '~ PATTERN' }[a.source] || '~ FALLBACK';
+    return `<div class="abuse-item" onclick="selectAbuseEmail(${i})">
+      <div class="abuse-badge ${bClass}">${bLabel}</div>
+      <div class="abuse-email">${a.email}</div>
+      <i class="fas fa-copy abuse-copy-btn" onclick="event.stopPropagation();copyText('${a.email}','Email')"></i>
+    </div>`;
+  }).join('');
+}
+
+function renderReportLinks(targetCountry) {
+  const countryLinks = (COUNTRY_CERTS[targetCountry] || []).concat(UNIVERSAL_AGENCIES);
+  ge('reportLinks').innerHTML = countryLinks.slice(0, 10).map(a =>
+    `<a class="rlink" href="${a.url}" target="_blank" rel="noopener">
+      <div class="rlink-ico" style="background:${a.color || 'rgba(255,0,51,.08)'}">${a.ico}</div>
+      <div class="rlink-text">
+        <div class="rlink-name">${a.name}</div>
+        <div class="rlink-desc">${a.desc}</div>
+      </div>
+      <i class="fas fa-external-link-alt rlink-arrow"></i>
+    </a>`
+  ).join('');
+}
+
+function selectAbuseEmail(i) {
+  const email = abuseEmails[i].email;
+  currentEmail.to = email;
+  ge('ecTo').textContent = email;
+  copyText(email, 'Abuse email');
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  COPY HELPERS
+// ════════════════════════════════════════════════════════════════════
+function copyText(text, label) {
+  navigator.clipboard.writeText(text).then(() => showToast((label || 'TEXT') + ' COPIED ✓'));
+}
+
+function copyEmailBody() {
+  if (!currentEmail.body) { showToast('NO EMAIL YET', true); return; }
+  navigator.clipboard.writeText(currentEmail.body).then(() => showToast('EMAIL BODY COPIED ✓'));
+}
+
+function sendEmail() {
+  if (!currentEmail.to) { showToast('NO ABUSE EMAIL FOUND', true); return; }
+  const enc = s => encodeURIComponent(s);
+  window.location.href = `mailto:${currentEmail.to}?subject=${enc(currentEmail.subject)}&body=${enc(currentEmail.body)}`;
+}
+
+function sendAllEmails() {
+  if (!abuseEmails.length) { showToast('NO ABUSE EMAILS', true); return; }
+  const all = abuseEmails.map(a => a.email).join(',');
+  const enc = s => encodeURIComponent(s);
+  window.location.href = `mailto:${all}?subject=${enc(currentEmail.subject)}&body=${enc(currentEmail.body)}`;
+  showToast('OPENING MAIL TO ' + abuseEmails.length + ' CONTACTS');
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  MAIN SCAN LOGIC
+// ════════════════════════════════════════════════════════════════════
+async function executeTrace() {
+  const rawUrl = ge('targetUrl').value.trim();
+  if (!rawUrl) { showToast('URL IS REQUIRED', true); return; }
+
+  let urlObj;
+  try {
+    urlObj = new URL(rawUrl.startsWith('http') ? rawUrl : 'https://' + rawUrl);
+  } catch (e) { showToast('INVALID URL FORMAT', true); return; }
+
+  const fullUrl = urlObj.href;
+  const domain = urlObj.hostname.replace(/^www\./, '');
+  const brandName = ge('brandName').value.trim();
+  const extraContext = ge('extraContext').value.trim();
+  const reporterType = ge('reporterType').value;
+  const targetCountry = ge('targetCountry').value;
+  const reporterName = ge('reporterName').value.trim();
+
+  // Reset
+  scanResults = {};
+  abuseEmails = [];
+  ge('genBtn').disabled = true;
+  ge('emptyState').style.display = 'none';
+  ge('resultsArea').style.display = 'none';
+  ge('progWrap').style.display = 'block';
+  clearTerminal();
+
+  // Init steps
+  for (let i = 0; i < 5; i++) setStep(i, 'idle');
+  setProgress(0, 'INITIALIZING...');
+
+  log(`[BCT SCAN] Target: ${domain}`, 'info');
+  log(`Full URL: ${fullUrl}`, 'muted');
+  log(`Scan started: ${new Date().toUTCString()}`, 'muted');
+
+  try {
+
+    // ─── STEP 0: DNS ───────────────────────────────────────────────
+    setStep(0, 'active');
+    setProgress(8, 'RESOLVING DNS RECORDS...');
+    log('Querying Google DNS for A / NS / MX records...', 'warning');
+
+    const [dnsA, dnsNS, dnsMX] = await Promise.allSettled([
+      fetchTimeout(`https://dns.google/resolve?name=${domain}&type=A`).then(r => r.json()),
+      fetchTimeout(`https://dns.google/resolve?name=${domain}&type=NS`).then(r => r.json()),
+      fetchTimeout(`https://dns.google/resolve?name=${domain}&type=MX`).then(r => r.json()),
+    ]);
+
+    if (dnsA.status === 'rejected' || !dnsA.value?.Answer) {
+      throw new Error('DNS resolution failed — domain may not exist or has no A record.');
+    }
+
+    const ip = dnsA.value.Answer.find(r => r.type === 1)?.data || dnsA.value.Answer[0]?.data;
+    if (!ip) throw new Error('No A record found for this domain.');
+
+    const nameservers = dnsNS.value?.Answer?.map(r => r.data.replace(/\.$/, '')).join(', ') || 'N/A';
+    const mxRecords = dnsMX.value?.Answer?.map(r => r.data).slice(0, 3).join(', ') || 'N/A';
+
+    scanResults.ip = ip;
+    scanResults.domain = domain;
+    scanResults.fullUrl = fullUrl;
+    scanResults.nameservers = nameservers;
+    scanResults.mxRecords = mxRecords;
+
+    log(`IP resolved: ${ip}`, 'success');
+    log(`Nameservers: ${nameservers.slice(0, 80)}`, 'data');
+    setStep(0, 'done');
+    setProgress(20, 'IP RESOLVED');
+
+    // ─── STEP 1: IP INTELLIGENCE ───────────────────────────────────
+    setStep(1, 'active');
+    setProgress(30, 'FETCHING IP INTELLIGENCE...');
+    log(`Querying ipapi.co for geolocation of ${ip}...`, 'warning');
+
+    let ipInfo = {};
+    try {
+      const ipRes = await fetchTimeout(`https://ipapi.co/${ip}/json/`, 8000);
+      ipInfo = await ipRes.json();
+      if (ipInfo.error) throw new Error(ipInfo.reason || 'API error');
+    } catch (e) {
+      log(`ipapi.co failed (${e.message}), trying fallback...`, 'warning');
+      try {
+        // Fallback: use ipwho.is
+        const fb = await fetchTimeout(`https://ipwho.is/${ip}`, 6000);
+        const fd = await fb.json();
+        if (fd.success) {
+          ipInfo = {
+            ip: fd.ip, city: fd.city, region: fd.region, country_name: fd.country,
+            org: fd.connection?.org || fd.connection?.isp || '',
+            asn: fd.connection?.asn ? 'AS' + fd.connection.asn : '',
+            timezone: fd.timezone?.id || '',
+          };
+        }
+      } catch (e2) { log('Fallback IP lookup also failed', 'warning'); }
+    }
+
+    scanResults.country = ipInfo.country_name || ipInfo.country || 'Unknown';
+    scanResults.region = ipInfo.region || '';
+    scanResults.city = ipInfo.city || '';
+    scanResults.isp = ipInfo.org || '';
+    scanResults.asn = ipInfo.asn || ipInfo.org || '';
+    scanResults.timezone = ipInfo.timezone || '';
+
+    log(`Country: ${scanResults.country} | City: ${scanResults.city}`, 'success');
+    log(`ISP/Org: ${scanResults.isp || 'Unknown'}`, 'data');
+    log(`ASN: ${scanResults.asn || 'Unknown'}`, 'data');
+    setStep(1, 'done');
+    setProgress(48, 'IP INTEL COMPLETE');
+
+    // ─── STEP 2: RDAP ABUSE CONTACTS ──────────────────────────────
+    setStep(2, 'active');
+    setProgress(55, 'RDAP ABUSE CONTACT LOOKUP...');
+    log('Running RDAP IP lookup (routes to ARIN/RIPE/APNIC/LACNIC/AFRINIC)...', 'warning');
+
+    // IP RDAP
+    try {
+      const ipRdap = await fetchTimeout(`https://rdap.org/ip/${ip}`, 9000);
+      if (ipRdap.ok) {
+        const ipData = await ipRdap.json();
+        const emails = parseAllRDAPEmails(ipData);
+        if (ipData.name) scanResults.registrar = ipData.name;
+        if (emails.length) {
+          emails.forEach(e => {
+            if (!abuseEmails.some(x => x.email === e.email)) {
+              abuseEmails.push({ email: e.email, type: 'IP RDAP', source: 'rdap_ip' });
+            }
+          });
+          log(`RDAP IP: Found ${emails.length} abuse contact(s) — ${emails[0].email}`, 'success');
+        } else {
+          log('RDAP IP: No abuse email in response', 'muted');
+        }
+      }
+    } catch (e) {
+      log(`RDAP IP lookup failed: ${e.message.slice(0, 60)}`, 'warning');
+    }
+
+    // Domain RDAP
+    log(`Running RDAP domain lookup for ${domain}...`, 'warning');
+    try {
+      const domRdap = await fetchTimeout(`https://rdap.org/domain/${domain}`, 9000);
+      if (domRdap.ok) {
+        const domData = await domRdap.json();
+        const emails = parseAllRDAPEmails(domData);
+
+        // Extract registrar name
+        if (domData.entities) {
+          for (const ent of domData.entities) {
+            if (ent.roles?.includes('registrar')) {
+              scanResults.domainRegistrar = getEntityName(ent) || scanResults.domainRegistrar;
+            }
+          }
+        }
+
+        // Extract dates
+        if (domData.events) {
+          for (const evt of domData.events) {
+            if (evt.eventAction === 'registration') {
+              try { scanResults.regDate = new Date(evt.eventDate).toLocaleDateString(); } catch (e) {}
+            }
+            if (evt.eventAction === 'expiration') {
+              try { scanResults.expDate = new Date(evt.eventDate).toLocaleDateString(); } catch (e) {}
+            }
+          }
+        }
+
+        if (emails.length) {
+          emails.forEach(e => {
+            if (!abuseEmails.some(x => x.email === e.email)) {
+              abuseEmails.push({ email: e.email, type: 'Domain RDAP', source: 'rdap_domain' });
+            }
+          });
+          log(`RDAP Domain: Found ${emails.length} contact(s)`, 'success');
+        } else {
+          log('RDAP Domain: No abuse email found', 'muted');
+        }
+        if (scanResults.regDate) log(`Domain registered: ${scanResults.regDate}`, 'data');
+        if (scanResults.domainRegistrar) log(`Registrar: ${scanResults.domainRegistrar}`, 'data');
+      }
+    } catch (e) {
+      log(`RDAP domain lookup failed: ${e.message.slice(0, 60)}`, 'warning');
+    }
+
+    // Known provider database
+    const ispKey = (scanResults.isp + ' ' + (scanResults.registrar || '')).toLowerCase();
+    for (const [key, email] of Object.entries(KNOWN_ABUSE_DB)) {
+      if (ispKey.includes(key)) {
+        if (!abuseEmails.some(x => x.email === email)) {
+          abuseEmails.push({ email, type: 'Known DB', source: 'known_db' });
+          log(`Known provider match: ${email}`, 'success');
+        }
+        break;
+      }
+    }
+
+    // Pattern fallback
+    if (abuseEmails.length === 0) {
+      const fallback = `abuse@${domain}`;
+      abuseEmails.push({ email: fallback, type: 'Pattern Fallback', source: 'pattern' });
+      log(`No RDAP email found — using fallback: ${fallback}`, 'warning');
+    }
+
+    log(`Total abuse contacts: ${abuseEmails.length}`, 'success');
+    setStep(2, 'done');
+    setProgress(72, 'RDAP COMPLETE');
+
+    // ─── STEP 3: THREAT SCORE ──────────────────────────────────────
+    setStep(3, 'active');
+    setProgress(82, 'CALCULATING THREAT SCORE...');
+    const scoreData = calculateThreatScore(domain, fullUrl, scanResults);
+    scanResults.scoreData = scoreData;
+    log(`Threat score: ${scoreData.score}/100 — [${scoreData.tags.join('] [')}]`, scoreData.score >= 65 ? 'error' : 'warning');
+    setStep(3, 'done');
+    setProgress(90, 'COMPOSING REPORT...');
+
+    // ─── STEP 4: EMAIL BUILD ───────────────────────────────────────
+    setStep(4, 'active');
+    const emailData = {
+      domain, fullUrl, type: selectedScamType, severity: selectedSeverity,
+      brand: brandName, reporterType, extra: extraContext, targetCountry, reporterName,
+      ip: scanResults.ip, isp: scanResults.isp, asn: scanResults.asn,
+      city: scanResults.city, country: scanResults.country,
+      domainRegistrar: scanResults.domainRegistrar || scanResults.registrar,
+      regDate: scanResults.regDate, nameservers: scanResults.nameservers,
+    };
+    const primaryEmail = abuseEmails[0]?.email || `abuse@${domain}`;
+    const emailObj = buildEmail(primaryEmail, emailData);
+    currentEmail = emailObj;
+
+    ge('ecTo').textContent = emailObj.to;
+    ge('ecSubj').textContent = emailObj.subject;
+    ge('ecBody').textContent = emailObj.body;
+
+    log(`Email composed — to: ${emailObj.to}`, 'success');
+    setStep(4, 'done');
+    setProgress(100, 'SCAN COMPLETE');
+
+    // ─── RENDER ALL ───────────────────────────────────────────────
+    renderMiniStats(scanResults.ip, `${scanResults.city ? scanResults.city + ', ' : ''}${scanResults.country}`, scoreData);
+    renderInfoCards(scanResults);
+    renderThreatCard(scoreData);
+    renderAbuseEmails();
+    renderReportLinks(targetCountry);
+
+    ge('resultsArea').style.display = 'block';
+    ge('resultsArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    log(`[DONE] Report ready. ${abuseEmails.length} abuse contact(s) found.`, 'success');
+    showToast(`✓ SCAN COMPLETE — ${abuseEmails.length} CONTACT(S) EXTRACTED`);
+
+  } catch (err) {
+    log(`[CRITICAL] ${err.message}`, 'error');
+    showToast('SCAN FAILED: ' + err.message.slice(0, 40), true);
+    ge('emptyState').style.display = 'block';
+  } finally {
+    ge('genBtn').disabled = false;
+    setTimeout(() => { ge('progWrap').style.display = 'none'; }, 2500);
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════════════════
+window.onload = function () {
+  // Particles
+  const pc = ['#ff0033', '#cc0015', '#ff2244', '#991122'];
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.style.cssText = `position:fixed;border-radius:50%;pointer-events:none;z-index:0;
+      left:${Math.random() * 100}%;top:${Math.random() * 100}%;
+      width:${Math.random() * 2 + .2}px;height:${Math.random() * 2 + .2}px;
+      background:${pc[i % pc.length]};
+      animation:pf ${10 + Math.random() * 16}s ${-(Math.random() * 20)}s infinite ease-in-out;
+      --op:${.06 + Math.random() * .18};--tx:${(Math.random() - .5) * 80}px;--ty:${-50 - Math.random() * 100}px;--sc:${.2 + Math.random()}`;
+    document.body.appendChild(p);
+  }
+  const st = document.createElement('style');
+  st.textContent = `@keyframes pf{0%,100%{transform:translate(0,0) scale(1);opacity:0}15%{opacity:var(--op)}85%{opacity:calc(var(--op)*.1)}50%{transform:translate(var(--tx),var(--ty)) scale(var(--sc))}}`;
+  document.head.appendChild(st);
+
+  // Default severity
+  selSev(document.querySelector('.sev-btn.sev-hi'));
+};
+</script>
+</body>
+  </html>
