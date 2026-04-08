@@ -1161,10 +1161,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const skipBtn = dialog.querySelector(".ramadan-skip");
 
     // site load হতেই dialogue দেখাও
-    setTimeout(() => {
-        dialog.style.display = "flex";
-    }, 1200); // 1.2 second delay, boot screen এর পরে
-
+    dialog.style.display = "none";
     // skip button hide করবে শুধু এই session এর জন্য
     skipBtn.addEventListener("click", () => {
         dialog.style.display = "none";
