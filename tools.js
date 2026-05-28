@@ -1,31 +1,31 @@
-// --- loc ---
-const BIN_ID = "6960ab9d43b1c97be923b2dd";
+// GitHub Gist থেকে টুলস লোড করা
+const GIST_OWNER = 'TROOPSITSOLUTIONS';
+const GIST_ID = '3bfa4b9ca8dbdc1038918d63329096b3';
+const GIST_FILE = 'tools.json';
+const GIST_RAW_URL = `https://gist.githubusercontent.com/${GIST_OWNER}/${GIST_ID}/raw/${GIST_FILE}`;
 
-const API_KEY =
-  "$2a$10$" +
-  "FCZs3q0UrVn3ftm8i8x5t." +
-  "J7uhYK1gkrozCVhKbUNdLM/" +
-  "ws0IfM3K";
-
-// --- DATA FROM JSONBIN ---
-async function fetchTools() {
-  const container = document.getElementById('dynamic-tools-container');
-
-  try {
-    const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-      headers: { 'X-Master-Key': API_KEY }
-    });
-
-    const data = await response.json();
-    renderTools(data.record.sections); // এটা ধরে নিলাম তুমি আগেই renderTools ফাংশন ডিফাইন করেছ
-  } catch (error) {
-    container.innerHTML = `
-      <div style="color:var(--primary); text-align:center; padding: 40px; font-family: 'JetBrains Mono'; border: 1px solid #222;">
-        [!] ERROR: FAILED TO LOAD SYSTEM DATA
-      </div>`;
-    console.error(error);
-  }
+async function fetchToolsFromBin() {
+    try {
+        const response = await fetch(`${GIST_RAW_URL}?t=${Date.now()}`);
+        if (!response.ok) throw new Error('Failed to load');
+        const data = await response.json();
+        
+        if (data.tools && data.tools.sections) {
+            return data.tools.sections;
+        }
+        return [];
+    } catch(error) {
+        console.log('Using fallback tools');
+        return [
+            {
+                section_title: "🔐 SECURITY TOOLS",
+                title_color: "#ff0033",
+                tools: [
+                    { title: "IP Tracker", url: "https://ipinfo.io", icon: "fas fa-map-marker-alt", desc: "Track IP addresses", tag: "POPULAR" }
+                ]
+            }
+        ];
+    }
 }
 
-// Automatically call fetchTools when script loads
-document.addEventListener("DOMContentLoaded", fetchTools);
+window.fetchToolsFromBin = fetchToolsFromBin;
