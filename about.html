@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Team BCT</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Rajdhani for Logo, Play for Announcement, Inter for Body -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* CSS Variables - Deep Pure Black & Maroon/Red Theme */
+        :root {
+            --bg-color: #030000;
+            --header-bg: #000000; 
+            --card-bg: #070000;
+            --border-color: #3a0808;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-blue: #dc2626; 
+            --popular-purple: #0a0000;
+            --popular-text: #fecaca;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #150000 0%, transparent 40%);
+        }
+
+        /* Sticky Wrapper with Deep Black and Subtle Shadow */
+        .sticky-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: #000000; 
+            border-bottom: 1px solid rgba(220, 38, 38, 0.15); 
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Header */
+        header {
+            background-color: #000000; 
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-icon {
+            font-size: 20px;
+            color: var(--text-main);
+            cursor: pointer;
+            margin-right: auto;
+            width: 25px;
+            display: inline-block;
+        }
+
+        /* Logo Area */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: auto;
+            transform: translateX(-10px);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-img-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-img-container img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid rgba(220, 38, 38, 0.6);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3);
+            object-fit: cover;
+        }
+
+        .logo-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #150000, #050000);
+            padding: 6px;
+            border-radius: 50%;
+            border: 1px solid rgba(220, 38, 38, 0.6);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3);
+            font-size: 15px;
+            color: var(--accent-blue);
+            width: 38px;
+            height: 38px;
+        }
+
+        /* Rajdhani Bold Font */
+        .logo-text {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700; 
+            font-size: 27px;
+            letter-spacing: 0px;
+            display: flex;
+            align-items: center;
+            color: #d1d5db; 
+            text-transform: uppercase !important; 
+            text-shadow: none; 
+        }
+
+        .logo-text span {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            margin-left: 4px; 
+            color: #b91c1c; 
+            text-transform: uppercase !important; 
+            text-shadow: none; 
+        }
+
+        /* Minimal Dropdown Menu */
+        .nav-menu-dropdown {
+            background: linear-gradient(to bottom, #050000, #000000); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid #1a0000;
+            border-bottom: 1px solid #3a0808; 
+            display: none;
+            padding: 10px 0; 
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9);
+            animation: menuFadeIn 0.2s ease-out forwards;
+        }
+
+        @keyframes menuFadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0; 
+        }
+
+        .dropdown-links a {
+            color: #d1d5db; 
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            background: transparent;
+            border-left: 3px solid transparent; 
+            border-bottom: 1px solid #0f0000; 
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-links a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-links a i {
+            color: #6b7280; 
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            transition: color 0.2s ease;
+        }
+
+        .dropdown-links a:hover {
+            background: linear-gradient(90deg, #150000 0%, #000000 100%); 
+            color: #ffffff;
+            border-left: 3px solid #dc2626; 
+            padding-left: 24px; 
+        }
+
+        .dropdown-links a:hover i {
+            color: #dc2626; 
+        }
+
+        /* Container */
+        .container {
+            padding: 25px 15px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        /* Telegram Announcement */
+        .announcement-banner {
+            background: linear-gradient(145deg, #0f0000, #030000);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .announcement-banner::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(220, 38, 38, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .announcement-banner p {
+            font-family: 'Play', sans-serif;
+            font-weight: 400;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #ffc2c2;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .join-btn {
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+            background-color: #dc2626; 
+            color: white;
+            padding: 10px 32px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.2);
+            transition: all 0.2s ease;
+        }
+        
+        .join-btn:hover {
+            background-color: #ef4444; 
+            box-shadow: 0 6px 15px rgba(220, 38, 38, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Popular Tools Dropdown */
+        .popular-tools-btn {
+            background-color: #0a0000;
+            border: none;
+            border-left: 4px solid #dc2626; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+            padding: 14px 18px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .popular-tools-btn:hover {
+            background-color: #150000;
+            border-left-color: #ff4d4d;
+        }
+
+        .popular-tools-list {
+            background-color: #070000;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 4px;
+            margin-top: -15px;
+            margin-bottom: 20px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+
+        .popular-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .popular-item:last-child {
+            border-bottom: none;
+        }
+
+        .popular-item:hover {
+            background-color: #120000;
+        }
+
+        .popular-item i {
+            color: rgba(220, 38, 38, 0.8);
+        }
+
+        /* About Us Content Layout */
+        .about-card {
+            background: linear-gradient(145deg, #0a0000, #030000);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .about-header {
+            background: linear-gradient(135deg, #7f1d1d 0%, #3b0909 100%);
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+        }
+
+        .about-header h2 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .about-header p {
+            font-size: 12px;
+            color: #ffc2c2;
+            margin-top: 4px;
+        }
+
+        .about-body {
+            padding: 25px 20px;
+        }
+
+        .about-section {
+            margin-bottom: 25px;
+        }
+
+        .about-section h3 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+
+        .about-section p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            text-align: justify;
+        }
+
+        /* Features List */
+        .features-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .features-list li {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .features-list li i {
+            color: var(--accent-blue);
+            margin-top: 4px;
+            font-size: 14px;
+        }
+
+        .features-list strong {
+            color: var(--text-main);
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            background-color: #000000;
+            padding: 30px 15px 15px 15px;
+            margin-top: auto;
+            border-top: 1px solid rgba(220, 38, 38, 0.1);
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 20%;
+            width: 60%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.8), transparent);
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-about h4 {
+            color: rgba(220, 38, 38, 0.9);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .footer-about p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .footer-col h5 {
+            font-size: 13px;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: #fecaca;
+        }
+
+        .copyright-bar {
+            position: relative;
+            max-width: 600px;
+            margin: 20px auto 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            font-size: 13px; 
+            color: #9ca3af;
+            text-align: center;
+        }
+
+        .copyright-text {
+            line-height: 1.5;
+            letter-spacing: 0.3px;
+        }
+
+        .trustiq-link {
+            color: #dc2626 !important; 
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .trustiq-link:hover {
+            color: #ef4444 !important; 
+            text-shadow: 0 0 8px rgba(220, 38, 38, 0.6);
+        }
+
+        .scroll-top-btn {
+            position: absolute;
+            right: 0; 
+            background: linear-gradient(145deg, #120000, #050000);
+            color: white;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);
+        }
+        
+        .scroll-top-btn:hover {
+            background: #2e0505;
+            border-color: rgba(220, 38, 38, 0.8);
+            color: #ffc2c2;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Header and Search Wrapper -->
+    <div class="sticky-wrapper">
+        <!-- Header -->
+        <header>
+            <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
+            <a href="/" class="logo" id="headerLogoContainer">
+                <!-- ইমেজ এবং গ্লোয়িং টেক্সট লোগো এখানে পাশাপাশি লোড হবে -->
+            </a>
+        </header>
+
+        <!-- Dropdown Navigation Drawer -->
+        <div class="nav-menu-dropdown" id="navDropdown">
+            <ul class="dropdown-links" id="drawerLinksContainer">
+                <!-- Dynamic Menu Items will load here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Announcement Banner -->
+        <div class="announcement-banner" id="announceBanner">
+            <p id="announcementText"></p>
+            <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
+        </div>
+
+        <!-- Popular Tools Dropdown -->
+        <div class="popular-tools-btn" id="popularBtn">
+            <span>Popular Tools</span>
+            <i class="fa-solid fa-chevron-right" id="popArrow"></i>
+        </div>
+        <div class="popular-tools-list" id="popularList"></div>
+        
+        <!-- About Content Card -->
+        <div class="about-card">
+            <div class="about-header">
+                <h2>About Team BCT</h2>
+                <p>Your one-stop destination for efficient online web tools</p>
+            </div>
+            
+            <div class="about-body">
+                
+                <div class="about-section">
+                    <p>Welcome to Team BCT, your one-stop destination for free, high-quality, and efficient online web tools. We are dedicated to providing developers, designers, content creators, and SEO professionals with the utilities they need to stream-line their workflow.</p>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fa-solid fa-users"></i> Who We Are</h3>
+                    <p>Team BCT was founded with a simple mission: to make powerful web tools accessible to everyone, completely free of charge. Whether you need to check your website's SEO score, generate strong passwords, analyze network performance, or manipulate text and images, we have a tool for you.</p>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fa-solid fa-bullseye"></i> Our Mission</h3>
+                    <p>Our goal is to build the most comprehensive collection of web utilities on the internet. We believe that productivity shouldn't come with a price tag. That's why all our tools—from our advanced CC Checker (for educational testing) to our simple Word Counter—are available to everyone, everywhere.</p>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fa-solid fa-scale-balanced"></i> Educational Purpose & Ethics</h3>
+                    <p>Please note that all tools provided on Team BCT, especially those related to payment system testing or security analysis, are intended strictly for educational and development purposes. We do not condone or support any form of illegal activity, including "carding" or financial fraud. Our tools are here to help developers build better, more secure systems.</p>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fa-solid fa-circle-question"></i> Why Choose Us?</h3>
+                    <ul class="features-list">
+                        <li>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span><strong>100% Free:</strong> No subscriptions, no hidden fees.</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span><strong>Fast & Reliable:</strong> Our tools are optimized for speed and accuracy.</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span><strong>User-Centric Design:</strong> Built with a clean implementation to ensure ease of use.</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span><strong>Secure:</strong> We respect your privacy and data security.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="about-section" style="margin-bottom: 0;">
+                    <p>Thank you for being part of the Team BCT community. If you have any suggestions or need a specific tool, feel free to contact us!</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <h4>About Us</h4>
+                <p id="footerAboutText">One Step Online Tools</p>
+            </div>
+            <div class="footer-grid" id="footerGridContainer">
+                <!-- Columns render dynamically -->
+            </div>
+        </div>
+        <!-- Centered Copyright Bar -->
+        <div class="copyright-bar">
+            <span class="copyright-text" id="copyrightSpan">
+                &copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">Trustiq</a>.
+            </span>
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <i class="fa-solid fa-chevron-up"></i>
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        // CONFIG
+        const GIST_OWNER = 'TROOPSITSOLUTIONS';
+        const GIST_ID = '3bfa4b9ca8dbdc1038918d63329096b3';
+        const GIST_URL = `https://gist.githubusercontent.com/${GIST_OWNER}/${GIST_ID}/raw/tools.json`;
+
+        let siteData = null;
+
+        async function loadData() {
+            try {
+                const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
+                if (!res.ok) throw new Error();
+                siteData = await res.json();
+                applyTheme();
+                applySiteConfig();
+            } catch (e) {
+                console.error("Gist Load Failed.");
+            }
+        }
+
+        // Apply theme properties dynamically
+        function applyTheme() {
+            if (siteData.themeConfig) {
+                const root = document.documentElement;
+                Object.entries(siteData.themeConfig).forEach(([key, val]) => {
+                    const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+                    root.style.setProperty(cssKey, val);
+                });
+            }
+        }
+
+        function applySiteConfig() {
+            // Header configuration
+            const logoContainer = document.getElementById('headerLogoContainer');
+            
+            let imgHTML = '';
+            if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
+                imgHTML = `
+                    <div class="logo-img-container">
+                        <img src="${siteData.siteConfig.logoUrl}">
+                    </div>
+                `;
+            } else {
+                let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
+                if (!iconClass.includes('fa-')) {
+                    iconClass = 'fa-solid fa-' + iconClass;
+                } else if (!iconClass.includes('fa-solid') && !iconClass.includes('fa-regular') && !iconClass.includes('fas') && !iconClass.includes('far')) {
+                    iconClass = 'fa-solid ' + iconClass;
+                }
+
+                imgHTML = `
+                    <div class="logo-icon">
+                        <i class="${iconClass}"></i>
+                    </div>
+                `;
+            }
+
+            const siteName = siteData.siteConfig.siteName || "TEAM BCT";
+            let textHTML = "";
+            const parts = siteName.trim().split(/\s+/);
+            
+            if (parts.length > 1) {
+                let firstPart = parts[0].toUpperCase();
+                let secondPart = parts.slice(1).join(" ").toUpperCase();
+                textHTML = `${firstPart}<span>${secondPart}</span>`;
+            } else {
+                if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
+                    let firstPart = "TEAM";
+                    let secondPart = siteName.slice(4).toUpperCase();
+                    textHTML = `${firstPart}<span>${secondPart}</span>`;
+                } else {
+                    textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
+                }
+            }
+
+            logoContainer.innerHTML = `
+                ${imgHTML}
+                <span class="logo-text">${textHTML}</span>
+            `;
+
+            // Navigation Menu with Icons
+            const drawerLinks = document.getElementById('drawerLinksContainer');
+            drawerLinks.innerHTML = '';
+            siteData.navigationMenu.forEach(menu => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
+                drawerLinks.appendChild(li);
+            });
+
+            // Announcement Banner
+            const banner = document.getElementById('announceBanner');
+            if (siteData.siteConfig.showAnnouncement) {
+                banner.style.display = 'block';
+                document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
+                document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
+            } else {
+                banner.style.display = 'none';
+            }
+
+            // Popular tools dropdown
+            const popList = document.getElementById('popularList');
+            popList.innerHTML = '';
+            siteData.siteConfig.popularTools.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'popular-item';
+                div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
+                
+                div.onclick = function() {
+                    if (tool.link === '#') {
+                        Swal.fire({
+                            title: 'Coming Soon!',
+                            text: `${tool.title} is under development.`,
+                            icon: 'info',
+                            background: siteData.themeConfig.cardBg || '#131c31',
+                            color: '#fff',
+                            confirmButtonColor: siteData.themeConfig.accentBlue || '#ef4444'
+                        });
+                    } else {
+                        window.location.href = tool.link;
+                    }
+                };
+                popList.appendChild(div);
+            });
+
+            // Footer Configuration
+            document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
+
+            const footerGrid = document.getElementById('footerGridContainer');
+            footerGrid.innerHTML = '';
+            siteData.footerConfig.columns.forEach(col => {
+                const div = document.createElement('div');
+                div.className = 'footer-col';
+                div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
+                const ul = div.querySelector('.footer-links');
+                col.links.forEach(l => {
+                    ul.innerHTML += `<li><a href="${l.url}">${escapeHtml(l.title)}</a></li>`;
+                });
+                footerGrid.appendChild(div);
+            });
+        }
+
+        // Dropdown Navigation Drawer Controls (থ্রি-লাইন ড্রপডাউন টগল ও আইকন পরিবর্তন)
+        function toggleNavDropdown() {
+            const dropdown = document.getElementById('navDropdown');
+            const menuIcon = document.querySelector('.menu-icon i');
+            const isVisible = dropdown.style.display === 'block';
+
+            if (isVisible) {
+                dropdown.style.display = 'none';
+                menuIcon.className = 'fa-solid fa-bars';
+            } else {
+                dropdown.style.display = 'block';
+                menuIcon.className = 'fa-solid fa-xmark';
+            }
+        }
+
+        // Popular Dropdown Toggle
+        const popularBtn = document.getElementById('popularBtn');
+        const popularList = document.getElementById('popularList');
+        const popArrow = document.getElementById('popArrow');
+        popularBtn.addEventListener('click', () => {
+            const isFlex = popularList.style.display === 'flex';
+            popularList.style.display = isFlex ? 'none' : 'flex';
+            popArrow.className = isFlex ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-down';
+        });
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m]));
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
