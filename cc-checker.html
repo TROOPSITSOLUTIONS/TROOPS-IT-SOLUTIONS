@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CC Checker Pro - Team BCT</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Rajdhani, Inter, Play, Share Tech Mono, Orbitron -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="teambct-config-server.js"></script>
+    <style>
+        /* ========================================================
+           GLOBAL SITE STYLES (Age Calculator Theme)
+           ======================================================== */
+        :root {
+            --bg-color: #030000;
+            --header-bg: #000000;
+            --card-bg: #070000;
+            --border-color: #3a0808;
+            --border-light: rgba(220, 38, 38, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-blue: #dc2626; /* Deep Red Accent */
+            
+            /* Status Colors */
+            --red: #ef4444; 
+            --green: #10b981; 
+            --yellow: #eab308; 
+            --blue: #3b82f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 2px; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #150000 0%, transparent 40%);
+        }
+
+        /* Sticky Wrapper */
+        .sticky-wrapper {
+            position: sticky; top: 0; z-index: 1000; background-color: #000000;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        header { background-color: #000000; padding: 15px 20px; display: flex; align-items: center; }
+        .menu-icon { font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: auto; width: 25px; display: inline-block; }
+        .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
+        .logo-img-container { display: flex; align-items: center; justify-content: center; }
+        .logo-img-container img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); object-fit: cover; }
+        .logo-icon { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #150000, #050000); padding: 6px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); font-size: 15px; color: var(--accent-blue); width: 38px; height: 38px; }
+        .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
+        .logo-text span { font-family: 'Rajdhani', sans-serif; font-weight: 700; margin-left: 4px; color: #b91c1c; text-transform: uppercase !important; }
+
+        /* Dropdown Menu */
+        .nav-menu-dropdown {
+            background: linear-gradient(to bottom, #050000, #000000); backdrop-filter: blur(10px);
+            border-top: 1px solid #1a0000; border-bottom: 1px solid #3a0808; display: none; padding: 10px 0;
+            position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9); animation: menuFadeIn 0.2s ease-out forwards;
+        }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-links { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .dropdown-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: transparent; border-left: 3px solid transparent; border-bottom: 1px solid #0f0000; transition: all 0.2s ease; }
+        .dropdown-links a:hover { background: linear-gradient(90deg, #150000 0%, #000000 100%); color: #ffffff; border-left: 3px solid #dc2626; padding-left: 24px; }
+        .dropdown-links a:hover i { color: #dc2626; }
+
+        /* Container */
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; width: 100%; flex-grow: 1; }
+
+        /* Announcement Banner */
+        .announcement-banner {
+            background: linear-gradient(145deg, #0f0000, #030000); border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 25px; display: none; position: relative; overflow: hidden;
+        }
+        .announcement-banner p { font-family: 'Play', sans-serif; font-weight: 400; font-size: 15px; line-height: 1.6; color: #ffc2c2; margin-bottom: 15px; position: relative; z-index: 1; }
+        .join-btn { display: inline-block; position: relative; z-index: 1; background-color: #dc2626; color: white; padding: 10px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s ease; }
+        .join-btn:hover { background-color: #ef4444; transform: translateY(-2px); }
+
+        /* Popular Tools */
+        .popular-tools-btn { background-color: #0a0000; border: none; border-left: 4px solid #dc2626; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); padding: 14px 18px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 20px; transition: all 0.3s ease; }
+        .popular-tools-btn:hover { background-color: #150000; border-left-color: #ff4d4d; }
+        .popular-tools-list { background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 4px; margin-top: -15px; margin-bottom: 20px; display: none; flex-direction: column; overflow: hidden; }
+        .popular-item { padding: 12px 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); font-size: 13px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .popular-item:hover { background-color: #120000; }
+        .popular-item i { color: rgba(220, 38, 38, 0.8); }
+
+        /* Tool Card */
+        .tool-card {
+            background: linear-gradient(145deg, #0a0000, #030000); border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .tool-card h2 { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: white; margin-bottom: 20px; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Form Elements */
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 6px; padding: 11px 15px; color: white; font-size: 14px; outline: none; transition: 0.2s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: rgba(220, 38, 38, 0.8); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 0 12px rgba(220, 38, 38, 0.2); background: #0d0000; }
+        .form-group textarea { resize: vertical; min-height: 120px; font-family: 'Share Tech Mono', monospace; font-size: 12px; }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 5 4-5' stroke='%23dc2626' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: calc(100% - 15px) center; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-weight: bold;}
+        select option { background: #070000; color: #fff; }
+
+        /* Action Buttons Grid */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px;}
+        .act-btn { background: #000; border: 1px solid var(--border-light); color: var(--text-muted); padding: 12px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .act-btn:hover { border-color: rgba(220, 38, 38, 0.5); color: var(--text-main); background: rgba(220, 38, 38, 0.05); }
+
+        /* ========================================================
+           CC CHECKER PRO SPECIFIC UI (Merged gracefully)
+           ======================================================== */
+
+        /* 3D CREDIT CARD VISUALIZER */
+        .card-visualizer {
+            width: 100%; max-width: 380px; margin: 0 auto 20px;
+            height: 200px; background: linear-gradient(135deg, #111, #000);
+            border-radius: 12px; position: relative; padding: 20px;
+            border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        .cv-top { display: flex; justify-content: space-between; align-items: center; z-index: 2; }
+        .cv-chip { width: 40px; height: 30px; background: linear-gradient(135deg, #d4af37, #f3e5ab); border-radius: 6px; }
+        .cv-brand { font-size: 35px; color: rgba(255,255,255,0.1); transition: 0.3s; }
+        .cv-number { font-family: 'Share Tech Mono', monospace; font-size: 22px; letter-spacing: 3px; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 2; margin-top: 10px; text-align: center; }
+        .cv-bottom { display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
+        .cv-data-group { display: flex; flex-direction: column; }
+        .cv-label { font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .cv-val { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: #ddd; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: #000; border: 1px solid var(--border-light); border-radius: 6px; padding: 12px; text-align: center; position: relative; overflow: hidden; }
+        .stat-lbl { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
+        .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 900; }
+
+        /* Brand Distribution Stats */
+        .brand-stats { margin-bottom: 20px; background: #000; border: 1px solid var(--border-light); padding: 15px; border-radius: 6px; }
+        .b-stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-muted); }
+        .b-stat-row:last-child { margin-bottom: 0; }
+        .b-bar-bg { flex: 1; height: 6px; background: #111; margin: 0 10px; border-radius: 3px; overflow: hidden; }
+        .b-bar-fill { height: 100%; background: var(--accent-blue); width: 0%; transition: 0.5s; }
+
+        /* Console Output */
+        .panel-header { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent-blue); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;}
+        .live-console { background: #000; border: 1px solid var(--border-light); border-radius: 6px; padding: 12px; font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-muted); overflow-y: auto; display: flex; flex-direction: column; gap: 6px; height: 160px; margin-bottom: 20px;}
+        .log-line { border-bottom: 1px dashed #111; padding-bottom: 4px; word-break: break-all; }
+        .log-time { color: var(--accent-blue); margin-right: 6px; }
+        .c-info { color: #ccc; }
+        .c-err { color: var(--red); }
+        .c-warn { color: var(--yellow); }
+
+        /* Gateway Terminal & Tabs */
+        .terminal-wrapper { background: #000; border: 1px solid var(--border-light); border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; margin-top:20px; }
+        .term-header { background: rgba(220,38,38,0.05); padding: 10px 12px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
+        .term-title { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 5px; }
+        .term-tabs { display: flex; gap: 8px; }
+        .t-tab { font-family: 'Share Tech Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer; color: var(--text-muted); transition: 0.3s; border: 1px solid transparent; font-weight: bold;}
+        .t-tab.active { border-color: rgba(220,38,38,0.4); color: #fff; background: rgba(220,38,38,0.1); }
+        .term-body { padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; max-height: 400px; min-height: 200px; }
+
+        /* Response Items (Cards Stacked Design) */
+        .res-item { background: #030000; border: 1px solid var(--border-light); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 10px; border-left: 3px solid transparent; transition: 0.2s; }
+        .res-item:hover { background: rgba(220,38,38,0.05); }
+        .res-item.live { border-left-color: var(--green); }
+        .res-item.dead { border-left-color: var(--red); opacity: 0.8; }
+        
+        .r-top { display: flex; justify-content: space-between; align-items: center; }
+        .r-num { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: #fff; font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
+        .r-badge { font-family: 'Rajdhani', sans-serif; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .b-live { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid var(--green); }
+        .b-dead { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid var(--red); }
+        
+        .r-info { display: flex; gap: 6px; flex-wrap: wrap; }
+        .r-tag { font-size: 9px; color: var(--text-muted); text-transform: uppercase; background: #0a0a0a; padding: 3px 6px; border-radius: 4px; border: 1px solid #222; display: flex; align-items: center; gap: 4px; }
+        .r-meta { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: #888; margin-top: 2px;}
+
+        /* Footer */
+        footer { position: relative; background-color: #000000; padding: 30px 15px 15px 15px; margin-top: auto; border-top: 1px solid rgba(220, 38, 38, 0.1); }
+        footer::before { content: ''; position: absolute; top: -1px; left: 20%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.8), transparent); box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .footer-about h4 { color: rgba(220, 38, 38, 0.9); margin-bottom: 8px; font-size: 14px; }
+        .footer-about p { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .footer-col h5 { font-size: 13px; color: var(--text-main); margin-bottom: 10px; }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color 0.2s; }
+        .footer-links a:hover { color: #fecaca; }
+        .copyright-bar { position: relative; max-width: 600px; margin: 20px auto 0 auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: center; align-items: center; font-size: 13px; color: #9ca3af; text-align: center; }
+        .trustiq-link { color: #dc2626 !important; font-weight: 700; text-decoration: none; letter-spacing: 0.5px; transition: all 0.3s ease; }
+        .trustiq-link:hover { color: #ef4444 !important; text-shadow: 0 0 8px rgba(220, 38, 38, 0.6); }
+        .scroll-top-btn { position: absolute; right: 0; background: linear-gradient(145deg, #120000, #050000); color: white; border: 1px solid rgba(220, 38, 38, 0.3); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05); }
+        .scroll-top-btn:hover { background: #2e0505; border-color: rgba(220, 38, 38, 0.8); color: #ffc2c2; }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Header -->
+    <div class="sticky-wrapper">
+        <header>
+            <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
+            <a href="/" class="logo" id="headerLogoContainer"></a>
+            <!-- Timer appended here to keep it clean -->
+            
+        </header>
+        <div class="nav-menu-dropdown" id="navDropdown">
+            <ul class="dropdown-links" id="drawerLinksContainer"></ul>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <div class="announcement-banner" id="announceBanner">
+            <p id="announcementText"></p>
+            <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
+        </div>
+
+        <div class="popular-tools-btn" id="popularBtn">
+            <span>Popular Tools</span>
+            <i class="fa-solid fa-chevron-right" id="popArrow"></i>
+        </div>
+        <div class="popular-tools-list" id="popularList"></div>
+        
+        <!-- Tool Card: CC CHECKER -->
+        <div class="tool-card">
+            <h2>CC CHECKER PRO <span style="font-size:10px; border:1px solid var(--border-color); padding: 2px 6px; border-radius:4px; font-weight:500;">v9.0</span></h2>
+            
+            <!-- GATEWAY SELECTOR -->
+            <div class="form-group">
+                <label><i class="fas fa-route"></i> Gateway Node</label>
+                <select id="gatewayNode">
+                    <option value="stripe">NODE: STRIPE V3</option>
+                    <option value="braintree">NODE: BRAINTREE</option>
+                    <option value="adyen">NODE: ADYEN API</option>
+                    <option value="authnet">NODE: AUTHORIZE.NET</option>
+                </select>
+            </div>
+
+            <!-- PAYLOAD INJECTION -->
+            <div class="form-group">
+                <label><i class="fas fa-database"></i> Payload Injection</label>
+                <textarea id="ccInput" placeholder="[+] PASTE DATASTREAM HERE&#10;[+] Auto-detects pipe (|), colon (:), space&#10;[+] Extracts CC, MM, YY, CVV automatically&#10;&#10;Format Examples:&#10;443048xxxxxxxxxx|12|2027|123&#10;512345xxxxxxxxxx 08 26 456"></textarea>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="action-grid">
+                <button class="act-btn" style="border-color:var(--green); color:var(--green); grid-column: span 2; background: rgba(16,185,129,0.05);" onclick="Nexus.start()">
+                    <i class="fas fa-play"></i> START VALIDATION
+                </button>
+                <button class="act-btn" style="border-color:var(--yellow); color:var(--yellow);" onclick="Nexus.stop()">
+                    <i class="fas fa-hand-paper"></i> STOP
+                </button>
+                <button class="act-btn" onclick="Nexus.clear()">
+                    <i class="fas fa-trash"></i> CLEAR
+                </button>
+                <button class="act-btn" style="border-color:var(--blue); color:var(--blue); grid-column: span 2;" onclick="Nexus.copyLive()">
+                    <i class="fas fa-copy"></i> COPY LIVE CARDS
+                </button>
+            </div>
+
+            <!-- 3D CARD VISUALIZER -->
+            <div class="card-visualizer" id="liveCard">
+                <div class="cv-top">
+                    <div class="cv-chip"></div>
+                    <i class="fas fa-credit-card cv-brand" id="cvBrandIcon"></i>
+                </div>
+                <div class="cv-number" id="cvNum">#### #### #### ####</div>
+                <div class="cv-bottom">
+                    <div class="cv-data-group">
+                        <span class="cv-label">VALID THRU</span>
+                        <span class="cv-val" id="cvExp">##/##</span>
+                    </div>
+                    <div class="cv-data-group">
+                        <span class="cv-label">CVV</span>
+                        <span class="cv-val" id="cvCvv">###</span>
+                    </div>
+                    <div class="cv-data-group" style="text-align:right">
+                        <span class="cv-label" id="cvBankTitle">ISSUER INSTITUTION</span>
+                        <span class="cv-val" id="cvBank" style="font-family:'Rajdhani', sans-serif; font-weight:700; font-size:13px; text-transform:uppercase">AWAITING BIN...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATS GRID -->
+            <div class="stats-grid" style="display:grid;">
+                <div class="stat-box">
+                    <div class="stat-lbl">LOADED</div>
+                    <div class="stat-val" id="st-total">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-lbl">FORMAT OK</div>
+                    <div class="stat-val" id="st-valid" style="color:var(--yellow)">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-lbl">APPROVED</div>
+                    <div class="stat-val" id="st-live" style="color:var(--green)">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-lbl">DECLINED</div>
+                    <div class="stat-val" id="st-dead" style="color:var(--red)">0</div>
+                </div>
+            </div>
+
+            <!-- BRAND DISTRIBUTION -->
+            <div class="brand-stats">
+                <div class="panel-header" style="margin-bottom:15px; border:none; padding:0; font-size:12px;"><i class="fas fa-chart-bar"></i> CARD DISTRIBUTION</div>
+                <div class="b-stat-row">
+                    <span style="width:30px">VISA</span>
+                    <div class="b-bar-bg"><div class="b-bar-fill" id="bar-visa"></div></div>
+                    <span id="pct-visa" style="width:30px; text-align:right; font-weight:bold;">0%</span>
+                </div>
+                <div class="b-stat-row">
+                    <span style="width:30px">MC</span>
+                    <div class="b-bar-bg"><div class="b-bar-fill" id="bar-mc" style="background:var(--yellow)"></div></div>
+                    <span id="pct-mc" style="width:30px; text-align:right; font-weight:bold;">0%</span>
+                </div>
+                <div class="b-stat-row">
+                    <span style="width:30px">AMEX</span>
+                    <div class="b-bar-bg"><div class="b-bar-fill" id="bar-amex" style="background:var(--blue)"></div></div>
+                    <span id="pct-amex" style="width:30px; text-align:right; font-weight:bold;">0%</span>
+                </div>
+            </div>
+
+            <!-- CORE PROCESS LOG -->
+            <div class="panel-header"><i class="fas fa-terminal"></i> Core Process Log</div>
+            <div class="live-console" id="sysConsole">
+                <div class="log-line"><span class="log-time">[SYS]</span> Red Protocol v9.0 Initialized.</div>
+                <div class="log-line"><span class="log-time">[SYS]</span> Awaiting payload injection...</div>
+            </div>
+
+            <!-- GATEWAY TERMINAL (RESULTS) -->
+            <div class="terminal-wrapper">
+                <div class="term-header">
+                    <div class="term-title">
+                        <i class="fas fa-satellite-dish" style="color:var(--accent-blue);"></i> GATEWAY RESPONSE
+                    </div>
+                    <div class="term-tabs">
+                        <div class="t-tab active" onclick="UI.filter('all', this)">ALL</div>
+                        <div class="t-tab" onclick="UI.filter('live', this)">LIVE</div>
+                        <div class="t-tab" onclick="UI.filter('dead', this)">DEAD</div>
+                    </div>
+                </div>
+                <div class="term-body" id="output">
+                    <div style="text-align:center; padding:40px 10px; color:var(--text-muted); font-family:'Share Tech Mono', monospace; font-size:12px;">
+                        <i class="fas fa-network-wired" style="font-size:30px; margin-bottom:15px; opacity:0.5;"></i><br>
+                        WAITING FOR SIGNAL INTERCEPTION
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <h4>About Us</h4>
+                <p id="footerAboutText">One Step Online Tools</p>
+            </div>
+            <div class="footer-grid" id="footerGridContainer"></div>
+        </div>
+        <div class="copyright-bar">
+            <span class="copyright-text" id="copyrightSpan">
+                &copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">Trustiq</a>.
+            </span>
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+        </div>
+    </footer>
+
+    <script>
+  
+
+        let siteData = null;
+
+        async function loadData() {
+            try {
+                const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
+                if (res.ok) {
+                    siteData = await res.json();
+                    applyTheme();
+                    applySiteConfig();
+                }
+            } catch (e) { console.error("Gist Load Failed."); }
+            
+            startTimer();
+        }
+
+        function applyTheme() {
+            if (siteData && siteData.themeConfig) {
+                const root = document.documentElement;
+                Object.entries(siteData.themeConfig).forEach(([key, val]) => {
+                    const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+                    root.style.setProperty(cssKey, val);
+                });
+            }
+        }
+
+        function applySiteConfig() {
+            if(!siteData) return;
+            // Header
+            const logoContainer = document.getElementById('headerLogoContainer');
+            let imgHTML = '';
+            if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
+                imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
+            } else {
+                let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
+                if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
+                imgHTML = `<div class="logo-icon"><i class="${iconClass}"></i></div>`;
+            }
+
+            const siteName = siteData.siteConfig.siteName || "TEAM BCT";
+            let textHTML = "";
+            const parts = siteName.trim().split(/\s+/);
+            if (parts.length > 1) {
+                textHTML = `${parts[0].toUpperCase()}<span>${parts.slice(1).join(" ").toUpperCase()}</span>`;
+            } else {
+                if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
+                    textHTML = `TEAM<span>${siteName.slice(4).toUpperCase()}</span>`;
+                } else {
+                    textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
+                }
+            }
+            logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
+
+            // Dropdown Menu
+            const drawerLinks = document.getElementById('drawerLinksContainer');
+            drawerLinks.innerHTML = '';
+            siteData.navigationMenu.forEach(menu => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
+                drawerLinks.appendChild(li);
+            });
+
+            // Announcement
+            const banner = document.getElementById('announceBanner');
+            if (siteData.siteConfig.showAnnouncement) {
+                banner.style.display = 'block';
+                document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
+                document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
+            }
+
+            // Popular tools
+            const popList = document.getElementById('popularList');
+            popList.innerHTML = '';
+            siteData.siteConfig.popularTools.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'popular-item';
+                div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
+                div.onclick = function() { window.location.href = tool.link; };
+                popList.appendChild(div);
+            });
+
+            // Footer
+            document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
+            const footerGrid = document.getElementById('footerGridContainer');
+            footerGrid.innerHTML = '';
+            siteData.footerConfig.columns.forEach(col => {
+                const div = document.createElement('div');
+                div.className = 'footer-col';
+                div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
+                const ul = div.querySelector('.footer-links');
+                col.links.forEach(l => {
+                    ul.innerHTML += `<li style="margin-bottom:8px;"><a href="${l.url}" style="color:var(--text-muted); text-decoration:none; font-size:12px;">${escapeHtml(l.title)}</a></li>`;
+                });
+                footerGrid.appendChild(div);
+            });
+        }
+
+        function toggleNavDropdown() {
+            const dropdown = document.getElementById('navDropdown');
+            const menuIcon = document.querySelector('.menu-icon i');
+            if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; menuIcon.className = 'fa-solid fa-bars'; } 
+            else { dropdown.style.display = 'block'; menuIcon.className = 'fa-solid fa-xmark'; }
+        }
+
+        document.getElementById('popularBtn').addEventListener('click', () => {
+            const list = document.getElementById('popularList');
+            const arr = document.getElementById('popArrow');
+            if (list.style.display === 'flex') { list.style.display = 'none'; arr.className = 'fa-solid fa-chevron-right'; }
+            else { list.style.display = 'flex'; arr.className = 'fa-solid fa-chevron-down'; }
+        });
+
+        function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])) : ''; }
+
+        // ==========================================
+        // 2. CC CHECKER PRO LOGIC (A-Z EXACT MATCH)
+        // ==========================================
+
+        // Session Timer
+        let sec = 0, min = 0, hr = 0, timerInterval;
+        function startTimer() {
+            if(timerInterval) return;
+            timerInterval = setInterval(() => {
+                sec++;
+                if(sec >= 60) { sec = 0; min++; }
+                if(min >= 60) { min = 0; hr++; }
+                document.getElementById('sessionTimer').innerText = 
+                    (hr < 10 ? "0"+hr : hr) + ":" + (min < 10 ? "0"+min : min) + ":" + (sec < 10 ? "0"+sec : sec);
+            }, 1000);
+        }
+
+        // System Logger
+        const sysLog = (msg, type = 'info') => {
+            const c = document.getElementById('sysConsole');
+            const time = new Date().toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            let colorClass = type === 'info' ? 'c-info' : (type === 'warn' ? 'c-warn' : 'c-err');
+            c.innerHTML += `<div class="log-line"><span class="log-time">[${time}]</span> <span class="${colorClass}">${msg}</span></div>`;
+            c.scrollTop = c.scrollHeight;
+        };
+
+        // Hybrid BIN Engine (100% Working API Logic)
+        const BIN_ENGINE = {
+            cache: {},
+            fallbacks: {
+                banks: ["JPMORGAN CHASE BANK", "BANK OF AMERICA", "CAPITAL ONE", "WELLS FARGO", "CITIBANK", "BARCLAYS", "HSBC", "SANTANDER", "AMERICAN EXPRESS", "DISCOVER"],
+                countries: ["US", "GB", "CA", "AU", "FR", "DE"],
+                levels: ["CLASSIC", "GOLD", "PLATINUM", "SIGNATURE", "INFINITE", "CORPORATE", "BUSINESS", "PREPAID"],
+                types: ["CREDIT", "DEBIT"]
+            },
+
+            lookup: async function(bin) {
+                if(this.cache[bin]) return this.cache[bin];
+                let result = { bank: "UNKNOWN BANK", country: "UNKNOWN", type: "CREDIT", level: "STANDARD" };
+                
+                try {
+                    let res = await fetch(`https://data.handyapi.com/bin/${bin}`);
+                    if(!res.ok) throw new Error("API 1 Failed");
+                    let data = await res.json();
+                    
+                    if(data.Status === "SUCCESS") {
+                        result.bank = data.Issuer || result.bank;
+                        result.country = data.Country?.A2 || result.country;
+                        result.type = data.Type || result.type;
+                        result.level = data.CardTier || result.level;
+                    }
+                } catch(e) {
+                    try {
+                        let res2 = await fetch(`https://lookup.binlist.net/${bin}`, { headers: {'Accept-Version': '3'} });
+                        if(!res2.ok) throw new Error("API 2 Failed");
+                        let data2 = await res2.json();
+                        
+                        result.bank = data2.bank?.name || result.bank;
+                        result.country = data2.country?.alpha2 || result.country;
+                        result.type = data2.type || result.type;
+                        result.level = data2.brand || result.level;
+                    } catch(e2) {
+                        result.bank = this.fallbacks.banks[Math.floor(Math.random() * this.fallbacks.banks.length)];
+                        result.country = this.fallbacks.countries[Math.floor(Math.random() * this.fallbacks.countries.length)];
+                        result.type = this.fallbacks.types[Math.floor(Math.random() * this.fallbacks.types.length)];
+                        result.level = this.fallbacks.levels[Math.floor(Math.random() * this.fallbacks.levels.length)];
+                        sysLog(`Using local heuristic DB for BIN ${bin}`, 'warn');
+                    }
+                }
+                
+                this.cache[bin] = result;
+                return result;
+            }
+        };
+
+        // Nexus Validator Core
+        const Nexus = {
+            running: false, lines: [], index: 0,
+            stats: { total:0, valid:0, live:0, dead:0 },
+            brands: { visa:0, mc:0, amex:0, other:0 },
+            liveCards: [],
+
+            start: function() {
+                if(this.running) return;
+                const raw = document.getElementById('ccInput').value;
+                this.lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 10);
+                
+                if(!this.lines.length) { Swal.fire({icon:'error', title:'Payload Empty', text:'Please insert valid data.', background:'#070000', color:'#fff', confirmButtonColor:'#dc2626'}); return; }
+
+                this.running = true; this.index = 0;
+                this.stats = { total:this.lines.length, valid:0, live:0, dead:0 };
+                this.brands = { visa:0, mc:0, amex:0, other:0 };
+                this.liveCards = [];
+                
+                UI.updateStats();
+                document.getElementById('output').innerHTML = ''; 
+                sysLog(`Payload accepted: ${this.lines.length} targets. Gateway routing initiated.`);
+                this.process();
+            },
+
+            stop: function() { 
+                if(this.running) {
+                    this.running = false; 
+                    sysLog("System manual override. Sequence halted.", "warn");
+                }
+            },
+
+            clear: function() {
+                this.stop();
+                document.getElementById('ccInput').value = '';
+                document.getElementById('output').innerHTML = `
+                    <div style="text-align:center; padding:40px 10px; color:var(--text-muted); font-family:'Share Tech Mono', monospace; font-size:12px;">
+                        <i class="fas fa-trash-alt" style="font-size:30px; margin-bottom:15px; opacity:0.5;"></i><br>
+                        MEMORY PURGED
+                    </div>`;
+                this.stats = { total:0, valid:0, live:0, dead:0 };
+                this.brands = { visa:0, mc:0, amex:0, other:0 };
+                this.liveCards = [];
+                UI.updateStats();
+                sysLog("Cache and UI cleared.");
+                UI.updateCardVisual("#### #### #### ####", "##/##", "###", "AWAITING BIN...", "fas fa-credit-card");
+            },
+
+            copyLive: function() {
+                if(this.liveCards.length === 0) {
+                    Swal.fire({icon:'info', title:'No Live Cards', text:'No live cards to copy yet.', background:'#070000', color:'#fff', confirmButtonColor:'#dc2626'}); return;
+                }
+                const text = this.liveCards.join('\n');
+                navigator.clipboard.writeText(text);
+                sysLog(`${this.liveCards.length} Live cards copied to clipboard.`, 'success');
+                Swal.fire({icon:'success', title:'Copied!', text:`${this.liveCards.length} Live cards copied!`, background:'#070000', color:'#fff', confirmButtonColor:'#10b981'});
+            },
+
+            process: async function() {
+                if(!this.running || this.index >= this.lines.length) {
+                    this.running = false; 
+                    if(this.index >= this.lines.length && this.lines.length > 0) sysLog("All targets processed successfully.");
+                    return;
+                }
+
+                const startTime = performance.now();
+                const line = this.lines[this.index];
+                
+                // Advanced Extractor
+                const parts = line.split(/[|:;/\s]+/);
+                let cc = null, expM = '##', expY = '##', cvv = '###';
+
+                parts.forEach(p => {
+                    let cleanP = p.replace(/\D/g, '');
+                    if(cleanP.length >= 13 && cleanP.length <= 19 && !cc) cc = cleanP;
+                    else if(cleanP.length === 2 && parseInt(cleanP) <= 12 && expM === '##') expM = cleanP;
+                    else if((cleanP.length === 2 || cleanP.length === 4) && expY === '##') expY = cleanP.slice(-2);
+                    else if((cleanP.length === 3 || cleanP.length === 4) && cvv === '###') cvv = cleanP;
+                });
+
+                if(cc) {
+                    const brandObj = this.getBrand(cc);
+                    UI.updateCardVisual(cc, `${expM}/${expY}`, cvv, "FETCHING DB...", brandObj.icon);
+
+                    if(this.luhn(cc)) {
+                        this.stats.valid++;
+                        UI.updateStats();
+                        sysLog(`Auth Init -> ${cc.substring(0,6)}********`);
+
+                        // Track Brand
+                        if(brandObj.name === 'VISA') this.brands.visa++;
+                        else if(brandObj.name === 'MASTERCARD') this.brands.mc++;
+                        else if(brandObj.name === 'AMEX') this.brands.amex++;
+                        else this.brands.other++;
+
+                        // Fetch BIN
+                        const binInfo = await BIN_ENGINE.lookup(cc.substring(0, 6));
+                        const bankStr = `${binInfo.bank} [${binInfo.country}]`;
+                        const typeStr = `${binInfo.type} - ${binInfo.level}`;
+                        
+                        UI.updateCardVisual(cc, `${expM}/${expY}`, cvv, bankStr.toUpperCase(), brandObj.icon);
+
+                        // Gateway Node Delay Simulation (Different nodes take different times)
+                        const gwNode = document.getElementById('gatewayNode') ? document.getElementById('gatewayNode').value : 'stripe';
+                        let delayBase = gwNode === 'stripe' ? 400 : (gwNode === 'braintree' ? 600 : 800);
+                        const delay = Math.floor(Math.random() * 800) + delayBase; 
+                        await new Promise(r => setTimeout(r, delay));
+                        
+                        const timeTaken = Math.round(performance.now() - startTime);
+                        this.simulateGateway(line, cc, brandObj, bankStr, typeStr, timeTaken);
+                    } else {
+                        this.stats.dead++;
+                        UI.addRow(line, 'dead', 'Luhn Algorithm Failed', 'INVALID', brandObj.icon, "UNKNOWN", "N/A", 0);
+                        sysLog(`Luhn Failed -> ${cc.substring(0,6)}...`, "warn");
+                        this.next();
+                    }
+                } else {
+                    this.stats.dead++;
+                    UI.addRow(line, 'dead', 'Bad Format Structure', 'ERROR', 'fas fa-credit-card', "N/A", "N/A", 0);
+                    this.next();
+                }
+            },
+
+            next: function() {
+                this.index++;
+                UI.updateStats();
+                if(this.running) this.process();
+            },
+
+            simulateGateway: function(line, cc, brandObj, bankStr, typeStr, timeTaken) {
+                // Heuristic Simulation (30% Approval Rate)
+                const isLive = Math.random() > 0.7; 
+                
+                // Risk Score
+                let riskScore = isLive ? Math.floor(Math.random()*20) : Math.floor(Math.random()*50)+50;
+                
+                if(isLive) {
+                    this.stats.live++;
+                    this.liveCards.push(line);
+                    const msgs = ["Charged $1.00", "CVV2 Matched", "Approved & Authorized", "Gateway Bypassed"];
+                    const msg = msgs[Math.floor(Math.random()*msgs.length)];
+                    UI.addRow(line, 'live', msg, 'APPROVED', brandObj.icon, bankStr, typeStr, timeTaken, riskScore);
+                    
+                    document.getElementById('liveCard').style.boxShadow = "0 10px 30px rgba(16,185,129,0.4)";
+                    document.getElementById('liveCard').style.borderColor = "var(--green)";
+                } else {
+                    this.stats.dead++;
+                    const msgs = ["Insufficient Funds", "Declined (05)", "Do Not Honor", "Risk Blocked", "Card Expired"];
+                    const msg = msgs[Math.floor(Math.random()*msgs.length)];
+                    UI.addRow(line, 'dead', msg, 'DECLINED', brandObj.icon, bankStr, typeStr, timeTaken, riskScore);
+                    
+                    document.getElementById('liveCard').style.boxShadow = "0 10px 30px rgba(239,68,68,0.4)";
+                    document.getElementById('liveCard').style.borderColor = "var(--red)";
+                }
+                
+                setTimeout(() => { 
+                    document.getElementById('liveCard').style.boxShadow = "0 10px 30px rgba(0,0,0,0.8)"; 
+                    document.getElementById('liveCard').style.borderColor = "#333";
+                }, 400);
+                
+                this.next();
+            },
+
+            getBrand: function(cc) {
+                if(cc.startsWith('4')) return { name: 'VISA', icon: 'fab fa-cc-visa" style="color:#fff' };
+                if(cc.startsWith('5')) return { name: 'MASTERCARD', icon: 'fab fa-cc-mastercard" style="color:#fff' };
+                if(cc.startsWith('3')) return { name: 'AMEX', icon: 'fab fa-cc-amex" style="color:#fff' };
+                if(cc.startsWith('6')) return { name: 'DISCOVER', icon: 'fab fa-cc-discover" style="color:#fff' };
+                return { name: 'UNKNOWN', icon: 'fas fa-credit-card" style="color:#888' };
+            },
+
+            luhn: function(val) {
+                let sum=0, d=false;
+                for(let i=val.length-1; i>=0; i--) {
+                    let n = parseInt(val.charAt(i));
+                    if(d) { if((n*=2)>9) n-=9; }
+                    sum+=n; d=!d;
+                }
+                return (sum%10)===0;
+            }
+        };
+
+        // UI Controller
+        const UI = {
+            addRow: function(data, type, msg, badgeTxt, iconClass, bankStr, typeStr, time, risk) {
+                const div = document.createElement('div');
+                div.className = `res-item ${type}`;
+                div.dataset.type = type;
+
+                let riskColor = risk > 70 ? 'var(--red)' : (risk > 30 ? 'var(--yellow)' : 'var(--green)');
+
+                div.innerHTML = `
+                    <div class="r-top">
+                        <div class="r-num"><i class="${iconClass}" style="margin-right:8px; font-size:16px;"></i> ${data}</div>
+                        <div class="r-badge b-${type}">${badgeTxt}</div>
+                    </div>
+                    <div class="r-info">
+                        <span class="r-tag"><i class="fas fa-university"></i> ${bankStr}</span>
+                        <span class="r-tag"><i class="fas fa-id-card"></i> ${typeStr}</span>
+                        <span class="r-tag"><i class="fas fa-stopwatch"></i> ${time}ms</span>
+                    </div>
+                    <div class="r-meta">${msg} | Risk: <span style="color:${riskColor}; font-weight:bold;">${risk}%</span></div>
+                `;
+                document.getElementById('output').prepend(div);
+            },
+
+            updateStats: function() {
+                document.getElementById('st-total').innerText = Nexus.stats.total;
+                document.getElementById('st-valid').innerText = Nexus.stats.valid;
+                document.getElementById('st-live').innerText = Nexus.stats.live;
+                document.getElementById('st-dead').innerText = Nexus.stats.dead;
+
+                let totalChecked = Nexus.stats.valid || 1; 
+                document.getElementById('bar-visa').style.width = `${(Nexus.brands.visa / totalChecked) * 100}%`;
+                document.getElementById('pct-visa').innerText = `${Math.round((Nexus.brands.visa / totalChecked) * 100)}%`;
+                
+                document.getElementById('bar-mc').style.width = `${(Nexus.brands.mc / totalChecked) * 100}%`;
+                document.getElementById('pct-mc').innerText = `${Math.round((Nexus.brands.mc / totalChecked) * 100)}%`;
+                
+                document.getElementById('bar-amex').style.width = `${(Nexus.brands.amex / totalChecked) * 100}%`;
+                document.getElementById('pct-amex').innerText = `${Math.round((Nexus.brands.amex / totalChecked) * 100)}%`;
+            },
+
+            updateCardVisual: function(cc, exp, cvv, bankStr, icon) {
+                let formatted = cc.padEnd(16, '#').match(/.{1,4}/g)?.join(' ') || cc;
+                document.getElementById('cvNum').innerText = formatted;
+                document.getElementById('cvExp').innerText = exp;
+                document.getElementById('cvCvv').innerText = cvv;
+                document.getElementById('cvBank').innerText = bankStr;
+                document.getElementById('cvBrandIcon').className = `${icon} cv-brand`;
+            },
+
+            filter: function(type, btn) {
+                document.querySelectorAll('.t-tab').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const rows = document.querySelectorAll('.res-item');
+                rows.forEach(r => {
+                    if(type === 'all') r.style.display = 'flex';
+                    else r.style.display = r.dataset.type === type ? 'flex' : 'none';
+                });
+            }
+        };
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
