@@ -1,0 +1,555 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Editor Pro - Team BCT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="teambct-config-server.js"></script>
+    
+    <style>
+        /* ========================================================
+           GLOBAL SITE STYLES (Age Calculator Theme)
+           ======================================================== */
+        :root {
+            --bg-color: #030000;
+            --header-bg: #000000;
+            --card-bg: #070000;
+            --border-color: #3a0808;
+            --border-light: rgba(220, 38, 38, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-blue: #dc2626; /* Deep Red Accent */
+            
+            /* JSON Syntax Colors */
+            --json-key: #dc2626;
+            --json-str: #10b981;
+            --json-num: #3b82f6;
+            --json-bool: #eab308;
+            --json-null: #a1a1aa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; -webkit-tap-highlight-color: transparent;}
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 3px; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #150000 0%, transparent 40%);
+        }
+
+        /* Sticky Wrapper */
+        .sticky-wrapper {
+            position: sticky; top: 0; z-index: 1000; background-color: #000000;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        header { background-color: #000000; padding: 15px 20px; display: flex; align-items: center; }
+        .menu-icon { font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: auto; width: 25px; display: inline-block; }
+        .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
+        .logo-img-container { display: flex; align-items: center; justify-content: center; }
+        .logo-img-container img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); object-fit: cover; }
+        .logo-icon { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #150000, #050000); padding: 6px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); font-size: 15px; color: var(--accent-blue); width: 38px; height: 38px; }
+        .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
+        .logo-text span { font-family: 'Rajdhani', sans-serif; font-weight: 700; margin-left: 4px; color: #b91c1c; text-transform: uppercase !important; }
+
+        /* Dropdown Menu */
+        .nav-menu-dropdown {
+            background: linear-gradient(to bottom, #050000, #000000); backdrop-filter: blur(10px);
+            border-top: 1px solid #1a0000; border-bottom: 1px solid #3a0808; display: none; padding: 10px 0;
+            position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9); animation: menuFadeIn 0.2s ease-out forwards;
+        }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-links { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .dropdown-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: transparent; border-left: 3px solid transparent; border-bottom: 1px solid #0f0000; transition: all 0.2s ease; }
+        .dropdown-links a:hover { background: linear-gradient(90deg, #150000 0%, #000000 100%); color: #ffffff; border-left: 3px solid #dc2626; padding-left: 24px; }
+        .dropdown-links a:hover i { color: #dc2626; }
+
+        /* Container - Expanded for dual pane */
+        .container { padding: 15px; max-width: 1000px; margin: 0 auto; width: 100%; flex-grow: 1; }
+
+        /* Announcement & Popular Tools */
+        .announcement-banner { background: linear-gradient(145deg, #0f0000, #030000); border: 1px solid rgba(220, 38, 38, 0.3); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 25px; display: none; position: relative; overflow: hidden; }
+        .announcement-banner p { font-family: 'Play', sans-serif; font-weight: 400; font-size: 15px; line-height: 1.6; color: #ffc2c2; margin-bottom: 15px; position: relative; z-index: 1; }
+        .join-btn { display: inline-block; position: relative; z-index: 1; background-color: #dc2626; color: white; padding: 10px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s ease; }
+        .join-btn:hover { background-color: #ef4444; transform: translateY(-2px); }
+
+        .popular-tools-btn { background-color: #0a0000; border: none; border-left: 4px solid #dc2626; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); padding: 14px 18px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 20px; transition: all 0.3s ease; }
+        .popular-tools-btn:hover { background-color: #150000; border-left-color: #ff4d4d; }
+        .popular-tools-list { background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 4px; margin-top: -15px; margin-bottom: 20px; display: none; flex-direction: column; overflow: hidden; }
+        .popular-item { padding: 12px 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); font-size: 13px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .popular-item:hover { background-color: #120000; }
+        .popular-item i { color: rgba(220, 38, 38, 0.8); }
+
+        /* Tool Card */
+        .tool-card {
+            background: linear-gradient(145deg, #0a0000, #030000); border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .tool-card h2 { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: white; margin-bottom: 20px; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Split Editor Layout */
+        .editor-layout {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;
+        }
+        @media (max-width: 768px) {
+            .editor-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Form Elements */
+        .form-group { position: relative; display: flex; flex-direction: column; height: 100%;}
+        .form-group label { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
+        
+        .form-group textarea { 
+            width: 100%; background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 6px; padding: 15px; color: white; font-size: 13px; outline: none; transition: 0.2s; 
+            resize: vertical; min-height: 400px; font-family: 'Share Tech Mono', monospace; line-height: 1.5; flex-grow: 1;
+        }
+        .form-group textarea:focus { border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(220, 38, 38, 0.2); background: #0a0000; }
+
+        .btn-small { background: rgba(220,38,38,0.1); border: 1px solid var(--accent-blue); color: var(--text-main); padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px;}
+        .btn-small:hover { background: var(--accent-blue); color: #fff; }
+
+        /* Tree View Container */
+        .tree-container {
+            width: 100%; background-color: #030000; border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 6px; padding: 15px; 
+            min-height: 400px; max-height: 600px; overflow: auto; font-family: 'Share Tech Mono', monospace; font-size: 13px; line-height: 1.6;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        .tree-empty { color: #444; font-style: italic; font-family: 'Inter', sans-serif; text-align: center; margin-top: 50px;}
+
+        /* Native Details/Summary Tree Styling */
+        details { padding-left: 15px; border-left: 1px dashed rgba(255,255,255,0.1); margin-left: 5px; }
+        summary { cursor: pointer; color: var(--text-muted); user-select: none; position: relative; margin-left: -15px; list-style: none; display: flex; align-items: flex-start;}
+        summary::-webkit-details-marker { display: none; }
+        summary:hover { background: rgba(255,255,255,0.05); }
+        
+        .chevron { display: inline-block; width: 15px; text-align: center; transition: 0.2s; color: #666; font-size: 10px; margin-right: 5px; line-height: 1.8;}
+        details[open] > summary > .chevron { transform: rotate(90deg); color: var(--accent-blue); }
+
+        /* Tree Editable Nodes */
+        .tree-node { display: flex; padding: 2px 0; margin-left: 15px;}
+        .t-key { color: var(--json-key); font-weight: bold; margin-right: 5px; }
+        
+        /* Editable Content */
+        .editable { padding: 1px 4px; border-radius: 3px; border: 1px solid transparent; cursor: text; transition: 0.2s; min-width: 20px; display: inline-block; word-break: break-all;}
+        .editable:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+        .editable:focus { background: #000; border-color: var(--accent-blue); color: #fff !important; outline: none; box-shadow: 0 0 5px rgba(220,38,38,0.5);}
+
+        .t-str { color: var(--json-str); }
+        .t-num { color: var(--json-num); }
+        .t-bool { color: var(--json-bool); }
+        .t-null { color: var(--json-null); font-style: italic; }
+
+        /* Buttons */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .act-btn { background: #000; border: 1px solid var(--border-light); color: var(--text-muted); padding: 14px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .act-btn:hover { border-color: rgba(220, 38, 38, 0.5); color: var(--text-main); background: rgba(220, 38, 38, 0.05); }
+        .act-btn.primary { background: rgba(220,38,38,0.1); border-color: var(--accent-blue); color: var(--accent-blue); }
+        .act-btn.primary:hover { background: var(--accent-blue); color: #fff; box-shadow: 0 0 15px rgba(220,38,38,0.3); }
+
+        /* Footer */
+        footer { position: relative; background-color: #000000; padding: 30px 15px 15px 15px; margin-top: auto; border-top: 1px solid rgba(220, 38, 38, 0.1); }
+        footer::before { content: ''; position: absolute; top: -1px; left: 20%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.8), transparent); box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .footer-about h4 { color: rgba(220, 38, 38, 0.9); margin-bottom: 8px; font-size: 14px; }
+        .footer-about p { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .footer-col h5 { font-size: 13px; color: var(--text-main); margin-bottom: 10px; }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color 0.2s; }
+        .footer-links a:hover { color: #fecaca; }
+        .copyright-bar { position: relative; max-width: 600px; margin: 20px auto 0 auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: center; align-items: center; font-size: 13px; color: #9ca3af; text-align: center; }
+        .trustiq-link { color: #dc2626 !important; font-weight: 700; text-decoration: none; letter-spacing: 0.5px; transition: all 0.3s ease; }
+        .trustiq-link:hover { color: #ef4444 !important; text-shadow: 0 0 8px rgba(220, 38, 38, 0.6); }
+        .scroll-top-btn { position: absolute; right: 0; background: linear-gradient(145deg, #120000, #050000); color: white; border: 1px solid rgba(220, 38, 38, 0.3); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05); }
+        .scroll-top-btn:hover { background: #2e0505; border-color: rgba(220, 38, 38, 0.8); color: #ffc2c2; }
+    </style>
+</head>
+<body>
+
+    <div class="sticky-wrapper">
+        <header>
+            <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
+            <a href="/" class="logo" id="headerLogoContainer"></a>
+        </header>
+        <div class="nav-menu-dropdown" id="navDropdown">
+            <ul class="dropdown-links" id="drawerLinksContainer"></ul>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="announcement-banner" id="announceBanner">
+            <p id="announcementText"></p>
+            <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
+        </div>
+
+        <div class="popular-tools-btn" id="popularBtn">
+            <span>Popular Tools</span>
+            <i class="fa-solid fa-chevron-right" id="popArrow"></i>
+        </div>
+        <div class="popular-tools-list" id="popularList"></div>
+        
+        <div class="tool-card">
+            <h2>JSON EDITOR PRO <span style="font-size:10px; border:1px solid var(--border-color); padding: 2px 6px; border-radius:4px; font-weight:500;">v1.0</span></h2>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom: 20px;">Parse JSON into an interactive tree. Click on any green/blue/yellow value to edit it directly, and the raw JSON will automatically update!</p>
+            
+            <div class="editor-layout">
+                
+                <div class="form-group">
+                    <label>
+                        <span><i class="fa-solid fa-code"></i> Raw JSON Code</span>
+                        <button class="btn-small" onclick="buildTreeFromInput()"><i class="fa-solid fa-bolt"></i> BUILD TREE</button>
+                    </label>
+                    <textarea id="rawJsonInput" placeholder='Paste your JSON here...&#10;{&#10;  "name": "Team BCT",&#10;  "features": ["Visual Edit", "Live Sync"]&#10;}' spellcheck="false"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <span><i class="fa-solid fa-folder-tree"></i> Interactive Editor</span>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn-small" onclick="expandAll()"><i class="fa-solid fa-expand"></i></button>
+                            <button class="btn-small" onclick="collapseAll()"><i class="fa-solid fa-compress"></i></button>
+                        </div>
+                    </label>
+                    <div class="tree-container" id="treeView">
+                        <div class="tree-empty"><i class="fa-solid fa-arrow-left"></i> Paste JSON and click 'Build Tree'</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="action-grid">
+                <button class="act-btn" onclick="clearAll()">
+                    <i class="fa-solid fa-trash-can"></i> CLEAR ALL
+                </button>
+                <button class="act-btn primary" onclick="copyRawJson()">
+                    <i class="fa-solid fa-copy"></i> COPY UPDATED JSON
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <h4>About Us</h4>
+                <p id="footerAboutText">One Step Online Tools</p>
+            </div>
+            <div class="footer-grid" id="footerGridContainer"></div>
+        </div>
+        <div class="copyright-bar">
+            <span class="copyright-text" id="copyrightSpan">
+                &copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">Trustiq</a>.
+            </span>
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. SITE CONFIG LOGIC (EXTERNAL SCRIPT VARS)
+        // ==========================================
+        let siteData = null;
+
+        async function loadData() {
+            if (typeof GIST_URL === 'undefined') {
+                console.warn("GIST_URL is not defined. Ensure teambct-config-server.js is loaded.");
+                return;
+            }
+            try {
+                const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
+                if (res.ok) {
+                    siteData = await res.json();
+                    applyTheme();
+                    applySiteConfig();
+                }
+            } catch (e) { console.error("Gist Load Failed."); }
+        }
+
+        function applyTheme() {
+            if (siteData && siteData.themeConfig) {
+                const root = document.documentElement;
+                Object.entries(siteData.themeConfig).forEach(([key, val]) => {
+                    const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+                    root.style.setProperty(cssKey, val);
+                });
+            }
+        }
+
+        function applySiteConfig() {
+            if(!siteData) return;
+            // Header
+            const logoContainer = document.getElementById('headerLogoContainer');
+            let imgHTML = '';
+            if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
+                imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
+            } else {
+                let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
+                if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
+                imgHTML = `<div class="logo-icon"><i class="${iconClass}"></i></div>`;
+            }
+
+            const siteName = siteData.siteConfig.siteName || "TEAM BCT";
+            let textHTML = "";
+            const parts = siteName.trim().split(/\s+/);
+            if (parts.length > 1) {
+                textHTML = `${parts[0].toUpperCase()}<span>${parts.slice(1).join(" ").toUpperCase()}</span>`;
+            } else {
+                if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
+                    textHTML = `TEAM<span>${siteName.slice(4).toUpperCase()}</span>`;
+                } else {
+                    textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
+                }
+            }
+            logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
+
+            // Dropdown Menu
+            const drawerLinks = document.getElementById('drawerLinksContainer');
+            drawerLinks.innerHTML = '';
+            siteData.navigationMenu.forEach(menu => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
+                drawerLinks.appendChild(li);
+            });
+
+            // Announcement
+            const banner = document.getElementById('announceBanner');
+            if (siteData.siteConfig.showAnnouncement) {
+                banner.style.display = 'block';
+                document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
+                document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
+            }
+
+            // Popular tools
+            const popList = document.getElementById('popularList');
+            popList.innerHTML = '';
+            siteData.siteConfig.popularTools.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'popular-item';
+                div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
+                div.onclick = function() { window.location.href = tool.link; };
+                popList.appendChild(div);
+            });
+
+            // Footer
+            document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
+            const footerGrid = document.getElementById('footerGridContainer');
+            footerGrid.innerHTML = '';
+            siteData.footerConfig.columns.forEach(col => {
+                const div = document.createElement('div');
+                div.className = 'footer-col';
+                div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
+                const ul = div.querySelector('.footer-links');
+                col.links.forEach(l => {
+                    ul.innerHTML += `<li style="margin-bottom:8px;"><a href="${l.url}" style="color:var(--text-muted); text-decoration:none; font-size:12px;">${escapeHtml(l.title)}</a></li>`;
+                });
+                footerGrid.appendChild(div);
+            });
+        }
+
+        function toggleNavDropdown() {
+            const dropdown = document.getElementById('navDropdown');
+            const menuIcon = document.querySelector('.menu-icon i');
+            if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; menuIcon.className = 'fa-solid fa-bars'; } 
+            else { dropdown.style.display = 'block'; menuIcon.className = 'fa-solid fa-xmark'; }
+        }
+
+        document.getElementById('popularBtn').addEventListener('click', () => {
+            const list = document.getElementById('popularList');
+            const arr = document.getElementById('popArrow');
+            if (list.style.display === 'flex') { list.style.display = 'none'; arr.className = 'fa-solid fa-chevron-right'; }
+            else { list.style.display = 'flex'; arr.className = 'fa-solid fa-chevron-down'; }
+        });
+
+        function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' })) : ''; }
+
+
+        // ==========================================
+        // 2. JSON EDITOR PRO LOGIC (Tree View & Live Sync)
+        // ==========================================
+        
+        const rawInput = document.getElementById('rawJsonInput');
+        const treeView = document.getElementById('treeView');
+        let currentJsonObject = null;
+
+        // 1. Parse Input and Build Tree
+        function buildTreeFromInput() {
+            const rawText = rawInput.value.trim();
+            if (!rawText) {
+                Swal.fire({title: 'Empty Input', text: 'Please paste JSON code first.', icon: 'warning', background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'});
+                return;
+            }
+
+            try {
+                currentJsonObject = JSON.parse(rawText);
+                
+                // Format the text area to look neat
+                rawInput.value = JSON.stringify(currentJsonObject, null, 4);
+                
+                // Render Tree
+                treeView.innerHTML = '';
+                const rootDetails = createNode('root', currentJsonObject, []);
+                rootDetails.setAttribute('open', 'true');
+                treeView.appendChild(rootDetails);
+                
+            } catch (e) {
+                Swal.fire({title: 'Invalid JSON', text: 'Cannot build tree. Please fix syntax errors: ' + e.message, icon: 'error', background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'});
+            }
+        }
+
+        // 2. Recursive HTML Node Creator
+        function createNode(key, value, pathArray) {
+            const isObj = typeof value === 'object' && value !== null;
+            const isArr = Array.isArray(value);
+
+            if (isObj) {
+                const details = document.createElement('details');
+                const summary = document.createElement('summary');
+                
+                const bracketOpen = isArr ? '[' : '{';
+                const bracketClose = isArr ? ']' : '}';
+                const count = Object.keys(value).length;
+
+                summary.innerHTML = `<span class="chevron"><i class="fa-solid fa-caret-right"></i></span>
+                                     <span class="t-key">${key === 'root' ? '' : '"'+key+'":'}</span>
+                                     <span style="color:#666;">${bracketOpen} ${count} items ${bracketClose}</span>`;
+                details.appendChild(summary);
+
+                // Build children
+                Object.keys(value).forEach(childKey => {
+                    const newPath = [...pathArray, childKey];
+                    const childNode = createNode(childKey, value[childKey], newPath);
+                    details.appendChild(childNode);
+                });
+
+                return details;
+            } else {
+                // Primitive Value (Editable Leaf Node)
+                const div = document.createElement('div');
+                div.className = 'tree-node';
+                
+                // Determine Type & Class
+                let typeClass = 't-str';
+                let displayVal = `"${escapeHtml(String(value))}"`;
+                let rawValAttr = escapeHtml(String(value)); // For input parsing
+                let valType = 'string';
+
+                if (typeof value === 'number') {
+                    typeClass = 't-num'; displayVal = value; valType = 'number';
+                } else if (typeof value === 'boolean') {
+                    typeClass = 't-bool'; displayVal = value; valType = 'boolean';
+                } else if (value === null) {
+                    typeClass = 't-null'; displayVal = 'null'; valType = 'null';
+                }
+
+                const pathString = JSON.stringify(pathArray).replace(/"/g, '&quot;');
+
+                div.innerHTML = `
+                    <span class="t-key">"${key}":</span>
+                    <span class="editable ${typeClass}" contenteditable="true" 
+                          data-path="${pathString}" 
+                          data-type="${valType}"
+                          onblur="updateValueFromTree(this)">${displayVal}</span>
+                `;
+                return div;
+            }
+        }
+
+        // 3. Update JSON from Tree Edits
+        function updateValueFromTree(element) {
+            const pathStr = element.getAttribute('data-path');
+            // Decode the escaped quotes to parse the path array
+            const decodedPathStr = pathStr.replace(/&quot;/g, '"');
+            const pathArray = JSON.parse(decodedPathStr);
+            const originalType = element.getAttribute('data-type');
+            
+            let rawText = element.innerText.trim();
+            let finalValue = rawText;
+
+            // Handle Parsing based on original type
+            if (originalType === 'number') {
+                const num = Number(rawText);
+                if (!isNaN(num)) finalValue = num;
+            } else if (originalType === 'boolean') {
+                if (rawText.toLowerCase() === 'true') finalValue = true;
+                else if (rawText.toLowerCase() === 'false') finalValue = false;
+            } else if (originalType === 'null') {
+                if (rawText.toLowerCase() === 'null') finalValue = null;
+            } else {
+                // String: remove accidental quotes added by user to keep valid JSON
+                if (rawText.startsWith('"') && rawText.endsWith('"')) {
+                    rawText = rawText.slice(1, -1);
+                }
+                finalValue = rawText;
+                // Update display to re-wrap in quotes for visual consistency
+                element.innerText = `"${finalValue}"`;
+            }
+
+            // Apply change to object using the path
+            let currentRef = currentJsonObject;
+            for (let i = 0; i < pathArray.length - 1; i++) {
+                currentRef = currentRef[pathArray[i]];
+            }
+            const finalKey = pathArray[pathArray.length - 1];
+            
+            // Only update and rewrite if value actually changed
+            if (currentRef[finalKey] !== finalValue) {
+                currentRef[finalKey] = finalValue;
+                
+                // Sync back to Textarea
+                rawInput.value = JSON.stringify(currentJsonObject, null, 4);
+                
+                // Quick flash effect to show sync
+                rawInput.style.backgroundColor = 'rgba(16,185,129,0.1)';
+                setTimeout(() => rawInput.style.backgroundColor = '#070000', 300);
+            }
+        }
+
+        // Tree Controls
+        function expandAll() {
+            document.querySelectorAll('#treeView details').forEach(d => d.setAttribute('open', 'true'));
+        }
+        function collapseAll() {
+            document.querySelectorAll('#treeView details').forEach(d => d.removeAttribute('open'));
+            // Keep root open
+            const root = document.querySelector('#treeView > details');
+            if(root) root.setAttribute('open', 'true');
+        }
+
+        function clearAll() {
+            rawInput.value = '';
+            treeView.innerHTML = '<div class="tree-empty"><i class="fa-solid fa-arrow-left"></i> Paste JSON and click "Build Tree"</div>';
+            currentJsonObject = null;
+        }
+
+        function copyRawJson() {
+            const textToCopy = rawInput.value.trim();
+            if (!textToCopy) {
+                Swal.fire({title: 'Empty!', text: 'Nothing to copy.', icon: 'error', background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'});
+                return;
+            }
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                Swal.fire({title: 'Copied!', text: 'Updated JSON copied to clipboard', icon: 'success', toast: true, position: 'bottom', timer: 1500, showConfirmButton: false, background: '#070000', color: '#10b981'});
+            }).catch(err => {
+                Swal.fire({title: 'Error', text: 'Failed to copy text', icon: 'error', background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'});
+            });
+        }
+
+        // Init App
+        window.onload = () => {
+            loadData();
+        };
+
+    </script>
+</body>
+</html>
