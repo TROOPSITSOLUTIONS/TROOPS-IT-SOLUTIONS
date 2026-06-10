@@ -1,0 +1,558 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy & Reactive Energy Converter - Team BCT</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- External Server Config (GIST URL comes from here) -->
+    <script src="teambct-config-server.js"></script>
+    
+    <style>
+        /* ========================================================
+           GLOBAL SITE STYLES (Deep Black & Red Theme)
+           ======================================================== */
+        :root {
+            --bg-color: #030000;
+            --header-bg: #000000;
+            --card-bg: #070000;
+            --border-color: #3a0808;
+            --border-light: rgba(220, 38, 38, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-blue: #dc2626; /* Deep Red Accent */
+            
+            /* Status Colors */
+            --red: #ef4444; 
+            --green: #10b981; 
+            --yellow: #eab308; 
+            --blue: #3b82f6;
+            --purple: #c084fc;
+            --cyan: #06b6d4;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; -webkit-tap-highlight-color: transparent;}
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 2px; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #150000 0%, transparent 40%);
+        }
+
+        /* Sticky Wrapper */
+        .sticky-wrapper {
+            position: sticky; top: 0; z-index: 1000; background-color: #000000;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        header { background-color: #000000; padding: 15px 20px; display: flex; align-items: center; }
+        .menu-icon { font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: auto; width: 25px; display: inline-block; }
+        .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
+        .logo-img-container { display: flex; align-items: center; justify-content: center; }
+        .logo-img-container img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); object-fit: cover; }
+        .logo-icon { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #150000, #050000); padding: 6px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); font-size: 15px; color: var(--accent-blue); width: 38px; height: 38px; }
+        .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
+        .logo-text span { font-family: 'Rajdhani', sans-serif; font-weight: 700; margin-left: 4px; color: #b91c1c; text-transform: uppercase !important; }
+
+        /* Dropdown Menu */
+        .nav-menu-dropdown {
+            background: linear-gradient(to bottom, #050000, #000000); backdrop-filter: blur(10px);
+            border-top: 1px solid #1a0000; border-bottom: 1px solid #3a0808; display: none; padding: 10px 0;
+            position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9); animation: menuFadeIn 0.2s ease-out forwards;
+        }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-links { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .dropdown-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: transparent; border-left: 3px solid transparent; border-bottom: 1px solid #0f0000; transition: all 0.2s ease; }
+        .dropdown-links a:hover { background: linear-gradient(90deg, #150000 0%, #000000 100%); color: #ffffff; border-left: 3px solid #dc2626; padding-left: 24px; }
+        .dropdown-links a:hover i { color: #dc2626; }
+
+        /* Container */
+        .container { padding: 15px; max-width: 800px; margin: 0 auto; width: 100%; flex-grow: 1; }
+
+        /* Announcement Banner */
+        .announcement-banner {
+            background: linear-gradient(145deg, #0f0000, #030000); border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 25px; display: none; position: relative; overflow: hidden;
+        }
+        .announcement-banner p { font-family: 'Play', sans-serif; font-weight: 400; font-size: 15px; line-height: 1.6; color: #ffc2c2; margin-bottom: 15px; position: relative; z-index: 1; }
+        .join-btn { display: inline-block; position: relative; z-index: 1; background-color: #dc2626; color: white; padding: 10px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s ease; }
+        .join-btn:hover { background-color: #ef4444; transform: translateY(-2px); }
+
+        /* Popular Tools */
+        .popular-tools-btn { background-color: #0a0000; border: none; border-left: 4px solid #dc2626; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); padding: 14px 18px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 20px; transition: all 0.3s ease; }
+        .popular-tools-btn:hover { background-color: #150000; border-left-color: #ff4d4d; }
+        .popular-tools-list { background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 4px; margin-top: -15px; margin-bottom: 20px; display: none; flex-direction: column; overflow: hidden; }
+        .popular-item { padding: 12px 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); font-size: 13px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .popular-item:hover { background-color: #120000; }
+        .popular-item i { color: rgba(220, 38, 38, 0.8); }
+
+        /* Tool Card */
+        .tool-card {
+            background: linear-gradient(145deg, #0a0000, #030000); border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .tool-card h2 { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: white; margin-bottom: 20px; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Tab Switcher Style */
+        .tab-container {
+            display: flex; background: #000; padding: 5px; border-radius: 8px; border: 1px solid var(--border-light); margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1; background: transparent; border: none; padding: 12px; color: var(--text-muted); font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; border-radius: 6px; cursor: pointer; transition: 0.3s;
+        }
+        .tab-btn.active { background: var(--accent-blue); color: #fff; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3); }
+
+        /* Form Elements */
+        .form-group { margin-bottom: 20px; position: relative;}
+        .form-group label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
+        
+        .form-control { 
+            width: 100%; background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 6px; padding: 15px; color: white; font-size: 16px; outline: none; transition: 0.2s; font-family: 'Share Tech Mono', monospace; font-weight: bold;
+        }
+        .form-control:focus { 
+            border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(220, 38, 38, 0.2); background: #0a0000; 
+        }
+
+        /* Custom Select */
+        select.form-control { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 5 4-5' stroke='%23dc2626' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: calc(100% - 15px) center; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: normal;}
+        select.form-control option { background: #070000; color: #fff; }
+
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;}
+        @media (max-width: 500px) { .input-grid { grid-template-columns: 1fr; } }
+
+        /* Clear button inside input wrapper */
+        .clear-btn { position: absolute; right: 15px; top: 38px; background: rgba(220,38,38,0.1); border: 1px solid var(--accent-blue); color: var(--text-main); width: 30px; height: 30px; border-radius: 4px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; font-size: 14px; z-index: 10;}
+        .clear-btn:hover { background: var(--accent-blue); color: #fff; }
+
+        /* Result Table */
+        .result-container {
+            border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden; margin-top: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .result-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .result-table th, .result-table td { padding: 14px 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); }
+        .result-table tr:last-child td { border-bottom: none; }
+        
+        .result-table td:first-child { 
+            background: #0a0000; font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--accent-blue); font-size: 16px; border-right: 1px solid rgba(220, 38, 38, 0.1); width: 45%;
+        }
+        .result-table td:last-child {
+            background: #030000; font-family: 'Share Tech Mono', monospace; font-size: 15px; color: var(--text-main); position: relative;
+        }
+        .result-table tr:hover td:last-child { background: #080000; color: var(--green); }
+
+        /* Copy icon on hover */
+        .copy-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); opacity: 0; cursor: pointer; color: var(--text-muted); transition: 0.2s; background: #030000; padding-left: 5px;}
+        .result-table tr:hover .copy-icon { opacity: 1; }
+        .copy-icon:hover { color: var(--green); }
+
+        /* Buttons */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; }
+        .act-btn { background: #000; border: 1px solid var(--border-light); color: var(--text-muted); padding: 14px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .act-btn:hover { border-color: rgba(220, 38, 38, 0.5); color: var(--text-main); background: rgba(220, 38, 38, 0.05); }
+        .act-btn.primary { background: rgba(16,185,129,0.1); border-color: #10b981; color: #10b981; }
+        .act-btn.primary:hover { background: #10b981; color: #fff; box-shadow: 0 0 15px rgba(16,185,129,0.3); }
+
+        /* Footer */
+        footer { position: relative; background-color: #000000; padding: 30px 15px 15px 15px; margin-top: auto; border-top: 1px solid rgba(220, 38, 38, 0.1); }
+        footer::before { content: ''; position: absolute; top: -1px; left: 20%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.8), transparent); box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .footer-about h4 { color: rgba(220, 38, 38, 0.9); margin-bottom: 8px; font-size: 14px; }
+        .footer-about p { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .footer-col h5 { font-size: 13px; color: var(--text-main); margin-bottom: 10px; }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color 0.2s; }
+        .footer-links a:hover { color: #fecaca; }
+        .copyright-bar { position: relative; max-width: 600px; margin: 20px auto 0 auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: center; align-items: center; font-size: 13px; color: #9ca3af; text-align: center; }
+        .trustiq-link { color: #dc2626 !important; font-weight: 700; text-decoration: none; letter-spacing: 0.5px; transition: all 0.3s ease; }
+        .trustiq-link:hover { color: #ef4444 !important; text-shadow: 0 0 8px rgba(220, 38, 38, 0.6); }
+        .scroll-top-btn { position: absolute; right: 0; background: linear-gradient(145deg, #120000, #050000); color: white; border: 1px solid rgba(220, 38, 38, 0.3); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05); }
+        .scroll-top-btn:hover { background: #2e0505; border-color: rgba(220, 38, 38, 0.8); color: #ffc2c2; }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Header -->
+    <div class="sticky-wrapper">
+        <header>
+            <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
+            <a href="/" class="logo" id="headerLogoContainer"></a>
+        </header>
+        <div class="nav-menu-dropdown" id="navDropdown">
+            <ul class="dropdown-links" id="drawerLinksContainer"></ul>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <div class="announcement-banner" id="announceBanner">
+            <p id="announcementText"></p>
+            <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
+        </div>
+
+        <div class="popular-tools-btn" id="popularBtn">
+            <span>Popular Tools</span>
+            <i class="fa-solid fa-chevron-right" id="popArrow"></i>
+        </div>
+        <div class="popular-tools-list" id="popularList"></div>
+        
+        <!-- Tool Card: ENERGY & REACTIVE ENERGY CONVERTER -->
+        <div class="tool-card">
+            <h2>ENERGY CONVERTER <span style="font-size:10px; border:1px solid var(--border-color); padding: 2px 6px; border-radius:4px; font-weight:500;">v1.0</span></h2>
+
+            <!-- Option System (Tabs) -->
+            <div class="tab-container">
+                <button class="tab-btn active" id="tabEnergy" onclick="switchMode('energy')">Energy</button>
+                <button class="tab-btn" id="tabReactive" onclick="switchMode('reactive')">Reactive Energy</button>
+            </div>
+
+            <div class="input-grid">
+                <!-- Dropdown -->
+                <div class="form-group" style="margin: 0;">
+                    <label><i class="fa-solid fa-bolt"></i> Select Input Unit</label>
+                    <select id="inputUnit" class="form-control" onchange="calculateConversions()"></select>
+                </div>
+                
+                <!-- Number Input -->
+                <div class="form-group" style="margin: 0; position: relative;">
+                    <label><i class="fa-solid fa-keyboard"></i> Enter Value</label>
+                    <input type="number" id="inputValue" class="form-control" value="1" step="any" placeholder="e.g., 50" oninput="calculateConversions()">
+                    <button class="clear-btn" id="clearBtnIn" style="top:32px;" onclick="clearInput()" title="Clear Input"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <!-- Action Area -->
+            <div class="action-grid" style="margin-top:0; margin-bottom: 20px; grid-template-columns: 1fr;">
+                <button class="act-btn" style="border-color:var(--yellow); color:var(--yellow); background:rgba(234,179,8,0.05);" onclick="calculateConversions()">
+                    <i class="fa-solid fa-bolt-lightning"></i> CONVERT NOW
+                </button>
+            </div>
+
+            <!-- Result Table -->
+            <div class="result-container">
+                <table class="result-table" id="resultTable">
+                    <!-- Rows will be injected by JS -->
+                </table>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-grid">
+                <button class="act-btn" onclick="clearInput()">
+                    <i class="fa-solid fa-trash-can"></i> CLEAR
+                </button>
+                <button class="act-btn primary" onclick="copyAll()">
+                    <i class="fa-solid fa-copy"></i> COPY ALL RESULTS
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <h4>About Us</h4>
+                <p id="footerAboutText">One Step Online Tools</p>
+            </div>
+            <div class="footer-grid" id="footerGridContainer"></div>
+        </div>
+        <div class="copyright-bar">
+            <span class="copyright-text" id="copyrightSpan">
+                &copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">Trustiq</a>.
+            </span>
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. SITE CONFIG LOGIC (EXTERNAL SCRIPT VARS)
+        // ==========================================
+        let siteData = null;
+
+        async function loadData() {
+            if (typeof GIST_URL === 'undefined') {
+                console.warn("GIST_URL is not defined. Ensure teambct-config-server.js is loaded.");
+                return;
+            }
+            try {
+                const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
+                if (res.ok) {
+                    siteData = await res.json();
+                    applyTheme();
+                    applySiteConfig();
+                }
+            } catch (e) { console.error("Gist Load Failed."); }
+        }
+
+        function applyTheme() {
+            if (siteData && siteData.themeConfig) {
+                const root = document.documentElement;
+                Object.entries(siteData.themeConfig).forEach(([key, val]) => {
+                    const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+                    root.style.setProperty(cssKey, val);
+                });
+            }
+        }
+
+        function applySiteConfig() {
+            if(!siteData) return;
+            const logoContainer = document.getElementById('headerLogoContainer');
+            let imgHTML = '';
+            if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
+                imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
+            } else {
+                let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
+                if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
+                imgHTML = `<div class="logo-icon"><i class="${iconClass}"></i></div>`;
+            }
+
+            const siteName = siteData.siteConfig.siteName || "TEAM BCT";
+            let textHTML = "";
+            const parts = siteName.trim().split(/\s+/);
+            if (parts.length > 1) {
+                textHTML = `${parts[0].toUpperCase()}<span>${parts.slice(1).join(" ").toUpperCase()}</span>`;
+            } else {
+                if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
+                    textHTML = `TEAM<span>${siteName.slice(4).toUpperCase()}</span>`;
+                } else {
+                    textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
+                }
+            }
+            logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
+
+            const drawerLinks = document.getElementById('drawerLinksContainer');
+            drawerLinks.innerHTML = '';
+            siteData.navigationMenu.forEach(menu => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
+                drawerLinks.appendChild(li);
+            });
+
+            const banner = document.getElementById('announceBanner');
+            if (siteData.siteConfig.showAnnouncement) {
+                banner.style.display = 'block';
+                document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
+                document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
+            }
+
+            const popList = document.getElementById('popularList');
+            popList.innerHTML = '';
+            siteData.siteConfig.popularTools.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'popular-item';
+                div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
+                div.onclick = function() { window.location.href = tool.link; };
+                popList.appendChild(div);
+            });
+
+            document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
+            const footerGrid = document.getElementById('footerGridContainer');
+            footerGrid.innerHTML = '';
+            siteData.footerConfig.columns.forEach(col => {
+                const div = document.createElement('div');
+                div.className = 'footer-col';
+                div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
+                const ul = div.querySelector('.footer-links');
+                col.links.forEach(l => {
+                    ul.innerHTML += `<li style="margin-bottom:8px;"><a href="${l.url}" style="color:var(--text-muted); text-decoration:none; font-size:12px;">${escapeHtml(l.title)}</a></li>`;
+                });
+                footerGrid.appendChild(div);
+            });
+        }
+
+        function toggleNavDropdown() {
+            const dropdown = document.getElementById('navDropdown');
+            const menuIcon = document.querySelector('.menu-icon i');
+            if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; menuIcon.className = 'fa-solid fa-bars'; } 
+            else { dropdown.style.display = 'block'; menuIcon.className = 'fa-solid fa-xmark'; }
+        }
+
+        document.getElementById('popularBtn').addEventListener('click', () => {
+            const list = document.getElementById('popularList');
+            const arr = document.getElementById('popArrow');
+            if (list.style.display === 'flex') { list.style.display = 'none'; arr.className = 'fa-solid fa-chevron-right'; }
+            else { list.style.display = 'flex'; arr.className = 'fa-solid fa-chevron-down'; }
+        });
+
+        function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])) : ''; }
+
+
+        // ==========================================
+        // 2. CONVERTER LOGIC (ENERGY & REACTIVE)
+        // ==========================================
+        
+        let currentMode = 'energy'; // Default Mode
+        let lastGeneratedText = "";
+
+        // Energy Units (Base: Joule J)
+        const energyUnits = [
+            { id: 'J', name: 'Joule (J)', toBase: 1 },
+            { id: 'kJ', name: 'Kilojoule (kJ)', toBase: 1e3 },
+            { id: 'MJ', name: 'Megajoule (MJ)', toBase: 1e6 },
+            { id: 'GJ', name: 'Gigajoule (GJ)', toBase: 1e9 },
+            { id: 'cal', name: 'Calorie (cal)', toBase: 4.184 },
+            { id: 'kcal', name: 'Kilocalorie (kcal)', toBase: 4184 },
+            { id: 'Wh', name: 'Watt-hour (Wh)', toBase: 3600 },
+            { id: 'kWh', name: 'Kilowatt-hour (kWh)', toBase: 3.6e6 },
+            { id: 'MWh', name: 'Megawatt-hour (MWh)', toBase: 3.6e9 },
+            { id: 'eV', name: 'Electronvolt (eV)', toBase: 1.602176565e-19 },
+            { id: 'btu', name: 'British Thermal Unit (BTU)', toBase: 1055.05585262 }
+        ];
+
+        // Reactive Energy Units (Base: Volt-ampere reactive hour VARh)
+        const reactiveEnergyUnits = [
+            { id: 'mVARh', name: 'Millivolt-ampere reactive hour (mVARh)', toBase: 0.001 },
+            { id: 'VARh', name: 'Volt-ampere reactive hour (VARh)', toBase: 1 },
+            { id: 'kVARh', name: 'Kilovolt-ampere reactive hour (kVARh)', toBase: 1000 },
+            { id: 'MVARh', name: 'Megavolt-ampere reactive hour (MVARh)', toBase: 1e6 }
+        ];
+
+        // Format Number
+        function formatNumber(num) {
+            if (num === 0) return "0";
+            if (Math.abs(num) >= 1e9 || Math.abs(num) <= 1e-5) {
+                return num.toExponential(6).replace(/\.?0+e/, 'e');
+            }
+            return parseFloat(num.toPrecision(10)).toString();
+        }
+
+        // Switch Between Modes
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Tab styling
+            document.getElementById('tabEnergy').classList.remove('active');
+            document.getElementById('tabReactive').classList.remove('active');
+            
+            if (mode === 'energy') {
+                document.getElementById('tabEnergy').classList.add('active');
+            } else {
+                document.getElementById('tabReactive').classList.add('active');
+            }
+
+            // Update Dropdown Options
+            const select = document.getElementById('inputUnit');
+            select.innerHTML = '';
+            
+            const activeUnits = currentMode === 'energy' ? energyUnits : reactiveEnergyUnits;
+            
+            activeUnits.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.id;
+                opt.textContent = u.name;
+                select.appendChild(opt);
+            });
+
+            // Recalculate
+            calculateConversions();
+        }
+
+        function calculateConversions() {
+            const inputValStr = document.getElementById('inputValue').value;
+            const inputVal = parseFloat(inputValStr);
+            const inputUnitId = document.getElementById('inputUnit').value;
+            const clearBtn = document.getElementById('clearBtnIn');
+            const table = document.getElementById('resultTable');
+
+            if(inputValStr.length > 0) {
+                clearBtn.style.display = 'flex';
+            } else {
+                clearBtn.style.display = 'none';
+                table.innerHTML = '';
+                lastGeneratedText = "";
+                return;
+            }
+
+            if (isNaN(inputVal)) {
+                table.innerHTML = '<tr><td colspan="2" style="text-align:center; color: var(--red);">Invalid Number!</td></tr>';
+                lastGeneratedText = "";
+                return;
+            }
+
+            // Select active dataset
+            const activeUnits = currentMode === 'energy' ? energyUnits : reactiveEnergyUnits;
+
+            // Find selected unit data
+            const sourceUnit = activeUnits.find(u => u.id === inputUnitId);
+            if (!sourceUnit) return; // safeguard during mode switch
+            
+            // Convert to Base
+            const baseVal = inputVal * sourceUnit.toBase;
+
+            // Generate HTML for Table
+            let tableHTML = '';
+            let copyText = '';
+
+            activeUnits.forEach(targetUnit => {
+                // Calculate target value from base
+                let calculatedValue = baseVal / targetUnit.toBase;
+                
+                let displayVal = formatNumber(calculatedValue);
+                const rowTitle = `${sourceUnit.name} to ${targetUnit.name}`;
+                
+                tableHTML += `
+                    <tr>
+                        <td>${rowTitle}</td>
+                        <td>
+                            ${displayVal}
+                            <i class="fa-regular fa-copy copy-icon" onclick="copySingle('${displayVal}')" title="Copy value"></i>
+                        </td>
+                    </tr>
+                `;
+
+                copyText += `${rowTitle}\t${displayVal}\n`;
+            });
+
+            table.innerHTML = tableHTML;
+            lastGeneratedText = copyText.trim();
+        }
+
+        function clearInput() {
+            document.getElementById('inputValue').value = '';
+            document.getElementById('inputValue').focus();
+            calculateConversions();
+        }
+
+        function copySingle(val) {
+            navigator.clipboard.writeText(val).then(() => {
+                Swal.fire({title: 'Copied!', text: 'Value copied to clipboard', icon: 'success', toast: true, position: 'bottom', timer: 1500, showConfirmButton: false, background: '#070000', color: '#10b981'});
+            });
+        }
+
+        function copyAll() {
+            if (!lastGeneratedText) {
+                Swal.fire({title: 'Empty!', text: 'Nothing to copy. Please enter a value first.', icon: 'error', background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'});
+                return;
+            }
+            
+            navigator.clipboard.writeText(lastGeneratedText).then(() => {
+                Swal.fire({title: 'Copied!', text: 'All conversions copied to clipboard', icon: 'success', toast: true, position: 'bottom', timer: 1500, showConfirmButton: false, background: '#070000', color: '#10b981'});
+            }).catch(err => {
+                Swal.fire({title: 'Error', text: 'Failed to copy text', icon: 'error', background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'});
+            });
+        }
+
+        // Init App
+        window.onload = () => {
+            loadData();
+            switchMode('energy'); // Initializes Dropdown & Calculates
+        };
+
+    </script>
+</body>
+</html>

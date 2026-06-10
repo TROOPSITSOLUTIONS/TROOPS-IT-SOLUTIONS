@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Modifier - Team BCT</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- External Server Config (GIST URL comes from here) -->
+    <script src="teambct-config-server.js"></script>
+    
+    <style>
+        /* ========================================================
+           GLOBAL SITE STYLES (Deep Black & Red Theme)
+           ======================================================== */
+        :root {
+            --bg-color: #030000;
+            --header-bg: #000000;
+            --card-bg: #070000;
+            --border-color: #3a0808;
+            --border-light: rgba(220, 38, 38, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-blue: #dc2626; /* Deep Red Accent */
+            
+            /* Status Colors */
+            --red: #ef4444; 
+            --green: #10b981; 
+            --yellow: #eab308; 
+            --blue: #3b82f6;
+            --cyan: #06b6d4;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; -webkit-tap-highlight-color: transparent;}
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 2px; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #150000 0%, transparent 40%);
+        }
+
+        /* Sticky Wrapper */
+        .sticky-wrapper {
+            position: sticky; top: 0; z-index: 1000; background-color: #000000;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        header { background-color: #000000; padding: 15px 20px; display: flex; align-items: center; }
+        .menu-icon { font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: auto; width: 25px; display: inline-block; }
+        .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
+        .logo-img-container { display: flex; align-items: center; justify-content: center; }
+        .logo-img-container img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); object-fit: cover; }
+        .logo-icon { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #150000, #050000); padding: 6px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); font-size: 15px; color: var(--accent-blue); width: 38px; height: 38px; }
+        .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
+        .logo-text span { font-family: 'Rajdhani', sans-serif; font-weight: 700; margin-left: 4px; color: #b91c1c; text-transform: uppercase !important; }
+
+        /* Dropdown Menu */
+        .nav-menu-dropdown {
+            background: linear-gradient(to bottom, #050000, #000000); backdrop-filter: blur(10px);
+            border-top: 1px solid #1a0000; border-bottom: 1px solid #3a0808; display: none; padding: 10px 0;
+            position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9); animation: menuFadeIn 0.2s ease-out forwards;
+        }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-links { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .dropdown-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: transparent; border-left: 3px solid transparent; border-bottom: 1px solid #0f0000; transition: all 0.2s ease; }
+        .dropdown-links a:hover { background: linear-gradient(90deg, #150000 0%, #000000 100%); color: #ffffff; border-left: 3px solid #dc2626; padding-left: 24px; }
+        .dropdown-links a:hover i { color: #dc2626; }
+
+        /* Container */
+        .container { padding: 15px; max-width: 800px; margin: 0 auto; width: 100%; flex-grow: 1; }
+
+        /* Announcement Banner */
+        .announcement-banner {
+            background: linear-gradient(145deg, #0f0000, #030000); border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 25px; display: none; position: relative; overflow: hidden;
+        }
+        .announcement-banner p { font-family: 'Play', sans-serif; font-weight: 400; font-size: 15px; line-height: 1.6; color: #ffc2c2; margin-bottom: 15px; position: relative; z-index: 1; }
+        .join-btn { display: inline-block; position: relative; z-index: 1; background-color: #dc2626; color: white; padding: 10px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s ease; }
+        .join-btn:hover { background-color: #ef4444; transform: translateY(-2px); }
+
+        /* Popular Tools */
+        .popular-tools-btn { background-color: #0a0000; border: none; border-left: 4px solid #dc2626; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); padding: 14px 18px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 20px; transition: all 0.3s ease; }
+        .popular-tools-btn:hover { background-color: #150000; border-left-color: #ff4d4d; }
+        .popular-tools-list { background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 4px; margin-top: -15px; margin-bottom: 20px; display: none; flex-direction: column; overflow: hidden; }
+        .popular-item { padding: 12px 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); font-size: 13px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .popular-item:hover { background-color: #120000; }
+        .popular-item i { color: rgba(220, 38, 38, 0.8); }
+
+        /* Tool Card */
+        .tool-card {
+            background: linear-gradient(145deg, #0a0000, #030000); border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .tool-card h2 { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: white; margin-bottom: 20px; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Form Elements */
+        .form-group { margin-bottom: 20px; position: relative;}
+        .form-group label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
+        .form-group label .badge { background: var(--accent-blue); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; letter-spacing: 0.5px; margin-left: auto;}
+        
+        .form-control { 
+            width: 100%; background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 6px; padding: 15px; color: white; font-size: 14px; outline: none; transition: 0.2s; font-family: 'Inter', sans-serif; resize: vertical; min-height: 140px; line-height: 1.5;
+        }
+        .form-control:focus { 
+            border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(220, 38, 38, 0.2); background: #0a0000; 
+        }
+        .form-control[readonly] { background-color: #050000; border-color: var(--border-light); color: var(--green); cursor: not-allowed; }
+
+        /* Clear button inside input wrapper */
+        .clear-btn { position: absolute; right: 15px; top: 38px; background: rgba(220,38,38,0.1); border: 1px solid var(--accent-blue); color: var(--text-main); width: 30px; height: 30px; border-radius: 4px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; font-size: 14px; z-index: 10;}
+        .clear-btn:hover { background: var(--accent-blue); color: #fff; }
+
+        /* Copy Button for Output */
+        .copy-output-btn { position: absolute; right: 15px; top: 38px; background: rgba(16,185,129,0.1); border: 1px solid var(--green); color: var(--green); width: 30px; height: 30px; border-radius: 4px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; font-size: 14px; z-index: 10;}
+        .copy-output-btn:hover { background: var(--green); color: #fff; box-shadow: 0 0 10px rgba(16,185,129,0.4); }
+
+        /* Action Grid (Smart Tools) */
+        .ai-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        @media (max-width: 600px) { .ai-action-grid { grid-template-columns: 1fr; } }
+        
+        .ai-btn { background: #000; border: 1px solid var(--border-light); color: #e2e8f0; padding: 16px; border-radius: 8px; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; text-transform: uppercase; position: relative; overflow: hidden; }
+        .ai-btn i { font-size: 16px; }
+        .ai-btn:hover { border-color: rgba(220, 38, 38, 0.5); background: rgba(220, 38, 38, 0.05); transform: translateY(-2px); }
+        .ai-btn:active { transform: translateY(0); }
+        
+        /* Specialized Buttons */
+        .btn-grammar { border-left: 3px solid var(--blue); }
+        .btn-humanize { border-left: 3px solid var(--green); }
+        .btn-prof { border-left: 3px solid var(--yellow); }
+        .btn-sum { border-left: 3px solid var(--purple); }
+
+        .btn-grammar:hover { border-color: var(--blue); color: var(--blue); box-shadow: 0 5px 15px rgba(59,130,246,0.15);}
+        .btn-humanize:hover { border-color: var(--green); color: var(--green); box-shadow: 0 5px 15px rgba(16,185,129,0.15);}
+        .btn-prof:hover { border-color: var(--yellow); color: var(--yellow); box-shadow: 0 5px 15px rgba(234,179,8,0.15);}
+        .btn-sum:hover { border-color: var(--purple); color: var(--purple); box-shadow: 0 5px 15px rgba(192,132,252,0.15);}
+
+        /* Footer */
+        footer { position: relative; background-color: #000000; padding: 30px 15px 15px 15px; margin-top: auto; border-top: 1px solid rgba(220, 38, 38, 0.1); }
+        footer::before { content: ''; position: absolute; top: -1px; left: 20%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.8), transparent); box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .footer-about h4 { color: rgba(220, 38, 38, 0.9); margin-bottom: 8px; font-size: 14px; }
+        .footer-about p { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .footer-col h5 { font-size: 13px; color: var(--text-main); margin-bottom: 10px; }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color 0.2s; }
+        .footer-links a:hover { color: #fecaca; }
+        .copyright-bar { position: relative; max-width: 600px; margin: 20px auto 0 auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: center; align-items: center; font-size: 13px; color: #9ca3af; text-align: center; }
+        .trustiq-link { color: #dc2626 !important; font-weight: 700; text-decoration: none; letter-spacing: 0.5px; transition: all 0.3s ease; }
+        .trustiq-link:hover { color: #ef4444 !important; text-shadow: 0 0 8px rgba(220, 38, 38, 0.6); }
+        .scroll-top-btn { position: absolute; right: 0; background: linear-gradient(145deg, #120000, #050000); color: white; border: 1px solid rgba(220, 38, 38, 0.3); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05); }
+        .scroll-top-btn:hover { background: #2e0505; border-color: rgba(220, 38, 38, 0.8); color: #ffc2c2; }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Header -->
+    <div class="sticky-wrapper">
+        <header>
+            <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
+            <a href="/" class="logo" id="headerLogoContainer"></a>
+        </header>
+        <div class="nav-menu-dropdown" id="navDropdown">
+            <ul class="dropdown-links" id="drawerLinksContainer"></ul>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <div class="announcement-banner" id="announceBanner">
+            <p id="announcementText"></p>
+            <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
+        </div>
+
+        <div class="popular-tools-btn" id="popularBtn">
+            <span>Popular Tools</span>
+            <i class="fa-solid fa-chevron-right" id="popArrow"></i>
+        </div>
+        <div class="popular-tools-list" id="popularList"></div>
+        
+        <!-- Tool Card: TEXT MODIFIER -->
+        <div class="tool-card">
+            <h2> TEXT MODIFIER <span style="font-size:10px; border:1px solid var(--border-color); padding: 2px 6px; border-radius:4px; font-weight:500;">AI v2.0</span></h2>
+
+            <!-- Original Text Input -->
+            <div class="form-group">
+                <label>
+                    <span><i class="fa-solid fa-pen-nib"></i> Original Text</span>
+                    <span class="badge" id="wordCount">0 Words</span>
+                </label>
+                <textarea id="inputText" class="form-control" placeholder="Paste your unformatted, robotic, or messy text here..." oninput="updateWordCount()"></textarea>
+                <button class="clear-btn" id="clearBtnIn" style="display:none;" onclick="clearInput()" title="Clear Text"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- AI Magic Actions -->
+            <div class="ai-action-grid">
+                <button class="ai-btn btn-grammar" onclick="processText('grammar')">
+                    <i class="fa-solid fa-spell-check"></i> Fix Grammar & Punctuation
+                </button>
+                <button class="ai-btn btn-humanize" onclick="processText('humanize')">
+                    <i class="fa-solid fa-user-pen"></i> Humanize AI Text
+                </button>
+                <button class="ai-btn btn-prof" onclick="processText('professional')">
+                    <i class="fa-solid fa-user-tie"></i> Professional Tone
+                </button>
+                <button class="ai-btn btn-sum" onclick="processText('summarize')">
+                    <i class="fa-solid fa-compress"></i> Summarize Text
+                </button>
+            </div>
+
+            <!-- Output Result -->
+            <div class="form-group" style="margin-bottom: 0;">
+                <label><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--green);"></i> Modified Result</label>
+                <textarea id="outputText" class="form-control" placeholder="Your polished text will appear here..." readonly></textarea>
+                <button class="copy-output-btn" onclick="copyOutput()" title="Copy Result"><i class="fa-regular fa-copy"></i></button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <h4>About Us</h4>
+                <p id="footerAboutText">One Step Online Tools</p>
+            </div>
+            <div class="footer-grid" id="footerGridContainer"></div>
+        </div>
+        <div class="copyright-bar">
+            <span class="copyright-text" id="copyrightSpan">
+                &copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">Trustiq</a>.
+            </span>
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. SITE CONFIG LOGIC (EXTERNAL SCRIPT VARS)
+        // ==========================================
+        let siteData = null;
+
+        async function loadData() {
+            if (typeof GIST_URL === 'undefined') {
+                console.warn("GIST_URL is not defined. Ensure teambct-config-server.js is loaded.");
+                return;
+            }
+            try {
+                const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
+                if (res.ok) {
+                    siteData = await res.json();
+                    applyTheme();
+                    applySiteConfig();
+                }
+            } catch (e) { console.error("Gist Load Failed."); }
+        }
+
+        function applyTheme() {
+            if (siteData && siteData.themeConfig) {
+                const root = document.documentElement;
+                Object.entries(siteData.themeConfig).forEach(([key, val]) => {
+                    const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+                    root.style.setProperty(cssKey, val);
+                });
+            }
+        }
+
+        function applySiteConfig() {
+            if(!siteData) return;
+            const logoContainer = document.getElementById('headerLogoContainer');
+            let imgHTML = '';
+            if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
+                imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
+            } else {
+                let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
+                if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
+                imgHTML = `<div class="logo-icon"><i class="${iconClass}"></i></div>`;
+            }
+
+            const siteName = siteData.siteConfig.siteName || "TEAM BCT";
+            let textHTML = "";
+            const parts = siteName.trim().split(/\s+/);
+            if (parts.length > 1) {
+                textHTML = `${parts[0].toUpperCase()}<span>${parts.slice(1).join(" ").toUpperCase()}</span>`;
+            } else {
+                if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
+                    textHTML = `TEAM<span>${siteName.slice(4).toUpperCase()}</span>`;
+                } else {
+                    textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
+                }
+            }
+            logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
+
+            const drawerLinks = document.getElementById('drawerLinksContainer');
+            drawerLinks.innerHTML = '';
+            siteData.navigationMenu.forEach(menu => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
+                drawerLinks.appendChild(li);
+            });
+
+            const banner = document.getElementById('announceBanner');
+            if (siteData.siteConfig.showAnnouncement) {
+                banner.style.display = 'block';
+                document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
+                document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
+            }
+
+            const popList = document.getElementById('popularList');
+            popList.innerHTML = '';
+            siteData.siteConfig.popularTools.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'popular-item';
+                div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
+                div.onclick = function() { window.location.href = tool.link; };
+                popList.appendChild(div);
+            });
+
+            document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
+            const footerGrid = document.getElementById('footerGridContainer');
+            footerGrid.innerHTML = '';
+            siteData.footerConfig.columns.forEach(col => {
+                const div = document.createElement('div');
+                div.className = 'footer-col';
+                div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
+                const ul = div.querySelector('.footer-links');
+                col.links.forEach(l => {
+                    ul.innerHTML += `<li style="margin-bottom:8px;"><a href="${l.url}" style="color:var(--text-muted); text-decoration:none; font-size:12px;">${escapeHtml(l.title)}</a></li>`;
+                });
+                footerGrid.appendChild(div);
+            });
+        }
+
+        function toggleNavDropdown() {
+            const dropdown = document.getElementById('navDropdown');
+            const menuIcon = document.querySelector('.menu-icon i');
+            if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; menuIcon.className = 'fa-solid fa-bars'; } 
+            else { dropdown.style.display = 'block'; menuIcon.className = 'fa-solid fa-xmark'; }
+        }
+
+        document.getElementById('popularBtn').addEventListener('click', () => {
+            const list = document.getElementById('popularList');
+            const arr = document.getElementById('popArrow');
+            if (list.style.display === 'flex') { list.style.display = 'none'; arr.className = 'fa-solid fa-chevron-right'; }
+            else { list.style.display = 'flex'; arr.className = 'fa-solid fa-chevron-down'; }
+        });
+
+        function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])) : ''; }
+
+
+        // ==========================================
+        // 2. AI TEXT MODIFIER LOGIC (GEMINI API)
+        // ==========================================
+        
+        // As per instructions, apiKey is provided at runtime environment. We use an empty string here.
+        const apiKey = ""; 
+
+        function updateWordCount() {
+            const text = document.getElementById('inputText').value.trim();
+            const clearBtn = document.getElementById('clearBtnIn');
+            
+            if (text.length > 0) {
+                clearBtn.style.display = 'flex';
+                const words = text.split(/\s+/).length;
+                document.getElementById('wordCount').innerText = `${words} Word${words > 1 ? 's' : ''}`;
+            } else {
+                clearBtn.style.display = 'none';
+                document.getElementById('wordCount').innerText = '0 Words';
+            }
+        }
+
+        function clearInput() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            updateWordCount();
+            document.getElementById('inputText').focus();
+        }
+
+        function copyOutput() {
+            const text = document.getElementById('outputText').value;
+            if (!text) {
+                Swal.fire({title: 'Empty!', text: 'Nothing to copy.', icon: 'warning', background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'});
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                Swal.fire({title: 'Copied!', text: 'Result copied to clipboard.', icon: 'success', toast: true, position: 'bottom', timer: 1500, showConfirmButton: false, background: '#070000', color: '#10b981'});
+            });
+        }
+
+        // Exponential backoff logic
+        async function fetchWithRetry(url, options, retries = 5, delay = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    if (response.status === 429 || response.status >= 500) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    // For 400 Bad Request, usually means invalid prompt/API key in this environment, don't retry.
+                    throw new Error(`Client error: ${response.status}`);
+                }
+                return await response.json();
+            } catch (err) {
+                if (retries > 0 && (err.message.includes('429') || err.message.includes('500') || err.message.includes('Failed to fetch'))) {
+                    await new Promise(res => setTimeout(res, delay));
+                    return fetchWithRetry(url, options, retries - 1, delay * 2);
+                } else {
+                    throw err;
+                }
+            }
+        }
+
+        async function processText(actionType) {
+            const originalText = document.getElementById('inputText').value.trim();
+            const outputBox = document.getElementById('outputText');
+
+            if (!originalText) {
+                Swal.fire({title: 'Wait!', text: 'Please paste some text first.', icon: 'warning', background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'});
+                return;
+            }
+
+            // Define the System Prompt/Instruction based on action
+            let systemPrompt = "";
+            let loadingMsg = "";
+
+            if (actionType === 'grammar') {
+                systemPrompt = "Fix all grammar, spelling, formatting, and punctuation errors in the user's text. Ensure appropriate use of commas, periods, and capitalization. Preserve the original meaning, context, and language exactly. Only return the corrected text without any extra conversational text or formatting like markdown blocks.";
+                loadingMsg = "Fixing Grammar & Punctuation...";
+            } 
+            else if (actionType === 'humanize') {
+                systemPrompt = "Rewrite the user's text to sound completely human, natural, engaging, and conversational. Remove repetitive phrasing, robotic jargon (e.g., 'In conclusion', 'Moreover', 'Delve into'), and overly complex words often used by AI. Write as if a real person is speaking. Preserve the original language and core message. Only return the rewritten text without any extra text.";
+                loadingMsg = "Humanizing Text...";
+            }
+            else if (actionType === 'professional') {
+                systemPrompt = "Rewrite the user's text in a highly professional, formal, polite, and polished tone. Make it suitable for business communication, official emails, or formal reports. Ensure excellent grammar and structure. Preserve the original language. Only return the rewritten text without any extra conversational text.";
+                loadingMsg = "Making it Professional...";
+            }
+            else if (actionType === 'summarize') {
+                systemPrompt = "Provide a very clear, concise, and easy-to-understand summary of the user's text. Capture the main points without unnecessary fluff. Preserve the original language of the text. Only return the summary text.";
+                loadingMsg = "Summarizing Text...";
+            }
+
+            // UI Loading State
+            Swal.fire({
+                title: loadingMsg,
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading() },
+                background: '#070000', color: '#fff'
+            });
+            outputBox.value = "AI is thinking...";
+
+            const payload = {
+                contents: [{ parts: [{ text: originalText }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            // Using the designated model
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            try {
+                const data = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
+                    const modifiedText = data.candidates[0].content.parts[0].text.trim();
+                    outputBox.value = modifiedText;
+                    Swal.close();
+                } else {
+                    throw new Error("Invalid response format from AI.");
+                }
+
+            } catch (error) {
+                console.error("AI Error:", error);
+                outputBox.value = "Failed to process text. The AI service might be temporarily unavailable or the API key needs to be configured in the runtime environment.";
+                Swal.fire({title: 'Error', text: 'Failed to connect to the AI brain.', icon: 'error', background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'});
+            }
+        }
+
+        // Init App
+        window.onload = () => {
+            loadData();
+        };
+
+    </script>
+</body>
+</html>
