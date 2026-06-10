@@ -59,27 +59,39 @@
         /* লোগো কন্টেইনার ও স্টাইল মেইন কোড অনুযায়ী সম্পূর্ণ ফিক্সড */
         .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
         
-        .logo img {
-            height: 46px !important;
-            max-width: 240px;
-            object-fit: contain;
-            display: block;
-            border-radius: 4px;
+        /* গোল বর্ডার লোগো ইমেজ স্টাইল (১০০% পারফেক্ট বৃত্তাকার ও ব্যাকগ্রাউন্ড রিমুভড) */
+        .logo-img-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+
+        .logo-img-container img {
+            width: 38px !important;
+            height: 38px !important;
+            border-radius: 50% !important;
+            border: 1px solid rgba(220, 38, 38, 0.6) !important;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.4) !important;
+            object-fit: cover !important;
+            background: none !important;
         }
 
         .logo-icon { 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            background: #1e293b; 
+            background: linear-gradient(145deg, #150000, #050000); 
             padding: 6px; 
             border-radius: 50%; 
-            border: 2px solid var(--accent-blue); 
-            box-shadow: 0 0 8px var(--accent-blue); 
-            font-size: 14px; 
+            border: 1px solid rgba(220, 38, 38, 0.6); 
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); 
+            font-size: 15px; 
             color: var(--accent-blue); 
-            width: 36px; 
-            height: 36px; 
+            width: 38px; 
+            height: 38px; 
         }
 
         .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
@@ -298,8 +310,10 @@
             if(!siteData) return;
             const logoContainer = document.getElementById('headerLogoContainer');
             let imgHTML = '';
+            
+            // মেইন কোড অনুযায়ী ইমেজ লোগো মড্যুলার সিঙ্ক (কোনো ব্যাকগ্রাউন্ড ও বর্ডার ছাড়া নিখুঁত বৃত্তাকার)
             if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
-                imgHTML = `<img src="${siteData.siteConfig.logoUrl}">`;
+                imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
             } else {
                 let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
                 if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
