@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebP to PNG/JPG Converter - Team BCT</title>
+    <title>JPG Image Converter - Team BCT</title>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -56,8 +55,45 @@
         }
         header { background-color: #000000; padding: 15px 20px; display: flex; align-items: center; }
         .menu-icon { font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: auto; width: 25px; display: inline-block; }
+        
+        /* লোগো কন্টেইনার ও স্টাইল মেইন কোড অনুযায়ী সম্পূর্ণ ফিক্সড */
         .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
-        .logo-icon { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #150000, #050000); padding: 6px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); font-size: 15px; color: var(--accent-blue); width: 38px; height: 38px; }
+        
+        /* গোল বর্ডার লোগো ইমেজ স্টাইল (১০০% পারফেক্ট বৃত্তাকার ও ব্যাকগ্রাউন্ড রিমুভড) */
+        .logo-img-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+
+        .logo-img-container img {
+            width: 38px !important;
+            height: 38px !important;
+            border-radius: 50% !important;
+            border: 1px solid rgba(220, 38, 38, 0.6) !important;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.4) !important;
+            object-fit: cover !important;
+            background: none !important;
+        }
+
+        .logo-icon { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: linear-gradient(145deg, #150000, #050000); 
+            padding: 6px; 
+            border-radius: 50%; 
+            border: 1px solid rgba(220, 38, 38, 0.6); 
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); 
+            font-size: 15px; 
+            color: var(--accent-blue); 
+            width: 38px; 
+            height: 38px; 
+        }
+
         .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
         .logo-text span { font-family: 'Rajdhani', sans-serif; font-weight: 700; margin-left: 4px; color: #b91c1c; text-transform: uppercase !important; }
 
@@ -177,29 +213,32 @@
         </div>
         <div class="popular-tools-list" id="popularList"></div>
         
-        <!-- Tool Card: WEBP CONVERTER -->
+        <!-- Tool Card: JPG IMAGE CONVERTER -->
         <div class="tool-card">
-            <h2>WEBP IMAGE CONVERTER <span style="font-size:10px; border:1px solid var(--border-color); padding: 2px 6px; border-radius:4px; font-weight:500;">v1.0</span></h2>
+            <h2>JPG IMAGE CONVERTER <span style="font-size:10px; border:1px solid var(--border-color); padding: 2px 6px; border-radius:4px; font-weight:500;">v1.0</span></h2>
 
             <!-- Upload Zone -->
             <div class="upload-zone" id="uploadZone">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                <p>Drag & Drop your WebP file here or <span>Click to Browse</span></p>
-                <input type="file" id="fileInput" accept="image/webp, image/*">
+                <p>Drag & Drop your JPG file here or <span>Click to Browse</span></p>
+                <input type="file" id="fileInput" accept="image/jpeg, image/jpg, image/png, image/webp">
             </div>
 
             <!-- Preview Area -->
             <div class="preview-area" id="previewArea">
                 <img id="imagePreview" class="preview-img" src="" alt="Preview">
-                <div class="file-info" id="fileInfo">Filename.webp (0 KB)</div>
+                <div class="file-info" id="fileInfo">Filename.jpg (0 KB)</div>
             </div>
 
             <!-- Settings -->
             <div class="form-group" style="margin-bottom: 25px;">
-                <label><i class="fa-solid fa-file-export"></i> Convert To</label>
+                <label><i class="fa-solid fa-file-export"></i> Convert To Format</label>
                 <select id="targetFormat" class="form-control">
-                    <option value="image/png">PNG (.png) - Best for transparency</option>
-                    <option value="image/jpeg">JPG / JPEG (.jpg) - Best for smaller size</option>
+                    <option value="image/png">PNG (.png) - High Quality / Transparent</option>
+                    <option value="image/webp">WebP (.webp) - Optimized for Web</option>
+                    <option value="image/x-icon">ICO (.ico) - Favicon / App Icon (Square Crop)</option>
+                    <option value="image/bmp">BMP (.bmp) - Bitmap Image</option>
+                    <option value="image/gif">GIF (.gif) - Static Graphic</option>
                 </select>
             </div>
 
@@ -236,9 +275,7 @@
     </footer>
 
     <script>
-        // ==========================================
-        // 1. SITE CONFIG LOGIC (EXTERNAL SCRIPT VARS)
-        // ==========================================
+        // CONFIG
         let siteData = null;
 
         async function loadData() {
@@ -256,6 +293,7 @@
             } catch (e) { console.error("Gist Load Failed."); }
         }
 
+        // Apply theme properties dynamically
         function applyTheme() {
             if (siteData && siteData.themeConfig) {
                 const root = document.documentElement;
@@ -270,6 +308,8 @@
             if(!siteData) return;
             const logoContainer = document.getElementById('headerLogoContainer');
             let imgHTML = '';
+            
+            // মেইন কোড অনুযায়ী ইমেজ লোগো মড্যুলার সিঙ্ক (কোনো ব্যাকগ্রাউন্ড ও বর্ডার ছাড়া নিখুঁত বৃত্তাকার)
             if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
                 imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
             } else {
@@ -290,6 +330,7 @@
                     textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
                 }
             }
+            // লোগো রেন্ডারিং ডাইনামিক ভেরিয়েবল `textHTML` সফলভাবে এখানে ফিক্সড করা হয়েছে (ডাবল টেক্সট আসা বন্ধ)
             logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
 
             const drawerLinks = document.getElementById('drawerLinksContainer');
@@ -350,7 +391,7 @@
 
 
         // ==========================================
-        // 2. WEBP CONVERTER LOGIC
+        // 2. IMAGE CONVERTER LOGIC (JPG TO OTHERS)
         // ==========================================
         
         const uploadZone = document.getElementById('uploadZone');
@@ -416,40 +457,130 @@
             reader.readAsDataURL(file);
         }
 
+        // Advanced ICO Generator Function (Pure JS)
+        async function getIcoData(canvas) {
+            // ICO requires a square image. We will center-crop and resize to max 256x256.
+            let size = 256;
+            let icoCanvas = document.createElement('canvas');
+            icoCanvas.width = size;
+            icoCanvas.height = size;
+            let ictx = icoCanvas.getContext('2d');
+            
+            // Calculate center crop
+            let minDim = Math.min(canvas.width, canvas.height);
+            let sx = (canvas.width - minDim) / 2;
+            let sy = (canvas.height - minDim) / 2;
+            
+            // Draw cropped and resized image
+            ictx.drawImage(canvas, sx, sy, minDim, minDim, 0, 0, size, size);
+            
+            return new Promise(resolve => {
+                icoCanvas.toBlob(blob => {
+                    blob.arrayBuffer().then(buffer => {
+                        let pngUint8 = new Uint8Array(buffer);
+                        let icoLen = 22 + pngUint8.length;
+                        let icoBuffer = new Uint8Array(icoLen);
+                        
+                        // ICO Header (ICONDIR)
+                        icoBuffer.set([0, 0, 1, 0, 1, 0], 0);
+                        
+                        // Directory Entry (ICONDIRENTRY)
+                        icoBuffer[6] = size === 256 ? 0 : size; // width (0 means 256)
+                        icoBuffer[7] = size === 256 ? 0 : size; // height
+                        icoBuffer[8] = 0; // color count
+                        icoBuffer[9] = 0; // reserved
+                        icoBuffer[10] = 1; // planes
+                        icoBuffer[11] = 0;
+                        icoBuffer[12] = 32; // bpp
+                        icoBuffer[13] = 0;
+                        
+                        // Size of png data
+                        let dataSize = pngUint8.length;
+                        icoBuffer[14] = dataSize & 0xff;
+                        icoBuffer[15] = (dataSize >> 8) & 0xff;
+                        icoBuffer[16] = (dataSize >> 16) & 0xff;
+                        icoBuffer[17] = (dataSize >> 24) & 0xff;
+                        
+                        // Offset of png data
+                        icoBuffer[18] = 22;
+                        icoBuffer[19] = 0;
+                        icoBuffer[20] = 0;
+                        icoBuffer[21] = 0;
+                        
+                        // Copy PNG data
+                        icoBuffer.set(pngUint8, 22);
+                        
+                        let icoBlob = new Blob([icoBuffer], {type: "image/x-icon"});
+                        resolve(URL.createObjectURL(icoBlob));
+                    });
+                }, "image/png");
+            });
+        }
+
         function convertAndDownload() {
             if (!imagePreview.src || imagePreview.src === window.location.href) {
                 Swal.fire({title: 'No Image!', text: 'Please upload an image first.', icon: 'warning', background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'});
                 return;
             }
 
-            const targetFormat = document.getElementById('targetFormat').value; // 'image/png' or 'image/jpeg'
-            const ext = targetFormat === 'image/jpeg' ? 'jpg' : 'png';
+            const targetFormat = document.getElementById('targetFormat').value; 
             
-            // Create Canvas
+            // Create a canvas to process the image
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = loadedImage.naturalWidth;
             canvas.height = loadedImage.naturalHeight;
 
-            // If converting to JPG, fill with white background first (because JPG doesn't support transparency)
-            if (targetFormat === 'image/jpeg') {
+            // If converting to BMP or JPEG, fill background with white (removes transparency)
+            if (targetFormat === 'image/bmp' || targetFormat === 'image/jpeg') {
                 ctx.fillStyle = '#FFFFFF';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Draw Image
+            // Draw Original Image
             ctx.drawImage(loadedImage, 0, 0);
 
-            // Get Data URL (Quality 0.95 for JPG, ignored for PNG)
-            const dataUrl = canvas.toDataURL(targetFormat, 0.95);
+            // Handle Specific Advanced Conversion for ICO
+            if (targetFormat === 'image/x-icon') {
+                Swal.fire({ title: 'Processing ICO...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }, background: '#070000', color: '#fff' });
+                
+                getIcoData(canvas).then(url => {
+                    Swal.close();
+                    downloadFile(url, `${originalFileName}_TeamBCT1.ico`);
+                    Swal.fire({title: 'Success!', text: `Image successfully converted to ICO`, icon: 'success', toast: true, position: 'bottom', timer: 2000, showConfirmButton: false, background: '#070000', color: '#10b981'});
+                });
+                return;
+            }
 
-            // Trigger Download
+            // Standard Conversion for PNG, WebP, BMP, GIF
+            let ext = targetFormat.split('/')[1];
+            if(ext === 'jpeg') ext = 'jpg';
+            
+            // Note: Modern browsers (Chrome/Edge/Firefox) handle image/png, image/webp natively.
+            // image/bmp and image/gif might fallback to PNG if not supported by the specific browser engine.
+            let dataUrl = canvas.toDataURL(targetFormat, 1.0);
+            
+            // Browser Fallback Check (If requested BMP/GIF but browser gave PNG)
+            if (targetFormat !== 'image/png' && dataUrl.startsWith('data:image/png')) {
+                // If browser failed to encode GIF/BMP natively
+                Swal.fire({
+                    title: 'Notice',
+                    text: `Your browser doesn't natively support converting to ${ext.toUpperCase()}. Saved as standard format.`,
+                    icon: 'info',
+                    background: '#070000', color: '#fff', confirmButtonColor: '#dc2626'
+                });
+            } else {
+                Swal.fire({title: 'Success!', text: `Image successfully converted to ${ext.toUpperCase()}`, icon: 'success', toast: true, position: 'bottom', timer: 2000, showConfirmButton: false, background: '#070000', color: '#10b981'});
+            }
+
+            downloadFile(dataUrl, `${originalFileName}_TeamBCT1.${ext}`);
+        }
+
+        function downloadFile(url, filename) {
             const link = document.createElement('a');
-            link.download = `${originalFileName}_TeamBCT.${ext}`;
-            link.href = dataUrl;
+            link.download = filename;
+            link.href = url;
             link.click();
-
-            Swal.fire({title: 'Success!', text: `Image successfully converted to ${ext.toUpperCase()}`, icon: 'success', toast: true, position: 'bottom', timer: 2000, showConfirmButton: false, background: '#070000', color: '#10b981'});
         }
 
         function clearAll() {
