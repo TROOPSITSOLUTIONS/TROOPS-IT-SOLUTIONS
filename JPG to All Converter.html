@@ -508,7 +508,7 @@
                 
                 getIcoData(canvas).then(url => {
                     Swal.close();
-                    downloadFile(url, `${originalFileName}_TeamBCT.ico`);
+                    downloadFile(url, `${originalFileName}_TeamBCT1.ico`);
                     Swal.fire({title: 'Success!', text: `Image successfully converted to ICO`, icon: 'success', toast: true, position: 'bottom', timer: 2000, showConfirmButton: false, background: '#070000', color: '#10b981'});
                 });
                 return;
@@ -535,7 +535,7 @@
                 Swal.fire({title: 'Success!', text: `Image successfully converted to ${ext.toUpperCase()}`, icon: 'success', toast: true, position: 'bottom', timer: 2000, showConfirmButton: false, background: '#070000', color: '#10b981'});
             }
 
-            downloadFile(dataUrl, `${originalFileName}_TeamBCT.${ext}`);
+            downloadFile(dataUrl, `${originalFileName}_TeamBCT1.${ext}`);
         }
 
         function downloadFile(url, filename) {
