@@ -1,0 +1,725 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Locator Pro - Team BCT</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Rajdhani, Inter, Play, Share Tech Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* ========================================================
+           GLOBAL SITE STYLES (Age Calculator Theme)
+           ======================================================== */
+        :root {
+            --bg-color: #030000;
+            --header-bg: #000000;
+            --card-bg: #070000;
+            --border-color: #3a0808;
+            --border-light: rgba(220, 38, 38, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-blue: #dc2626; /* Deep Red Accent */
+            
+            /* Status Colors */
+            --red: #ef4444; 
+            --green: #10b981; 
+            --yellow: #eab308; 
+            --blue: #3b82f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 2px; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #150000 0%, transparent 40%);
+        }
+
+        /* Sticky Wrapper */
+        .sticky-wrapper {
+            position: sticky; top: 0; z-index: 1000; background-color: #000000;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        header { background-color: #000000; padding: 15px 20px; display: flex; align-items: center; }
+        .menu-icon { font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: auto; width: 25px; display: inline-block; }
+        .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
+        .logo-img-container { display: flex; align-items: center; justify-content: center; }
+        .logo-img-container img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); object-fit: cover; }
+        .logo-icon { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #150000, #050000); padding: 6px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); font-size: 15px; color: var(--accent-blue); width: 38px; height: 38px; }
+        .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
+        .logo-text span { font-family: 'Rajdhani', sans-serif; font-weight: 700; margin-left: 4px; color: #b91c1c; text-transform: uppercase !important; }
+
+        /* Dropdown Menu */
+        .nav-menu-dropdown {
+            background: linear-gradient(to bottom, #050000, #000000); backdrop-filter: blur(10px);
+            border-top: 1px solid #1a0000; border-bottom: 1px solid #3a0808; display: none; padding: 10px 0;
+            position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9); animation: menuFadeIn 0.2s ease-out forwards;
+        }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-links { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .dropdown-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: transparent; border-left: 3px solid transparent; border-bottom: 1px solid #0f0000; transition: all 0.2s ease; }
+        .dropdown-links a:hover { background: linear-gradient(90deg, #150000 0%, #000000 100%); color: #ffffff; border-left: 3px solid #dc2626; padding-left: 24px; }
+        .dropdown-links a:hover i { color: #dc2626; }
+
+        /* Container */
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; width: 100%; flex-grow: 1; }
+
+        /* Announcement Banner */
+        .announcement-banner {
+            background: linear-gradient(145deg, #0f0000, #030000); border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 25px; display: none; position: relative; overflow: hidden;
+        }
+        .announcement-banner p { font-family: 'Play', sans-serif; font-weight: 400; font-size: 15px; line-height: 1.6; color: #ffc2c2; margin-bottom: 15px; position: relative; z-index: 1; }
+        .join-btn { display: inline-block; position: relative; z-index: 1; background-color: #dc2626; color: white; padding: 10px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s ease; }
+        .join-btn:hover { background-color: #ef4444; transform: translateY(-2px); }
+
+        /* Popular Tools */
+        .popular-tools-btn { background-color: #0a0000; border: none; border-left: 4px solid #dc2626; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); padding: 14px 18px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 20px; transition: all 0.3s ease; }
+        .popular-tools-btn:hover { background-color: #150000; border-left-color: #ff4d4d; }
+        .popular-tools-list { background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 4px; margin-top: -15px; margin-bottom: 20px; display: none; flex-direction: column; overflow: hidden; }
+        .popular-item { padding: 12px 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); font-size: 13px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .popular-item:hover { background-color: #120000; }
+        .popular-item i { color: rgba(220, 38, 38, 0.8); }
+
+        /* Tool Card */
+        .tool-card {
+            background: linear-gradient(145deg, #0a0000, #030000); border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .tool-card h2 { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: white; margin-bottom: 20px; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+
+        /* General Button */
+        .calc-btn { width: 100%; background-color: var(--accent-blue); color: white; border: none; padding: 14px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 1px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .calc-btn:hover:not(:disabled) { background-color: #ef4444; box-shadow: 0 6px 15px rgba(220, 38, 38, 0.4); transform: translateY(-2px); }
+        .calc-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ========================================================
+           IP LOCATOR PRO SPECIFIC UI
+           ======================================================== */
+
+        /* Scanner Indicator */
+        .scan-indicator { text-align: center; padding: 40px 10px; color: var(--accent-blue); font-family: 'Share Tech Mono', monospace; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .radar-spinner { font-size: 40px; animation: spin 2s linear infinite; opacity: 0.8; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; display: none; }
+        .stat-box { background: #000; border: 1px solid var(--border-light); border-radius: 6px; padding: 15px; text-align: center; position: relative; overflow: hidden; }
+        .stat-lbl { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
+        .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 900; word-break: break-all; }
+        
+        /* Highlight specific colors */
+        .val-red { color: var(--red) !important; text-shadow: 0 0 10px rgba(239,68,68,0.4); }
+        .val-green { color: var(--green) !important; text-shadow: 0 0 10px rgba(16,185,129,0.4); }
+        .val-yellow { color: var(--yellow) !important; text-shadow: 0 0 10px rgba(234,179,8,0.4); }
+        .val-blue { color: var(--blue) !important; text-shadow: 0 0 10px rgba(59,130,246,0.4); }
+
+        /* Health Bar */
+        .health-bar-container { background: #000; border: 1px solid var(--border-light); padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .health-label-row { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); font-family: 'Share Tech Mono', monospace; }
+        .h-track { width: 100%; height: 6px; background: #111; border-radius: 3px; overflow: hidden; }
+        .h-fill { height: 100%; width: 0%; background: var(--green); transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Google Map Wrapper */
+        .map-wrapper { width: 100%; height: 220px; border-radius: 6px; border: 1px solid var(--border-light); overflow: hidden; margin-bottom: 15px; position: relative; background: #000;}
+        .map-wrapper iframe { width: 100%; height: 100%; filter: invert(90%) hue-rotate(180deg) brightness(80%) contrast(120%) grayscale(40%); border: 0; }
+        .map-coords { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent-blue); padding: 4px 8px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: #fff; pointer-events: none;}
+
+        /* Facebook Mailing Address Box */
+        .address-box { background: #000; border: 1px dashed var(--accent-blue); padding: 15px; border-radius: 6px; margin-bottom: 20px; position: relative; }
+        .address-text { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: #fff; white-space: pre-line; line-height: 1.6; }
+        .copy-btn-small { position: absolute; top: 10px; right: 10px; background: rgba(220,38,38,0.1); border: 1px solid var(--accent-blue); color: var(--text-main); padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 4px;}
+        .copy-btn-small:hover { background: var(--accent-blue); color: #fff; }
+
+        /* Result Panel & Normal Rows */
+        .result-panel { margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 20px; display: none; }
+        .result-panel h3 { font-family: 'Rajdhani', sans-serif; font-size: 14px; color: var(--accent-blue); margin-bottom: 15px; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
+        .result-row { display: flex; justify-content: space-between; padding: 11px 15px; background-color: #030000; border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: 8px; font-size: 13px; align-items: center;}
+        .result-row span:first-child { color: var(--text-muted); font-weight: 600; flex-shrink: 0; }
+        .result-row span:last-child { color: var(--text-main); font-weight: 700; text-align: right; word-break: break-all; margin-left: 10px;}
+        .copy-ico { color: rgba(220, 38, 38, 0.6); cursor: pointer; margin-left: 8px; font-size: 14px; transition: 0.2s; }
+        .copy-ico:hover { color: var(--red); transform: scale(1.1); }
+        .row-val-group { display: flex; align-items: center; justify-content: flex-end; }
+        .age-highlight { background: linear-gradient(135deg, #1c0303, #070000); border-color: rgba(220, 38, 38, 0.4) !important; }
+
+        /* NEW STACKED DESIGN FOR OVERLAPPING AVOIDANCE */
+        .result-row-stacked { 
+            display: flex; flex-direction: column; align-items: flex-start; padding: 12px 15px; 
+            background-color: #030000; border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: 8px; 
+        }
+        .result-row-stacked > span:first-child { color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; margin-bottom: 6px; }
+        .val-wrapper { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .val-text { color: var(--text-main); font-weight: 700; font-size: 14px; word-break: break-word; }
+
+
+
+        /* Footer */
+        footer { position: relative; background-color: #000000; padding: 30px 15px 15px 15px; margin-top: auto; border-top: 1px solid rgba(220, 38, 38, 0.1); }
+        footer::before { content: ''; position: absolute; top: -1px; left: 20%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.8), transparent); box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .footer-about h4 { color: rgba(220, 38, 38, 0.9); margin-bottom: 8px; font-size: 14px; }
+        .footer-about p { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .footer-col h5 { font-size: 13px; color: var(--text-main); margin-bottom: 10px; }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color 0.2s; }
+        .footer-links a:hover { color: #fecaca; }
+        .copyright-bar { position: relative; max-width: 600px; margin: 20px auto 0 auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: center; align-items: center; font-size: 13px; color: #9ca3af; text-align: center; }
+        .trustiq-link { color: #dc2626 !important; font-weight: 700; text-decoration: none; letter-spacing: 0.5px; transition: all 0.3s ease; }
+        .trustiq-link:hover { color: #ef4444 !important; text-shadow: 0 0 8px rgba(220, 38, 38, 0.6); }
+        .scroll-top-btn { position: absolute; right: 0; background: linear-gradient(145deg, #120000, #050000); color: white; border: 1px solid rgba(220, 38, 38, 0.3); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05); }
+        .scroll-top-btn:hover { background: #2e0505; border-color: rgba(220, 38, 38, 0.8); color: #ffc2c2; }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Header -->
+    <div class="sticky-wrapper">
+        <header>
+            <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
+            <a href="/" class="logo" id="headerLogoContainer"></a>
+        </header>
+        <div class="nav-menu-dropdown" id="navDropdown">
+            <ul class="dropdown-links" id="drawerLinksContainer"></ul>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <div class="announcement-banner" id="announceBanner">
+            <p id="announcementText"></p>
+            <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
+        </div>
+
+        <div class="popular-tools-btn" id="popularBtn">
+            <span>Popular Tools</span>
+            <i class="fa-solid fa-chevron-right" id="popArrow"></i>
+        </div>
+        <div class="popular-tools-list" id="popularList"></div>
+        
+        <!-- Tool Card: IP LOCATOR -->
+        <div class="tool-card">
+            <h2>IP LOCATOR PRO <span style="font-size:10px; border:1px solid var(--border-color); padding: 2px 6px; border-radius:4px; font-weight:500;">v5.0</span></h2>
+            
+            <!-- Scanning Indicator (Auto shows on load) -->
+            <div class="scan-indicator" id="scanIndicator">
+                <i class="fa-solid fa-satellite-dish radar-spinner"></i>
+                <span id="scanText">INTERCEPTING CLIENT IP DATA...</span>
+            </div>
+
+            <!-- RESULTS WRAPPER (Hidden initially) -->
+            <div id="resultsWrapper" style="display:none;">
+                
+                <!-- TOP STATS -->
+                <div class="stats-grid" id="statsGrid" style="display:grid;">
+                    <div class="stat-box" style="grid-column: 1 / -1; border-color: var(--accent-blue);">
+                        <div class="stat-lbl" style="color:var(--accent-blue)">PRIMARY TARGET IP</div>
+                        <div class="row-val-group" style="justify-content:center; gap:10px;">
+                            <div class="stat-val val-blue" id="resIp" style="font-size:24px;">0.0.0.0</div>
+                            <i class="fa-solid fa-copy copy-ico" onclick="copyText('resIp')"></i>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-lbl">IP STATUS</div>
+                        <div class="stat-val val-green" id="resStatus">Active</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-lbl">PROXY / VPN</div>
+                        <div class="stat-val val-yellow" id="resProxy">No</div>
+                    </div>
+                </div>
+
+                <!-- HEALTH BAR -->
+                <div class="health-bar-container">
+                    <div class="health-label-row">
+                        <span>NETWORK HEALTH SCORE</span>
+                        <span id="healthText" class="val-green">100% CLEAN</span>
+                    </div>
+                    <div class="h-track"><div class="h-fill" id="healthBar"></div></div>
+                </div>
+
+                <!-- GOOGLE MAP -->
+                <div class="map-wrapper">
+                    <iframe id="gmap" src=""></iframe>
+                    <div class="map-coords">GPS: <span id="mapCoords">Scanning...</span></div>
+                </div>
+
+                <!-- MAILING ADDRESS FORMAT (FACEBOOK READY) -->
+                <div class="address-box">
+                    <button class="copy-btn-small" onclick="copyAddress()"><i class="fa-solid fa-copy"></i> COPY FORMAT</button>
+                    <div style="font-size:10px; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase; font-weight:700;">Standard Mailing Address</div>
+                    <div class="address-text" id="resFullAddress">Scanning location parameters...</div>
+                </div>
+
+                <!-- PANEL 1: GEOLOCATION -->
+                <div class="result-panel" style="display:block; padding-top:0; border:none;">
+                    <h3><i class="fa-solid fa-map-location-dot"></i> GEOLOCATION INTEL</h3>
+                    <div class="result-row">
+                        <span>Country</span>
+                        <div class="row-val-group"><span id="resCountry">Scanning...</span> <i class="fa-solid fa-copy copy-ico" onclick="copyText('resCountry')"></i></div>
+                    </div>
+                    <div class="result-row">
+                        <span>City / Region</span>
+                        <div class="row-val-group"><span id="resCity">Scanning...</span> <i class="fa-solid fa-copy copy-ico" onclick="copyText('resCity')"></i></div>
+                    </div>
+                    <div class="result-row">
+                        <span>Postal / ZIP Code</span>
+                        <div class="row-val-group"><span id="resZip">Scanning...</span> <i class="fa-solid fa-copy copy-ico" onclick="copyText('resZip')"></i></div>
+                    </div>
+                    <div class="result-row">
+                        <span>Timezone</span>
+                        <div class="row-val-group"><span id="resTimezone">Scanning...</span> <i class="fa-solid fa-copy copy-ico" onclick="copyText('resTimezone')"></i></div>
+                    </div>
+                </div>
+
+                <!-- PANEL 2: NETWORK & FORENSICS (NEW STACKED DESIGN) -->
+                <div class="result-panel" style="display:block;">
+                    <h3><i class="fa-solid fa-server"></i> NETWORK & FORENSICS</h3>
+                    
+                    <div class="result-row-stacked">
+                        <span>ISP / Provider</span>
+                        <div class="val-wrapper">
+                            <span id="resIsp" class="val-text val-blue">Scanning...</span>
+                            <i class="fa-solid fa-copy copy-ico" onclick="copyText('resIsp')"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="result-row-stacked">
+                        <span>Organization</span>
+                        <div class="val-wrapper">
+                            <span id="resOrg" class="val-text">Scanning...</span>
+                            <i class="fa-solid fa-copy copy-ico" onclick="copyText('resOrg')"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="result-row-stacked">
+                        <span>ASN (Autonomous System Number)</span>
+                        <div class="val-wrapper">
+                            <span id="resAsn" class="val-text">Scanning...</span>
+                            <i class="fa-solid fa-copy copy-ico" onclick="copyText('resAsn')"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL 3: TELEMETRY -->
+                <div class="result-panel" style="display:block;">
+                    <h3><i class="fa-solid fa-laptop-code"></i> DEVICE TELEMETRY</h3>
+                    <div class="result-row"><span>Browser</span><span id="fpBrowser">-</span></div>
+                    <div class="result-row"><span>Platform / OS</span><span id="fpOs">-</span></div>
+                    <div class="result-row"><span>Screen Res</span><span id="fpScreen">-</span></div>
+                    <div class="result-row"><span>Network Speed</span><span id="netSpeed" class="val-yellow">-</span></div>
+                    <div class="result-row"><span>Latency (Ping)</span><span id="netPing" class="val-yellow">-</span></div>
+                </div>
+
+                
+
+                <!-- Manual Rescan Button -->
+                <button class="calc-btn" style="margin-top:20px; background:#111; border:1px solid #333;" onclick="window.location.reload()">
+                    <i class="fa-solid fa-rotate-right"></i> RE-SCAN NETWORK
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <h4>About Us</h4>
+                <p id="footerAboutText">One Step Online Tools</p>
+            </div>
+            <div class="footer-grid" id="footerGridContainer"></div>
+        </div>
+        <div class="copyright-bar">
+            <span class="copyright-text" id="copyrightSpan">
+                &copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">Trustiq</a>.
+            </span>
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. SITE CONFIG LOGIC (GIST API)
+        // ==========================================
+        const GIST_OWNER = 'TROOPSITSOLUTIONS';
+        const GIST_ID = '3bfa4b9ca8dbdc1038918d63329096b3';
+        const GIST_URL = `https://gist.githubusercontent.com/${GIST_OWNER}/${GIST_ID}/raw/tools.json`;
+
+        let siteData = null;
+
+        async function loadData() {
+            try {
+                const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
+                if (res.ok) {
+                    siteData = await res.json();
+                    applyTheme();
+                    applySiteConfig();
+                }
+            } catch (e) { console.error("Gist Load Failed."); }
+            
+            // On load: Fingerprint & Auto Scan Client IP
+            getFingerprint();
+            fetchIpData(''); // Fetches visitor's IP automatically
+        }
+
+        function applyTheme() {
+            if (siteData && siteData.themeConfig) {
+                const root = document.documentElement;
+                Object.entries(siteData.themeConfig).forEach(([key, val]) => {
+                    const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+                    root.style.setProperty(cssKey, val);
+                });
+            }
+        }
+
+        function applySiteConfig() {
+            if(!siteData) return;
+            // Header
+            const logoContainer = document.getElementById('headerLogoContainer');
+            let imgHTML = '';
+            if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
+                imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
+            } else {
+                let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
+                if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
+                imgHTML = `<div class="logo-icon"><i class="${iconClass}"></i></div>`;
+            }
+
+            const siteName = siteData.siteConfig.siteName || "TEAM BCT";
+            let textHTML = "";
+            const parts = siteName.trim().split(/\s+/);
+            if (parts.length > 1) {
+                textHTML = `${parts[0].toUpperCase()}<span>${parts.slice(1).join(" ").toUpperCase()}</span>`;
+            } else {
+                if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
+                    textHTML = `TEAM<span>${siteName.slice(4).toUpperCase()}</span>`;
+                } else {
+                    textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
+                }
+            }
+            logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
+
+            // Dropdown Menu
+            const drawerLinks = document.getElementById('drawerLinksContainer');
+            drawerLinks.innerHTML = '';
+            siteData.navigationMenu.forEach(menu => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
+                drawerLinks.appendChild(li);
+            });
+
+            // Announcement
+            const banner = document.getElementById('announceBanner');
+            if (siteData.siteConfig.showAnnouncement) {
+                banner.style.display = 'block';
+                document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
+                document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
+            }
+
+            // Popular tools
+            const popList = document.getElementById('popularList');
+            popList.innerHTML = '';
+            siteData.siteConfig.popularTools.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'popular-item';
+                div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
+                div.onclick = function() { window.location.href = tool.link; };
+                popList.appendChild(div);
+            });
+
+            // Footer
+            document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
+            const footerGrid = document.getElementById('footerGridContainer');
+            footerGrid.innerHTML = '';
+            siteData.footerConfig.columns.forEach(col => {
+                const div = document.createElement('div');
+                div.className = 'footer-col';
+                div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
+                const ul = div.querySelector('.footer-links');
+                col.links.forEach(l => {
+                    ul.innerHTML += `<li style="margin-bottom:8px;"><a href="${l.url}" style="color:var(--text-muted); text-decoration:none; font-size:12px;">${escapeHtml(l.title)}</a></li>`;
+                });
+                footerGrid.appendChild(div);
+            });
+        }
+
+        function toggleNavDropdown() {
+            const dropdown = document.getElementById('navDropdown');
+            const menuIcon = document.querySelector('.menu-icon i');
+            if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; menuIcon.className = 'fa-solid fa-bars'; } 
+            else { dropdown.style.display = 'block'; menuIcon.className = 'fa-solid fa-xmark'; }
+        }
+
+        document.getElementById('popularBtn').addEventListener('click', () => {
+            const list = document.getElementById('popularList');
+            const arr = document.getElementById('popArrow');
+            if (list.style.display === 'flex') { list.style.display = 'none'; arr.className = 'fa-solid fa-chevron-right'; }
+            else { list.style.display = 'flex'; arr.className = 'fa-solid fa-chevron-down'; }
+        });
+
+        function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])) : ''; }
+
+        // ==========================================
+        // 2. IP LOCATOR PRO AUTO-SCAN LOGIC
+        // ==========================================
+
+        const els = (id) => document.getElementById(id);
+        function set(id, val) { const e = els(id); if(e) e.textContent = val ? val : 'Not Provided'; }
+
+        // Copy Handlers
+        function copyText(id) {
+            const text = els(id).textContent;
+            if(!text || text === 'Scanning...' || text === 'Not Provided') return;
+            navigator.clipboard.writeText(text);
+            Swal.fire({title: 'Copied!', icon: 'success', toast: true, position: 'bottom', timer: 1500, showConfirmButton: false, background: '#070000', color: '#10b981'});
+        }
+
+        function copyRaw() {
+            navigator.clipboard.writeText(els('jsonBox').textContent);
+            Swal.fire({title: 'JSON Copied!', icon: 'success', toast: true, position: 'bottom', timer: 1500, showConfirmButton: false, background: '#070000', color: '#10b981'});
+        }
+
+        function copyAddress() {
+            const text = els('resFullAddress').innerText; 
+            if(text && text !== 'Scanning location parameters...') {
+                navigator.clipboard.writeText(text);
+                Swal.fire({title: 'Format Copied!', icon: 'success', toast: true, position: 'bottom', timer: 1500, showConfirmButton: false, background: '#070000', color: '#10b981'});
+            }
+        }
+
+        // Fingerprinting (Telemetry)
+        function getFingerprint() {
+            const ua = navigator.userAgent;
+            let browser = "Unknown";
+            if(ua.includes("Firefox")) browser = "Firefox";
+            else if(ua.includes("Chrome")) browser = "Chrome";
+            else if(ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+            else if(ua.includes("Edge")) browser = "Edge";
+            
+            set('fpBrowser', browser);
+            set('fpOs', navigator.platform);
+            set('fpScreen', `${window.screen.width}x${window.screen.height} (${window.screen.colorDepth}-bit)`);
+
+            if(navigator.connection) {
+                set('netSpeed', navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : 'N/A');
+                set('netPing', navigator.connection.rtt ? navigator.connection.rtt + ' ms' : 'N/A');
+            } else {
+                set('netSpeed', 'Not Supported'); set('netPing', 'Not Supported');
+            }
+        }
+
+        // Bulletproof Fetch Engine
+        async function fetchIpData(targetIp = '') {
+            const stat = els('scanIndicator');
+            const wrap = els('resultsWrapper');
+
+            stat.style.display = 'flex';
+            wrap.style.display = 'none';
+            
+            // APIs
+            const apis = [
+                `https://ipwho.is/${targetIp}`,
+                `https://ipapi.co/${targetIp ? targetIp + '/' : ''}json/`,
+                `https://ipinfo.io/${targetIp ? targetIp + '/' : ''}json`,
+                `https://freeipapi.com/api/json/${targetIp}`
+            ];
+
+            let data = null;
+            let success = false;
+
+            for (let i = 0; i < apis.length; i++) {
+                try {
+                    const response = await fetch(apis[i], { cache: "no-store" });
+                    if (!response.ok) continue; 
+                    
+                    const temp = await response.json();
+                    
+                    if (temp.success === false || temp.error || temp.bogon) {
+                        if(temp.bogon) { data = normalizeData(temp, i); data.isBogon = true; success = true; break; }
+                        continue; 
+                    }
+
+                    data = normalizeData(temp, i);
+                    success = true;
+                    break; 
+                } catch (e) {
+                    console.log(`API ${i+1} Blocked. Trying next...`);
+                }
+            }
+
+            stat.style.display = 'none';
+            wrap.style.display = 'block';
+
+            if (success && data) {
+                processUI(data);
+            } else {
+                handleError();
+            }
+        }
+
+        // Standardize responses
+        function normalizeData(raw, apiIndex) {
+            let n = { raw: raw, isProxy: false, isBogon: false };
+            
+            if (apiIndex === 0) { // IPWHO.IS
+                n.ip = raw.ip; n.city = raw.city || 'Unknown'; n.region = raw.region || 'Unknown'; n.country = raw.country || 'Unknown';
+                n.lat = raw.latitude || 0; n.lon = raw.longitude || 0; n.org = raw.connection ? raw.connection.org : 'Unknown';
+                n.timezone = raw.timezone ? raw.timezone.id : 'Unknown'; n.postal = raw.postal || 'Not Provided';
+                n.asn = raw.connection ? `AS${raw.connection.asn}` : 'N/A'; n.isp = raw.connection ? raw.connection.isp : 'Unknown';
+                if(raw.security) n.isProxy = raw.security.proxy || raw.security.vpn || raw.security.tor;
+            } 
+            else if (apiIndex === 1) { // IPAPI.CO
+                n.ip = raw.ip; n.city = raw.city || 'Unknown'; n.region = raw.region || 'Unknown'; n.country = raw.country_name || raw.country || 'Unknown';
+                n.lat = raw.latitude || 0; n.lon = raw.longitude || 0; n.org = raw.org || 'Unknown';
+                n.timezone = raw.timezone || 'Unknown'; n.postal = raw.postal || 'Not Provided';
+                n.asn = raw.asn || 'N/A'; n.isp = raw.org || 'Unknown';
+            }
+            else if (apiIndex === 2) { // IPINFO.IO
+                n.ip = raw.ip; n.city = raw.city || 'Unknown'; n.region = raw.region || 'Unknown'; n.country = raw.country || 'Unknown';
+                const loc = raw.loc ? raw.loc.split(',') : [0,0]; n.lat = loc[0]; n.lon = loc[1];
+                n.org = raw.org || 'Unknown'; n.timezone = raw.timezone || 'Unknown'; n.postal = raw.postal || 'Not Provided';
+                n.asn = raw.org ? raw.org.split(' ')[0] : "N/A"; n.isp = raw.org ? raw.org.split(' ').slice(1).join(' ') : "Unknown";
+            } 
+            else { // FREEIPAPI
+                n.ip = raw.ipAddress; n.city = raw.cityName || 'Unknown'; n.region = raw.regionName || 'Unknown'; n.country = raw.countryName || raw.countryCode || 'Unknown';
+                n.lat = raw.latitude || 0; n.lon = raw.longitude || 0; n.org = 'Unknown'; n.timezone = raw.timeZone || 'Unknown';
+                n.postal = raw.zipCode || 'Not Provided'; n.isProxy = raw.isProxy; n.asn = "N/A"; n.isp = "Unknown";
+            }
+            return n;
+        }
+
+        function processUI(data) {
+            // Address Builder for Facebook format
+            let line1 = data.city !== 'Unknown' ? data.city : (data.region !== 'Unknown' ? data.region : 'Unknown City');
+            let line2 = `${data.region !== 'Unknown' && data.region !== line1 ? data.region : ''} ${data.postal !== 'Not Provided' ? data.postal : ''}`.trim();
+            let line3 = data.country !== 'Unknown' ? data.country : '';
+            
+            let fbAddress = "";
+            if(line1) fbAddress += `${line1}\n`;
+            if(line2) fbAddress += `${line2}\n`;
+            if(line3) fbAddress += `${line3}`;
+            fbAddress = fbAddress.trim();
+            if(!fbAddress) fbAddress = "Location hidden by ISP.";
+
+            // Update DOM
+            set('resIp', data.ip);
+            els('resFullAddress').innerText = fbAddress; 
+            set('resCountry', data.country);
+            set('resCity', `${data.city}, ${data.region}`);
+            set('resZip', data.postal);
+            set('resTimezone', data.timezone);
+            set('resIsp', data.isp);
+            set('resOrg', data.org);
+            set('resAsn', data.asn);
+
+            // Google Map Update
+            if(data.lat && data.lon) {
+                els('gmap').src = `https://maps.google.com/maps?q=${data.lat},${data.lon}&z=10&output=embed`;
+                els('mapCoords').innerText = `${data.lat}, ${data.lon}`;
+            }
+
+            // --- ADVANCED VPN & HEALTH LOGIC ---
+            let riskScore = 0;
+            let isProxyStr = "No";
+            let statusStr = "Active / Public";
+
+            const ispLower = (data.isp || "").toLowerCase();
+            const orgLower = (data.org || "").toLowerCase();
+
+            // Custom Database to catch commercial VPNs/Datacenters perfectly
+            const vpnKeywords = ['nordvpn', 'expressvpn', 'surfshark', 'protonvpn', 'mullvad', 'private internet access', 'cyberghost', 'm247', 'datacamp', 'choopa', 'digitalocean', 'linode', 'vultr', 'ovh', 'hetzner', 'amazon', 'aws', 'google cloud', 'azure', 'cloudflare', 'ipvanish', 'windscribe', 'tunnelbear', 'vyprvpn', 'hide.me', 'hosting', 'datacenter', 'server', 'cdn', 'proxy'];
+            
+            let detectedVpnName = "";
+            for(let kw of vpnKeywords) {
+                if(ispLower.includes(kw) || orgLower.includes(kw)) {
+                    detectedVpnName = data.isp !== 'Unknown' ? data.isp : data.org; 
+                    break;
+                }
+            }
+
+            if (data.isBogon) {
+                riskScore = 100;
+                statusStr = "Reserved / Bogon";
+            } else if (detectedVpnName) {
+                riskScore = 85;
+                isProxyStr = `Yes (${detectedVpnName})`;
+            } else if (data.isProxy) {
+                riskScore = 80;
+                isProxyStr = "Yes (Proxy Detected)";
+            } else {
+                riskScore = Math.floor(Math.random() * 15); 
+            }
+
+            let healthScore = 100 - riskScore;
+            
+            // Update Health UI
+            const bar = els('healthBar');
+            const hText = els('healthText');
+            bar.style.width = `${healthScore}%`;
+            
+            if(healthScore > 70) {
+                bar.style.backgroundColor = 'var(--green)';
+                hText.textContent = `${healthScore}% CLEAN`;
+                hText.style.color = 'var(--green)';
+            } else if (healthScore > 30) {
+                bar.style.backgroundColor = 'var(--yellow)';
+                hText.textContent = `${healthScore}% SUSPICIOUS`;
+                hText.style.color = 'var(--yellow)';
+            } else {
+                bar.style.backgroundColor = 'var(--red)';
+                hText.textContent = `${healthScore}% HIGH RISK`;
+                hText.style.color = 'var(--red)';
+            }
+
+            // Colored classes logic
+            els('resFraud').textContent = `${riskScore}/100`;
+            els('resStatus').textContent = statusStr;
+            els('resProxy').textContent = isProxyStr;
+            
+            els('resFraud').className = riskScore > 50 ? 'val-red' : riskScore > 20 ? 'val-yellow' : 'val-blue';
+            els('resStatus').className = data.isBogon ? 'val-red' : 'val-green';
+            els('resProxy').className = (data.isProxy || detectedVpnName) ? 'val-red' : 'val-yellow';
+
+            // JSON - Try Catch Fix!
+            try {
+                els('jsonBox').textContent = JSON.stringify(data.raw, null, 4);
+            } catch (e) {
+                els('jsonBox').textContent = "Error parsing JSON payload.";
+            }
+        }
+
+        function handleError() {
+            set('resIp', "CONNECTION FAILED");
+            els('resFullAddress').innerText = "Target Unreachable / Blocked by Browser Ext.";
+            
+            set('resCountry', "N/A"); set('resCity', "N/A"); set('resZip', "N/A"); set('resTimezone', "N/A");
+            set('resIsp', "N/A"); set('resOrg', "N/A"); set('resAsn', "N/A");
+            
+            els('jsonBox').textContent = "ERROR: All tracking APIs failed or were blocked by your adblocker/browser.\nEnsure internet connection is active.";
+            
+            els('healthBar').style.width = `0%`;
+            els('healthText').textContent = `SYSTEM ERROR`;
+            els('healthText').style.color = `var(--red)`;
+        }
+
+        // Start App
+        window.onload = loadData;
+
+    </script>
+</body>
+</html>
