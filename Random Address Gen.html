@@ -1,0 +1,1174 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Generator Pro - Team BCT</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Rajdhani, Inter, Play, Share Tech Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* ========================================================
+           GLOBAL SITE STYLES (Age Calculator Theme)
+           ======================================================== */
+        :root {
+            --bg-color: #030000;
+            --header-bg: #000000;
+            --card-bg: #070000;
+            --border-color: #3a0808;
+            --border-light: rgba(220, 38, 38, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-blue: #dc2626; /* Deep Red Accent */
+            
+            /* Status Colors */
+            --red: #ef4444; 
+            --green: #10b981; 
+            --yellow: #eab308; 
+            --blue: #3b82f6;
+            --purple: #c084fc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 2px; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #150000 0%, transparent 40%);
+        }
+
+        /* Sticky Wrapper */
+        .sticky-wrapper {
+            position: sticky; top: 0; z-index: 1000; background-color: #000000;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        header { background-color: #000000; padding: 15px 20px; display: flex; align-items: center; }
+        .menu-icon { font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: auto; width: 25px; display: inline-block; }
+        .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
+        .logo-img-container { display: flex; align-items: center; justify-content: center; }
+        .logo-img-container img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); object-fit: cover; }
+        .logo-icon { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #150000, #050000); padding: 6px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); font-size: 15px; color: var(--accent-blue); width: 38px; height: 38px; }
+        .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
+        .logo-text span { font-family: 'Rajdhani', sans-serif; font-weight: 700; margin-left: 4px; color: #b91c1c; text-transform: uppercase !important; }
+
+        /* Dropdown Menu */
+        .nav-menu-dropdown {
+            background: linear-gradient(to bottom, #050000, #000000); backdrop-filter: blur(10px);
+            border-top: 1px solid #1a0000; border-bottom: 1px solid #3a0808; display: none; padding: 10px 0;
+            position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9); animation: menuFadeIn 0.2s ease-out forwards;
+        }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-links { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .dropdown-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: transparent; border-left: 3px solid transparent; border-bottom: 1px solid #0f0000; transition: all 0.2s ease; }
+        .dropdown-links a:hover { background: linear-gradient(90deg, #150000 0%, #000000 100%); color: #ffffff; border-left: 3px solid #dc2626; padding-left: 24px; }
+        .dropdown-links a:hover i { color: #dc2626; }
+
+        /* Container */
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; width: 100%; flex-grow: 1; }
+
+        /* Announcement Banner */
+        .announcement-banner {
+            background: linear-gradient(145deg, #0f0000, #030000); border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 25px; display: none; position: relative; overflow: hidden;
+        }
+        .announcement-banner p { font-family: 'Play', sans-serif; font-weight: 400; font-size: 15px; line-height: 1.6; color: #ffc2c2; margin-bottom: 15px; position: relative; z-index: 1; }
+        .join-btn { display: inline-block; position: relative; z-index: 1; background-color: #dc2626; color: white; padding: 10px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s ease; }
+        .join-btn:hover { background-color: #ef4444; transform: translateY(-2px); }
+
+        /* Popular Tools */
+        .popular-tools-btn { background-color: #0a0000; border: none; border-left: 4px solid #dc2626; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); padding: 14px 18px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 20px; transition: all 0.3s ease; }
+        .popular-tools-btn:hover { background-color: #150000; border-left-color: #ff4d4d; }
+        .popular-tools-list { background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 4px; margin-top: -15px; margin-bottom: 20px; display: none; flex-direction: column; overflow: hidden; }
+        .popular-item { padding: 12px 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); font-size: 13px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .popular-item:hover { background-color: #120000; }
+        .popular-item i { color: rgba(220, 38, 38, 0.8); }
+
+        /* Tool Card */
+        .tool-card {
+            background: linear-gradient(145deg, #0a0000, #030000); border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .tool-card h2 { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: white; margin-bottom: 20px; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+
+        /* ========================================================
+           ADDRESS GENERATOR PRO SPECIFIC UI
+           ======================================================== */
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: #000; border: 1px solid var(--border-light); border-radius: 6px; padding: 15px; text-align: center; position: relative; overflow: hidden; }
+        .stat-lbl { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
+        .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 900; word-break: break-all; }
+        
+        .val-red { color: var(--red) !important; text-shadow: 0 0 10px rgba(239,68,68,0.4); }
+        .val-green { color: var(--green) !important; text-shadow: 0 0 10px rgba(16,185,129,0.4); }
+        .val-yellow { color: var(--yellow) !important; text-shadow: 0 0 10px rgba(234,179,8,0.4); }
+        .val-blue { color: var(--blue) !important; text-shadow: 0 0 10px rgba(59,130,246,0.4); }
+        .val-purple { color: var(--purple) !important; text-shadow: 0 0 10px rgba(192,132,252,0.4); }
+
+        /* Form Elements */
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .form-group input[type="text"], .form-group select { width: 100%; background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 6px; padding: 11px 15px; color: white; font-size: 14px; outline: none; transition: 0.2s; margin-bottom: 8px;}
+        .form-group input:focus, .form-group select:focus { border-color: rgba(220, 38, 38, 0.8); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 0 12px rgba(220, 38, 38, 0.2); background: #0d0000; }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 5 4-5' stroke='%23dc2626' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: calc(100% - 15px) center; cursor: pointer; }
+        select optgroup { background: #0a0000; color: var(--accent-blue); font-weight: bold; }
+        select option { background: #070000; color: #fff; }
+
+        /* Slider */
+        .slider-wrap { background: #000; border: 1px solid var(--border-light); border-radius: 6px; padding: 15px; margin-bottom: 18px; }
+        .slider-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .slider-lbl { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;}
+        .slider-num { font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 900; color: var(--red); line-height: 1; }
+        input[type=range] { -webkit-appearance: none; width: 100%; height: 6px; background: #111; border: 1px solid rgba(220,38,38,0.2); border-radius: 3px; outline: none; cursor: pointer; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--accent-blue); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(220,38,38,0.5); transition: transform 0.15s; }
+        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
+
+        /* Checkboxes */
+        .check-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .ck { display: flex; align-items: center; gap: 8px; background: #000; border: 1px solid var(--border-light); padding: 10px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .ck:hover { border-color: rgba(220, 38, 38, 0.5); background: rgba(220, 38, 38, 0.05); }
+        .ck input { display: none; }
+        .ck-box { width: 16px; height: 16px; border: 1px solid rgba(220, 38, 38, 0.4); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: transparent; transition: 0.2s; flex-shrink: 0;}
+        .ck input:checked + .ck-box { background: var(--accent-blue); border-color: var(--accent-blue); color: white; box-shadow: 0 0 8px rgba(220, 38, 38, 0.4); }
+        .ck-lbl { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; transition: color 0.2s;}
+        .ck input:checked ~ .ck-lbl { color: white; }
+
+        /* General Button */
+        .calc-btn { width: 100%; background-color: var(--accent-blue); color: white; border: none; padding: 14px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 1px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px;}
+        .calc-btn:hover:not(:disabled) { background-color: #ef4444; box-shadow: 0 6px 15px rgba(220, 38, 38, 0.4); transform: translateY(-2px); }
+        .calc-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Action Buttons Grid */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px;}
+        .act-btn { background: #000; border: 1px solid var(--border-light); color: var(--text-muted); padding: 10px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .act-btn:hover { border-color: rgba(220, 38, 38, 0.5); color: var(--red); background: rgba(220, 38, 38, 0.05); }
+
+        /* Progress Bar */
+        .health-bar-container { background: #000; border: 1px solid var(--border-light); padding: 15px; border-radius: 6px; margin-bottom: 15px; display: none;}
+        .health-label-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); font-family: 'Share Tech Mono', monospace; }
+        .h-track { width: 100%; height: 6px; background: #111; border-radius: 3px; overflow: hidden; }
+        .h-fill { height: 100%; width: 0%; background: var(--accent-blue); transition: 0.3s; box-shadow: 0 0 10px rgba(220,38,38,0.5);}
+
+        /* Result Cards */
+        .empty-state { text-align: center; padding: 40px 10px; color: var(--text-muted); font-size: 13px; border: 1px dashed rgba(220,38,38,0.2); border-radius: 6px; line-height: 1.6; }
+        .addr-card { background: #000; border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 15px; overflow: hidden; animation: cardIn 0.3s ease both; }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .addr-card-hd { padding: 12px 15px; background: rgba(220,38,38,0.05); border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+        .copy-btn-small { background: rgba(220,38,38,0.1); border: 1px solid var(--accent-blue); color: var(--text-main); padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 4px;}
+        .copy-btn-small:hover { background: var(--accent-blue); color: #fff; }
+        .addr-card-bd { padding: 15px; }
+
+        /* OVERLAP-FREE ROW DESIGN */
+        .result-row-stacked { 
+            display: flex; flex-direction: column; align-items: flex-start; padding: 10px 12px; 
+            background-color: #030000; border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: 8px; cursor: pointer; transition: background 0.2s;
+        }
+        .result-row-stacked:hover { background: rgba(220,38,38,0.05); border-color: rgba(220,38,38,0.4); }
+        .result-row-stacked > span:first-child { color: var(--text-muted); font-weight: 600; font-size: 10px; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 5px;}
+        .val-wrapper { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .val-text { color: var(--text-main); font-family: 'Share Tech Mono', monospace; font-size: 13px; word-break: break-word; line-height: 1.4; }
+        .copy-ico { color: rgba(220, 38, 38, 0.4); font-size: 14px; transition: 0.2s; padding: 5px;}
+        .result-row-stacked:hover .copy-ico { color: var(--red); transform: scale(1.1); }
+
+        /* Footer */
+        footer { position: relative; background-color: #000000; padding: 30px 15px 15px 15px; margin-top: auto; border-top: 1px solid rgba(220, 38, 38, 0.1); }
+        footer::before { content: ''; position: absolute; top: -1px; left: 20%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.8), transparent); box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .footer-about h4 { color: rgba(220, 38, 38, 0.9); margin-bottom: 8px; font-size: 14px; }
+        .footer-about p { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .footer-col h5 { font-size: 13px; color: var(--text-main); margin-bottom: 10px; }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color 0.2s; }
+        .footer-links a:hover { color: #fecaca; }
+        .copyright-bar { position: relative; max-width: 600px; margin: 20px auto 0 auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: center; align-items: center; font-size: 13px; color: #9ca3af; text-align: center; }
+        .trustiq-link { color: #dc2626 !important; font-weight: 700; text-decoration: none; letter-spacing: 0.5px; transition: all 0.3s ease; }
+        .trustiq-link:hover { color: #ef4444 !important; text-shadow: 0 0 8px rgba(220, 38, 38, 0.6); }
+        .scroll-top-btn { position: absolute; right: 0; background: linear-gradient(145deg, #120000, #050000); color: white; border: 1px solid rgba(220, 38, 38, 0.3); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05); }
+        .scroll-top-btn:hover { background: #2e0505; border-color: rgba(220, 38, 38, 0.8); color: #ffc2c2; }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Header -->
+    <div class="sticky-wrapper">
+        <header>
+            <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
+            <a href="/" class="logo" id="headerLogoContainer"></a>
+        </header>
+        <div class="nav-menu-dropdown" id="navDropdown">
+            <ul class="dropdown-links" id="drawerLinksContainer"></ul>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <div class="announcement-banner" id="announceBanner">
+            <p id="announcementText"></p>
+            <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
+        </div>
+
+        <div class="popular-tools-btn" id="popularBtn">
+            <span>Popular Tools</span>
+            <i class="fa-solid fa-chevron-right" id="popArrow"></i>
+        </div>
+        <div class="popular-tools-list" id="popularList"></div>
+        
+        <!-- Tool Card: ADDRESS GENERATOR -->
+        <div class="tool-card">
+            <h2>ADDRESS GENERATOR PRO <span style="font-size:10px; border:1px solid var(--border-color); padding: 2px 6px; border-radius:4px; font-weight:500;">v3.0</span></h2>
+            
+            <!-- TOP STATS -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-lbl"><i class="fa-solid fa-map-pin"></i> GENERATED</div>
+                    <div class="stat-val val-red" id="sGen">0</div>
+                    <div style="font-size:10px; color:var(--text-muted); margin-top:5px;">SESSION TOTAL</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-lbl"><i class="fa-solid fa-globe"></i> COUNTRY</div>
+                    <div class="stat-val val-green" id="sCountry" style="font-size:18px; margin-top:5px;">—</div>
+                    <div style="font-size:10px; color:var(--text-muted); margin-top:5px;" id="sNatCode">SELECT A COUNTRY</div>
+                </div>
+            </div>
+
+            <!-- CONTROLS -->
+            <div class="form-group">
+                <label><i class="fa-solid fa-earth-americas"></i> Target Country</label>
+                <input type="text" id="countrySearch" placeholder="Search country name..." autocomplete="off" oninput="filterCountries()">
+                <select id="country" onchange="onCountryChange()">
+                    <option value=""> Choose a Country </option>
+                </select>
+            </div>
+
+            <div class="slider-wrap">
+                <div class="slider-top">
+                    <div class="slider-lbl">Quantity to Generate</div>
+                    <div class="slider-num" id="qtyNum">10</div>
+                </div>
+                <input type="range" id="qty" min="1" max="50" value="10" oninput="onSlider(this.value)">
+                <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:10px; color:var(--text-muted);">
+                    <span>MIN 1</span><span>MAX 50</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-list-check"></i> Data Fields to Include</label>
+                <div class="check-grid">
+                    <label class="ck"><input type="checkbox" id="chkName" checked><div class="ck-box"><i class="fa-solid fa-check"></i></div><span class="ck-lbl">Full Name</span></label>
+                    <label class="ck"><input type="checkbox" id="chkPhone" checked><div class="ck-box"><i class="fa-solid fa-check"></i></div><span class="ck-lbl">Phone/Mob</span></label>
+                    <label class="ck"><input type="checkbox" id="chkEmail" checked><div class="ck-box"><i class="fa-solid fa-check"></i></div><span class="ck-lbl">Email</span></label>
+                    <label class="ck"><input type="checkbox" id="chkDob" checked><div class="ck-box"><i class="fa-solid fa-check"></i></div><span class="ck-lbl">Birthday</span></label>
+                    <label class="ck"><input type="checkbox" id="chkGender" checked><div class="ck-box"><i class="fa-solid fa-check"></i></div><span class="ck-lbl">Gender</span></label>
+                    <label class="ck"><input type="checkbox" id="chkUser" checked><div class="ck-box"><i class="fa-solid fa-check"></i></div><span class="ck-lbl">Username</span></label>
+                    <label class="ck"><input type="checkbox" id="chkPass" checked><div class="ck-box"><i class="fa-solid fa-check"></i></div><span class="ck-lbl">Password</span></label>
+                    <label class="ck"><input type="checkbox" id="chkCoords"><div class="ck-box"><i class="fa-solid fa-check"></i></div><span class="ck-lbl">Coords</span></label>
+                    <label class="ck"><input type="checkbox" id="chkNat" checked><div class="ck-box"><i class="fa-solid fa-check"></i></div><span class="ck-lbl">Nationality</span></label>
+                    <label class="ck"><input type="checkbox" id="chkTz"><div class="ck-box"><i class="fa-solid fa-check"></i></div><span class="ck-lbl">Timezone</span></label>
+                </div>
+            </div>
+
+            <div style="font-size:11px; color:var(--text-muted); background:rgba(220,38,38,0.05); padding:10px; border:1px solid rgba(220,38,38,0.1); border-radius:6px; margin-bottom:18px; line-height:1.5;">
+                <i class="fa-solid fa-circle-info" style="color:var(--accent-blue);"></i> API countries use <strong>randomuser.me</strong>. Local countries use <strong>real city-specific street data</strong>.
+            </div>
+
+            <!-- GENERATE BTN -->
+            <button class="calc-btn" id="genBtn" onclick="doGenerate()">
+                <i class="fa-solid fa-bolt"></i> GENERATE ADDRESSES
+            </button>
+
+            <!-- PROGRESS BAR -->
+            <div class="health-bar-container" id="genProg">
+                <div class="health-label-row">
+                    <span id="gpTxt">INITIALIZING...</span>
+                    <span id="gpPct" class="val-red" style="font-family:'Rajdhani', sans-serif; font-size:14px; font-weight:800;">0%</span>
+                </div>
+                <div class="h-track"><div class="h-fill" id="gpFill"></div></div>
+            </div>
+
+            <!-- EXPORT ACTIONS -->
+            <div class="action-grid">
+                <button class="act-btn" onclick="exportJSON()"><i class="fa-solid fa-file-code"></i> JSON</button>
+                <button class="act-btn" onclick="exportCSV()"><i class="fa-solid fa-file-csv"></i> CSV</button>
+                <button class="act-btn" onclick="exportTXT()"><i class="fa-solid fa-file-lines"></i> TXT</button>
+                <button class="act-btn" onclick="doClear()"><i class="fa-solid fa-trash-can"></i> CLEAR</button>
+                <button class="act-btn" style="grid-column: 1 / -1; border-color:var(--green); color:var(--green); background:rgba(16,185,129,0.05);" onclick="copyAll()">
+                    <i class="fa-solid fa-copy"></i> COPY ALL RECORDS
+                </button>
+            </div>
+
+            <!-- OUTPUT AREA -->
+            <div style="margin-top:25px; border-top:1px solid var(--border-color); padding-top:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="font-family:'Rajdhani', sans-serif; font-size:16px; color:var(--text-main);"><i class="fa-solid fa-database" style="color:var(--accent-blue);"></i> OUTPUT STREAM</h3>
+                    <div style="font-size:10px; background:rgba(220,38,38,0.1); border:1px solid var(--accent-blue); padding:3px 8px; border-radius:4px; color:var(--text-main);" id="tmCount">0 RECORDS</div>
+                </div>
+                
+                <div id="cardsArea">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-map-location-dot" style="font-size:30px; opacity:0.5; margin-bottom:10px;"></i><br>
+                        <strong>AWAITING GENERATION</strong><br>Select a country, set quantity, and press Generate.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <h4>About Us</h4>
+                <p id="footerAboutText">One Step Online Tools</p>
+            </div>
+            <div class="footer-grid" id="footerGridContainer"></div>
+        </div>
+        <div class="copyright-bar">
+            <span class="copyright-text" id="copyrightSpan">
+                &copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">Trustiq</a>.
+            </span>
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. SITE CONFIG LOGIC (GIST API)
+        // ==========================================
+        const GIST_OWNER = 'TROOPSITSOLUTIONS';
+        const GIST_ID = '3bfa4b9ca8dbdc1038918d63329096b3';
+        const GIST_URL = `https://gist.githubusercontent.com/${GIST_OWNER}/${GIST_ID}/raw/tools.json`;
+
+        let siteData = null;
+
+        async function loadData() {
+            try {
+                const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
+                if (res.ok) {
+                    siteData = await res.json();
+                    applyTheme();
+                    applySiteConfig();
+                }
+            } catch (e) { console.error("Gist Load Failed."); }
+        }
+
+        function applyTheme() {
+            if (siteData && siteData.themeConfig) {
+                const root = document.documentElement;
+                Object.entries(siteData.themeConfig).forEach(([key, val]) => {
+                    const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+                    root.style.setProperty(cssKey, val);
+                });
+            }
+        }
+
+        function applySiteConfig() {
+            if(!siteData) return;
+            // Header
+            const logoContainer = document.getElementById('headerLogoContainer');
+            let imgHTML = '';
+            if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
+                imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
+            } else {
+                let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
+                if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
+                imgHTML = `<div class="logo-icon"><i class="${iconClass}"></i></div>`;
+            }
+
+            const siteName = siteData.siteConfig.siteName || "TEAM BCT";
+            let textHTML = "";
+            const parts = siteName.trim().split(/\s+/);
+            if (parts.length > 1) {
+                textHTML = `${parts[0].toUpperCase()}<span>${parts.slice(1).join(" ").toUpperCase()}</span>`;
+            } else {
+                if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
+                    textHTML = `TEAM<span>${siteName.slice(4).toUpperCase()}</span>`;
+                } else {
+                    textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
+                }
+            }
+            logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
+
+            // Dropdown Menu
+            const drawerLinks = document.getElementById('drawerLinksContainer');
+            drawerLinks.innerHTML = '';
+            siteData.navigationMenu.forEach(menu => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
+                drawerLinks.appendChild(li);
+            });
+
+            // Announcement
+            const banner = document.getElementById('announceBanner');
+            if (siteData.siteConfig.showAnnouncement) {
+                banner.style.display = 'block';
+                document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
+                document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
+            }
+
+            // Popular tools
+            const popList = document.getElementById('popularList');
+            popList.innerHTML = '';
+            siteData.siteConfig.popularTools.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'popular-item';
+                div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
+                div.onclick = function() { window.location.href = tool.link; };
+                popList.appendChild(div);
+            });
+
+            // Footer
+            document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
+            const footerGrid = document.getElementById('footerGridContainer');
+            footerGrid.innerHTML = '';
+            siteData.footerConfig.columns.forEach(col => {
+                const div = document.createElement('div');
+                div.className = 'footer-col';
+                div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
+                const ul = div.querySelector('.footer-links');
+                col.links.forEach(l => {
+                    ul.innerHTML += `<li style="margin-bottom:8px;"><a href="${l.url}" style="color:var(--text-muted); text-decoration:none; font-size:12px;">${escapeHtml(l.title)}</a></li>`;
+                });
+                footerGrid.appendChild(div);
+            });
+        }
+
+        function toggleNavDropdown() {
+            const dropdown = document.getElementById('navDropdown');
+            const menuIcon = document.querySelector('.menu-icon i');
+            if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; menuIcon.className = 'fa-solid fa-bars'; } 
+            else { dropdown.style.display = 'block'; menuIcon.className = 'fa-solid fa-xmark'; }
+        }
+
+        document.getElementById('popularBtn').addEventListener('click', () => {
+            const list = document.getElementById('popularList');
+            const arr = document.getElementById('popArrow');
+            if (list.style.display === 'flex') { list.style.display = 'none'; arr.className = 'fa-solid fa-chevron-right'; }
+            else { list.style.display = 'flex'; arr.className = 'fa-solid fa-chevron-down'; }
+        });
+
+        function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])) : ''; }
+
+
+        // ==========================================
+        // 2. ADDRESS GENERATOR PRO LOGIC
+        // ==========================================
+
+        const ALL_COUNTRIES=[
+            {code:'bd',name:'Bangladesh',flag:'🇧🇩',region:'South Asia',api:false},
+            {code:'in',name:'India',flag:'🇮🇳',region:'South Asia',api:true},
+            {code:'pk',name:'Pakistan',flag:'🇵🇰',region:'South Asia',api:false},
+            {code:'lk',name:'Sri Lanka',flag:'🇱🇰',region:'South Asia',api:false},
+            {code:'np',name:'Nepal',flag:'🇳🇵',region:'South Asia',api:false},
+            {code:'mv',name:'Maldives',flag:'🇲🇻',region:'South Asia',api:false},
+            {code:'bt',name:'Bhutan',flag:'🇧🇹',region:'South Asia',api:false},
+            {code:'us',name:'United States',flag:'🇺🇸',region:'Americas',api:true},
+            {code:'ca',name:'Canada',flag:'🇨🇦',region:'Americas',api:true},
+            {code:'br',name:'Brazil',flag:'🇧🇷',region:'Americas',api:true},
+            {code:'mx',name:'Mexico',flag:'🇲🇽',region:'Americas',api:true},
+            {code:'ar',name:'Argentina',flag:'🇦🇷',region:'Americas',api:false},
+            {code:'co',name:'Colombia',flag:'🇨🇴',region:'Americas',api:false},
+            {code:'cl',name:'Chile',flag:'🇨🇱',region:'Americas',api:false},
+            {code:'pe',name:'Peru',flag:'🇵🇪',region:'Americas',api:false},
+            {code:'ve',name:'Venezuela',flag:'🇻🇪',region:'Americas',api:false},
+            {code:'ec',name:'Ecuador',flag:'🇪🇨',region:'Americas',api:false},
+            {code:'gt',name:'Guatemala',flag:'🇬🇹',region:'Americas',api:false},
+            {code:'cu',name:'Cuba',flag:'🇨🇺',region:'Americas',api:false},
+            {code:'do',name:'Dominican Republic',flag:'🇩🇴',region:'Americas',api:false},
+            {code:'gb',name:'United Kingdom',flag:'🇬🇧',region:'Europe',api:true},
+            {code:'de',name:'Germany',flag:'🇩🇪',region:'Europe',api:true},
+            {code:'fr',name:'France',flag:'🇫🇷',region:'Europe',api:true},
+            {code:'es',name:'Spain',flag:'🇪🇸',region:'Europe',api:true},
+            {code:'nl',name:'Netherlands',flag:'🇳🇱',region:'Europe',api:true},
+            {code:'dk',name:'Denmark',flag:'🇩🇰',region:'Europe',api:true},
+            {code:'no',name:'Norway',flag:'🇳🇴',region:'Europe',api:true},
+            {code:'fi',name:'Finland',flag:'🇫🇮',region:'Europe',api:true},
+            {code:'ie',name:'Ireland',flag:'🇮🇪',region:'Europe',api:true},
+            {code:'ch',name:'Switzerland',flag:'🇨🇭',region:'Europe',api:true},
+            {code:'rs',name:'Serbia',flag:'🇷🇸',region:'Europe',api:true},
+            {code:'ua',name:'Ukraine',flag:'🇺🇦',region:'Europe',api:true},
+            {code:'tr',name:'Turkey',flag:'🇹🇷',region:'Europe',api:true},
+            {code:'it',name:'Italy',flag:'🇮🇹',region:'Europe',api:false},
+            {code:'pt',name:'Portugal',flag:'🇵🇹',region:'Europe',api:false},
+            {code:'pl',name:'Poland',flag:'🇵🇱',region:'Europe',api:false},
+            {code:'ru',name:'Russia',flag:'🇷🇺',region:'Europe',api:false},
+            {code:'se',name:'Sweden',flag:'🇸🇪',region:'Europe',api:false},
+            {code:'be',name:'Belgium',flag:'🇧🇪',region:'Europe',api:false},
+            {code:'at',name:'Austria',flag:'🇦🇹',region:'Europe',api:false},
+            {code:'cz',name:'Czech Republic',flag:'🇨🇿',region:'Europe',api:false},
+            {code:'ro',name:'Romania',flag:'🇷🇴',region:'Europe',api:false},
+            {code:'gr',name:'Greece',flag:'🇬🇷',region:'Europe',api:false},
+            {code:'sa',name:'Saudi Arabia',flag:'🇸🇦',region:'Middle East',api:false},
+            {code:'ae',name:'UAE',flag:'🇦🇪',region:'Middle East',api:false},
+            {code:'qa',name:'Qatar',flag:'🇶🇦',region:'Middle East',api:false},
+            {code:'kw',name:'Kuwait',flag:'🇰🇼',region:'Middle East',api:false},
+            {code:'bh',name:'Bahrain',flag:'🇧🇭',region:'Middle East',api:false},
+            {code:'om',name:'Oman',flag:'🇴🇲',region:'Middle East',api:false},
+            {code:'jo',name:'Jordan',flag:'🇯🇴',region:'Middle East',api:false},
+            {code:'lb',name:'Lebanon',flag:'🇱🇧',region:'Middle East',api:false},
+            {code:'iq',name:'Iraq',flag:'🇮🇶',region:'Middle East',api:false},
+            {code:'ir',name:'Iran',flag:'🇮🇷',region:'Middle East',api:true},
+            {code:'il',name:'Israel',flag:'🇮🇱',region:'Middle East',api:false},
+            {code:'cn',name:'China',flag:'🇨🇳',region:'East Asia',api:false},
+            {code:'jp',name:'Japan',flag:'🇯🇵',region:'East Asia',api:false},
+            {code:'kr',name:'South Korea',flag:'🇰🇷',region:'East Asia',api:false},
+            {code:'tw',name:'Taiwan',flag:'🇹🇼',region:'East Asia',api:false},
+            {code:'hk',name:'Hong Kong',flag:'🇭🇰',region:'East Asia',api:false},
+            {code:'id',name:'Indonesia',flag:'🇮🇩',region:'Southeast Asia',api:false},
+            {code:'ph',name:'Philippines',flag:'🇵🇭',region:'Southeast Asia',api:false},
+            {code:'vn',name:'Vietnam',flag:'🇻🇳',region:'Southeast Asia',api:false},
+            {code:'th',name:'Thailand',flag:'🇹🇭',region:'Southeast Asia',api:false},
+            {code:'my',name:'Malaysia',flag:'🇲🇾',region:'Southeast Asia',api:false},
+            {code:'sg',name:'Singapore',flag:'🇸🇬',region:'Southeast Asia',api:false},
+            {code:'kz',name:'Kazakhstan',flag:'🇰🇿',region:'Central Asia',api:false},
+            {code:'af',name:'Afghanistan',flag:'🇦🇫',region:'Central Asia',api:false},
+            {code:'ng',name:'Nigeria',flag:'🇳🇬',region:'Africa',api:false},
+            {code:'et',name:'Ethiopia',flag:'🇪🇹',region:'Africa',api:false},
+            {code:'eg',name:'Egypt',flag:'🇪🇬',region:'Africa',api:false},
+            {code:'za',name:'South Africa',flag:'🇿🇦',region:'Africa',api:false},
+            {code:'ke',name:'Kenya',flag:'🇰🇪',region:'Africa',api:false},
+            {code:'gh',name:'Ghana',flag:'🇬🇭',region:'Africa',api:false},
+            {code:'ma',name:'Morocco',flag:'🇲🇦',region:'Africa',api:false},
+            {code:'au',name:'Australia',flag:'🇦🇺',region:'Pacific',api:true},
+            {code:'nz',name:'New Zealand',flag:'🇳🇿',region:'Pacific',api:true},
+        ];
+        const CMAP={};ALL_COUNTRIES.forEach(c=>CMAP[c.code]=c);
+
+        const LOCAL={
+            bd:{
+            m:['Rahim','Karim','Arif','Hasan','Rifat','Shakib','Tamim','Mehedi','Rashed','Sohel','Imran','Jahangir','Rubel','Milon','Rasel','Faruk','Mahbub','Shafiq','Belal','Tariq'],
+            f:['Sumaiya','Nadia','Farhana','Tasnim','Mitu','Ayesha','Nasrin','Sharmin','Sadia','Runa','Sultana','Parveen','Lubna','Nafisa','Roksana','Tania','Mousumi','Shila','Rina','Moni'],
+            last:['Ahmed','Islam','Hossain','Rahman','Khan','Begum','Molla','Sheikh','Bhuiyan','Chowdhury','Sarkar','Mondal','Akter','Khanam','Sultana','Biswas','Das','Dey','Nath','Paul'],
+            locs:[
+                {c:'Dhaka',s:'Dhaka Division',p:'1207',streets:['Mirpur Road','Dhanmondi Road No. 27','Satmasjid Road','Elephant Road','New Eskaton Road','Kakrail Road','Shantinagar Road','Bijoy Sarani','Panthapath Road','Farmgate Road']},
+                {c:'Gulshan',s:'Dhaka Division',p:'1212',streets:['Gulshan Avenue','Gulshan-2 Circle','Road 53 Gulshan','Road 11 Gulshan','Kemal Ataturk Avenue','Gulshan-Badda Link Road','Gulshan North Avenue']},
+                {c:'Banani',s:'Dhaka Division',p:'1213',streets:['Banani Road 11','Banani Road 27','Banani DOHS Road','Kamal Ataturk Avenue','Road 17 Banani','Road 12 Banani']},
+                {c:'Uttara',s:'Dhaka Division',p:'1230',streets:['Uttara Sector 7 Road','Jasimuddin Avenue','Uttara Sector 10 Road','Hazi Abdul Latif Road','Airport Road Uttara','Rabbani Avenue']},
+                {c:'Mohammadpur',s:'Dhaka Division',p:'1207',streets:['Mohammadpur Housing Estate Road','Iqbal Road','Ringroad Mohammadpur','Tajmahal Road','Asad Avenue','Mirpur Road']},
+                {c:'Narayanganj',s:'Dhaka Division',p:'1400',streets:['BB Road Narayanganj','DIT Road','Bangabandhu Road Narayanganj','Chashara Road','Tanbazar Road']},
+                {c:'Gazipur',s:'Dhaka Division',p:'1700',streets:['Board Bazar Road','Joydebpur Road','Bhaluka Road','Dhaka-Mymensingh Highway','Chandona Chowrasta Road']},
+                {c:'Chittagong',s:'Chittagong Division',p:'4000',streets:['Agrabad Commercial Area Road','CDA Avenue','Station Road Chittagong','Nasirabad Road','Khulshi Road','Anderkilla Road','Jubilee Road Chittagong','O.R. Nizam Road','Iftekhar Ahmed Chowdhury Road']},
+                {c:"Cox's Bazar",s:'Chittagong Division',p:'4700',streets:["Cox's Bazar-Chittagong Road","Marine Drive Road","Kolatali Road","Bazarghata Road","Sugandha Sarak"]},
+                {c:'Comilla',s:'Chittagong Division',p:'3500',streets:['Kandirpar Road','Laksam Road','Comilla Cantonment Road','Tomsom Bridge Road','Chowkbazar Road Comilla']},
+                {c:'Sylhet',s:'Sylhet Division',p:'3100',streets:['Zindabazar Road','Bandarbazar Road','Chouhatta Road','Ambarkhana Main Road','Upashahar Housing Estate Road','Surma River Road','Medical Road Sylhet']},
+                {c:'Moulvibazar',s:'Sylhet Division',p:'3200',streets:['Shilhata Road','Sherpur Road Moulvibazar','Rajnagar Road','Court Road Moulvibazar']},
+                {c:'Rajshahi',s:'Rajshahi Division',p:'6000',streets:['Rajshahi-Dhaka Highway','Alupotti Road','Padma Garden Road','Rajshahi University Road','Laxmipur Road Rajshahi','Natore Road','Court Area Road Rajshahi']},
+                {c:'Bogra',s:'Rajshahi Division',p:'5800',streets:['Kabi Kazi Nazrul Islam Road','Bogra Cantonment Road','Sherpur Road Bogra','Station Road Bogra','Rangpur Road Bogra']},
+                {c:'Khulna',s:'Khulna Division',p:'9000',streets:['Khan Jahan Ali Road','KDA Avenue','Shibbari Road','Birshreshtha Noor Mohammad Sarak','Rupsha Road','Ferryghaat Road']},
+                {c:'Jessore',s:'Khulna Division',p:'7400',streets:['Jessore-Khulna Road','MIM Road Jessore','SS Road Jessore','Khazura Road','Chhauni Road Jessore']},
+                {c:'Barisal',s:'Barisal Division',p:'8200',streets:['Sadar Road Barisal','Kaunia Road','Nathullabad Road','Band Road Barisal','Kaliganj Road']},
+                {c:'Mymensingh',s:'Mymensingh Division',p:'2200',streets:['Ganginarpar Road','Town Hall Road Mymensingh','Maskanda Road','Railway Station Road Mymensingh','Charpara Road']},
+                {c:'Rangpur',s:'Rangpur Division',p:'5400',streets:['Rangpur-Dhaka Highway','Rangpur Cantonment Road','Lalbag Road Rangpur','Station Road Rangpur','Jail Road Rangpur']},
+                {c:'Dinajpur',s:'Rangpur Division',p:'5200',streets:['Dinajpur-Rangpur Road','Maharaja Road','Munshipara Road','Railway Station Road Dinajpur']},
+            ],
+            country:'Bangladesh',phone:()=>'+880 1'+['3','5','6','7','8','9'][ri(6)]+rn(8),
+            email:['gmail.com','yahoo.com','hotmail.com'],tz:'Asia/Dhaka',
+            coord:{lat:[20.5,26.6],lng:[88.0,92.6]}
+            },
+            pk:{
+            m:['Ali','Ahmed','Hassan','Usman','Bilal','Imran','Asad','Waqar','Kamran','Faisal','Tariq','Zubair','Kashif','Naveed','Aamir'],
+            f:['Fatima','Ayesha','Zainab','Sana','Amna','Mehwish','Saba','Nadia','Hira','Maryam','Rabia','Kiran','Noor','Iqra','Saima'],
+            last:['Khan','Malik','Ahmed','Shah','Chaudhry','Qureshi','Siddiqui','Mirza','Butt','Baig','Nawaz','Iqbal','Bhatti','Sheikh','Ansari'],
+            locs:[
+                {c:'Karachi',s:'Sindh',p:'74200',streets:['Shahrah-e-Faisal','Clifton Road','M.A. Jinnah Road','Tariq Road','University Road Karachi','Sharae Quaideen','Stadium Road Karachi','Shar-e-Pakistan','PECHS Main Shahrah-e-Faisal']},
+                {c:'Hyderabad',s:'Sindh',p:'71000',streets:['Auto Bhan Road','Hussainabad Road','Latifabad Road','Qasimabad Road','Tilak Incline Road']},
+                {c:'Sukkur',s:'Sindh',p:'65200',streets:['Barrage Road Sukkur','Military Road Sukkur','Station Road Sukkur','Minara Road']},
+                {c:'Lahore',s:'Punjab',p:'54000',streets:['Mall Road Lahore','Gulberg Main Boulevard','Ferozpur Road','Canal Bank Road Lahore','Davis Road Lahore','Link Road Model Town','Jail Road Lahore','MM Alam Road','Hussain Chowk Road']},
+                {c:'Faisalabad',s:'Punjab',p:'38000',streets:['Jaranwala Road','Sargodha Road Faisalabad','Satiana Road','Canal Road Faisalabad','Kotwali Road Faisalabad']},
+                {c:'Rawalpindi',s:'Punjab',p:'46000',streets:['Murree Road','Committee Chowk Road','Peshawar Road Rawalpindi','Lalkurti Road','Saddar Road Rawalpindi','Liaquat Road']},
+                {c:'Multan',s:'Punjab',p:'66000',streets:['Kutchery Road Multan','Bosan Road','Vehari Road','Nishtar Road Multan','Khanewal Road']},
+                {c:'Islamabad',s:'Islamabad Capital Territory',p:'44000',streets:['Constitution Avenue','Jinnah Avenue','Faisal Avenue','Srinagar Highway','Margalla Road','Park Road Islamabad','Khyaban-e-Suharwardy','Main Service Road']},
+                {c:'Peshawar',s:'Khyber Pakhtunkhwa',p:'25000',streets:['Jamrud Road Peshawar','University Road Peshawar','GT Road Peshawar','Canal Road Peshawar','College Road Peshawar','Ring Road Peshawar']},
+                {c:'Quetta',s:'Balochistan',p:'87300',streets:['Liaquat Road Quetta','Zarghoon Road','Shahrah-e-Iqbal Quetta','Sariab Road','Airport Road Quetta']},
+            ],
+            country:'Pakistan',phone:()=>'+92 3'+['0','1','2','3','4','5'][ri(6)]+rn(8),
+            email:['gmail.com','yahoo.com','hotmail.com'],tz:'Asia/Karachi',
+            coord:{lat:[23.5,37.1],lng:[60.9,77.2]}
+            },
+            sa:{
+            m:['Mohammed','Abdullah','Khalid','Fahad','Sultan','Ahmad','Ibrahim','Omar','Tariq','Walid','Saad','Nasser','Bandar','Turki','Majid'],
+            f:['Fatima','Noura','Maha','Reem','Sara','Hessa','Lulwa','Dana','Ghada','Wafa','Abeer','Nada','Mona','Sana','Hana'],
+            last:['Al-Saud','Al-Rashid','Al-Harbi','Al-Qahtani','Al-Otaibi','Al-Zahrani','Al-Ghamdi','Al-Shehri','Al-Dosari','Al-Mutairi','Al-Anazi','Al-Shamari'],
+            locs:[
+                {c:'Riyadh',s:'Riyadh Region',p:'11564',streets:['King Fahd Road','Olaya Street','Tahlia Street','King Abdullah Road','Al Urubah Road','Prince Sultan Road','Khurais Road','Makkah Al Mukarramah Road','Al Imam Saud Al Kabeer Road']},
+                {c:'Al Kharj',s:'Riyadh Region',p:'16278',streets:['Al Matar Road Al Kharj','Prince Sultan Road Al Kharj','Hospital Street Al Kharj']},
+                {c:'Jeddah',s:'Makkah Region',p:'21451',streets:['King Abdulaziz Road Jeddah','Palestine Street Jeddah','Al Madinah Al Munawarah Road','Falastin Street','Prince Nayef Road Jeddah','Al Andalus Street Jeddah','Arafat Road Jeddah']},
+                {c:'Mecca',s:'Makkah Region',p:'24231',streets:['Ibrahim Al Khalil Road','Umm Al Qura Road','Al Haram Street','Ajyad Road','Sitteen Street Mecca']},
+                {c:'Medina',s:'Madinah Region',p:'42311',streets:['King Faisal Road Medina','Quba Road','Sultan Road Medina','Abu Bakr Al Siddiq Road','Al Hijra Road']},
+                {c:'Dammam',s:'Eastern Province',p:'32232',streets:['King Saud Street Dammam','Al Khobar Road','Aramco Road','Prince Nayef Road Dammam','Al Ittisalat Road']},
+                {c:'Khobar',s:'Eastern Province',p:'34412',streets:['Prince Turki Al Awwal Road','King Abdulaziz Road Khobar','Al Thuqbah Road','Dhahran Street Khobar']},
+                {c:'Abha',s:'Asir Region',p:'62511',streets:['King Faisal Road Abha','Al Nuzha Road Abha','Al Manhal Road','Qurtuba Road Abha']},
+                {c:'Tabuk',s:'Tabuk Region',p:'71411',streets:['King Faisal Road Tabuk','Prince Fahd Road Tabuk','Al Salam Road Tabuk']},
+                {c:'Hail',s:'Hail Region',p:'55411',streets:['King Abdul Aziz Road Hail','Al Aziziyah Road Hail','Tariq Bin Ziyad Road']},
+            ],
+            country:'Saudi Arabia',phone:()=>'+966 5'+['0','1','2','3','4','5'][ri(6)]+rn(7),
+            email:['gmail.com','hotmail.com','yahoo.com'],tz:'Asia/Riyadh',
+            coord:{lat:[16.4,32.2],lng:[36.5,55.7]}
+            },
+            ae:{
+            m:['Mohammed','Ahmed','Khalid','Sultan','Hamdan','Rashid','Saeed','Ali','Hassan','Omar','Majid','Saif','Zayed','Nahyan','Maktoum'],
+            f:['Fatima','Mariam','Aisha','Latifa','Reem','Maitha','Hessa','Shamsa','Moza','Dana','Noura','Lulwa','Salama','Khawla','Meera'],
+            last:['Al-Maktoum','Al-Nahyan','Al-Hamdan','Al-Rashidi','Al-Falasi','Al-Mansoori','Al-Mazrouei','Al-Suwaidi','Al-Nuaimi','Al-Kaabi','Al-Muhairi','Al-Shamsi'],
+            locs:[
+                {c:'Dubai',s:'Dubai',p:'00000',streets:['Sheikh Zayed Road','Al Wasl Road','Jumeirah Beach Road','Al Khail Road','Al Rebat Street','Oud Metha Road','Airport Road Dubai','Bur Dubai Road','Al Mankhool Road']},
+                {c:'Abu Dhabi',s:'Abu Dhabi',p:'00000',streets:['Corniche Road Abu Dhabi','Al Salam Street','Airport Road Abu Dhabi','Sultan Bin Zayed the First Street','Al Khalidiyah Street','Al Falah Street','Hamdan Street']},
+                {c:'Sharjah',s:'Sharjah',p:'00000',streets:['Al Wahda Street Sharjah','King Faisal Road Sharjah','Al Mamzar Street','Al Arouba Road Sharjah','Al Zahraa Street']},
+                {c:'Ajman',s:'Ajman',p:'00000',streets:['Al Ittihad Road Ajman','Sheikh Maktoum Road Ajman','Al Rashidiya Street Ajman']},
+                {c:'Fujairah',s:'Fujairah',p:'00000',streets:['Hamad Bin Abdullah Road','Al Faseel Road','Murbah Road']},
+                {c:'Ras Al Khaimah',s:'Ras Al Khaimah',p:'00000',streets:['Al Mamourah Road RAK','Oman Street RAK','King Faisal Road RAK']},
+                {c:'Al Ain',s:'Abu Dhabi',p:'64100',streets:['Khalifa Bin Zayed Street Al Ain','Mohammed Bin Khalifa Road','Al Ain Road']},
+            ],
+            country:'UAE',phone:()=>'+971 5'+['0','2','4','5','6'][ri(5)]+rn(7),
+            email:['gmail.com','yahoo.com','hotmail.com'],tz:'Asia/Dubai',
+            coord:{lat:[22.6,26.1],lng:[51.5,56.4]}
+            },
+            jp:{
+            m:['Hiroshi','Takeshi','Kenji','Haruto','Ryo','Shota','Kento','Daiki','Sota','Yuki','Ren','Sora','Kai','Naoto','Makoto'],
+            f:['Yui','Hana','Sakura','Aoi','Nana','Miku','Haruka','Yuna','Rin','Akari','Mei','Saki','Kana','Momoka','Miyu'],
+            last:['Sato','Suzuki','Tanaka','Watanabe','Ito','Yamamoto','Nakamura','Kobayashi','Kato','Yoshida','Yamada','Sasaki','Matsumoto','Inoue','Kimura'],
+            locs:[
+                {c:'Shinjuku',s:'Tokyo',p:'160-0022',streets:['Shinjuku-dori','Yasukuni-dori','Meiji-dori','Koshukaid-dori','Ome Kaido']},
+                {c:'Shibuya',s:'Tokyo',p:'150-0002',streets:['Meiji-dori','Koen-dori','Bunkamura-dori','Dogenzaka','Inokashira-dori']},
+                {c:'Chiyoda',s:'Tokyo',p:'100-0001',streets:['Uchibori-dori','Sotobori-dori','Hibiya-dori','Marunouchi Naka-dori']},
+                {c:'Namba',s:'Osaka',p:'556-0011',streets:['Midosuji','Sennichimae-dori','Dotonbori','Shinsaibashi-suji','Sakaisuji']},
+                {c:'Umeda',s:'Osaka',p:'530-0001',streets:['Midosuji','Tenjinbashi-suji','Hankyu Grand Building Road','Sonezaki-dori']},
+                {c:'Naka',s:'Yokohama',p:'231-0023',streets:['Bashamichi','Honcho-dori Yokohama','Kannai Road','Isezaki-cho']},
+                {c:'Nagoya City',s:'Aichi',p:'460-0008',streets:['Sakae-dori','Nishiki-dori','Fushimi-dori','Otsu-dori']},
+                {c:'Sapporo',s:'Hokkaido',p:'060-0001',streets:['Odori','Kita Ichijo Higashi','Sosei River Road','Nishi 4-chome']},
+                {c:'Hakata',s:'Fukuoka',p:'812-0011',streets:['Sumiyoshi-dori Fukuoka','Gion-machi Road','Taihaku-dori','Canal City Road']},
+            ],
+            country:'Japan',phone:()=>'+81 '+rp(2)+'-'+rp(4)+'-'+rp(4),
+            email:['gmail.com','yahoo.co.jp','docomo.ne.jp'],tz:'Asia/Tokyo',
+            coord:{lat:[24.4,45.5],lng:[122.9,153.9]}
+            },
+            cn:{
+            m:['Wei','Fang','Jing','Hao','Lei','Jun','Tao','Ping','Bo','Long','Jian','Ming','Chao','Peng','Xiao'],
+            f:['Min','Hui','Li','Xin','Yan','Ying','Na','Lan','Mei','Fang','Xia','Jing','Yun','Shu','Ting'],
+            last:['Wang','Li','Zhang','Liu','Chen','Yang','Zhao','Huang','Zhou','Wu','Xu','Sun','Ma','Zhu','Hu'],
+            locs:[
+                {c:'Chaoyang',s:'Beijing',p:'100020',streets:['Jianguomenwai Avenue','Chaoyang Road','Sanlitun Road','Workers Stadium Road','Guanghua Road Beijing','Jiangtai Road','Liangmaqiao Road']},
+                {c:'Haidian',s:'Beijing',p:'100080',streets:['Zhongguancun Street','Suzhou Street Haidian','Beisihuan West Road','Xueyuan Road Beijing','Renmin University Road']},
+                {c:'Pudong',s:'Shanghai',p:'200120',streets:['Lujiazui Ring Road','Zhangyang Road','Century Avenue','Yincheng Road','Dongfang Road Shanghai']},
+                {c:'Tianhe',s:'Guangdong',p:'510620',streets:['Tianhe Road','Huacheng Avenue','Zhujiang New Town Road','Huangpu Avenue','Sports Road Guangzhou']},
+                {c:'Futian',s:'Guangdong',p:'518048',streets:['Fuhua Road Shenzhen','Shennan Boulevard Futian','Fuzhong Road','Huafu Road Shenzhen','Jintian Road']},
+                {c:'Wuhou',s:'Sichuan',p:'610041',streets:['Wuhouci Street','Renmin South Road Chengdu','Tianfu Avenue','Jiuyanqiao Road','Shuangnan Avenue']},
+            ],
+            country:'China',phone:()=>'+86 1'+['3','5','7','8','9'][ri(5)]+rn(9),
+            email:['gmail.com','qq.com','163.com','126.com'],tz:'Asia/Shanghai',
+            postalFn:()=>String(ri(900000)+100000),
+            coord:{lat:[18.2,53.5],lng:[73.5,134.8]}
+            },
+            kr:{
+            m:['Minjun','Jiyeon','Seojun','Jihoon','Siwoo','Hyunwoo','Jaemin','Donghyun','Jaehyun','Youngjun'],
+            f:['Jiyoo','Seoyeon','Jiyeong','Yuna','Seohyun','Minji','Hyejin','Soyeon','Jisoo','Naeun'],
+            last:['Kim','Lee','Park','Choi','Jung','Kang','Cho','Yoon','Jang','Lim','Han','Oh','Shin','Seo','Ko'],
+            locs:[
+                {c:'Gangnam-gu',s:'Seoul',p:'06000',streets:['Teheran-ro','Gangnam-daero','Apgujeong-ro','Dosan-daero','Seolleung-ro']},
+                {c:'Mapo-gu',s:'Seoul',p:'03900',streets:['Mapo-daero','Yanghwa-ro','Wausan-ro','Seongam-ro']},
+                {c:'Haeundae-gu',s:'Busan',p:'48094',streets:['Haeundaehaebyeon-ro','APEC-ro','Centum Jungang-ro','Osiria Road']},
+                {c:'Dunsan-dong',s:'Daejeon',p:'35242',streets:['Dunsan-ro','Hannuri-daero','Expo-ro Daejeon']},
+            ],
+            country:'South Korea',phone:()=>'+82 10-'+rp(4)+'-'+rp(4),
+            email:['gmail.com','naver.com','kakao.com'],tz:'Asia/Seoul',
+            postalFn:()=>rp(5),
+            coord:{lat:[34.0,38.6],lng:[125.1,129.6]}
+            },
+            id:{
+            m:['Budi','Andi','Eko','Dani','Rudi','Hendra','Wahyu','Arif','Rizky','Fajar','Agus','Bambang','Sutrisno'],
+            f:['Siti','Dewi','Sri','Rina','Wati','Indah','Fitri','Yuni','Rini','Ayu','Sari','Lestari','Rahayu'],
+            last:['Santoso','Setiawan','Hidayat','Purwanto','Kusuma','Wibowo','Susanto','Hartono','Nugroho','Prasetyo'],
+            locs:[
+                {c:'Jakarta Pusat',s:'DKI Jakarta',p:'10110',streets:['Jalan Thamrin','Jalan Kebon Sirih','Jalan Wahid Hasyim','Jalan Cikini Raya','Jalan HOS Cokroaminoto']},
+                {c:'Jakarta Selatan',s:'DKI Jakarta',p:'12110',streets:['Jalan Sudirman','Jalan Gatot Subroto','Jalan Wijaya','Jalan Pangeran Antasari','Jalan Radio Dalam']},
+                {c:'Surabaya',s:'Jawa Timur',p:'60111',streets:['Jalan Basuki Rahmat','Jalan Pemuda Surabaya','Jalan Ahmad Yani Surabaya','Jalan Raya Darmo','Jalan Gubeng Pojok']},
+                {c:'Bandung',s:'Jawa Barat',p:'40111',streets:['Jalan Braga','Jalan Asia Afrika Bandung','Jalan Riau Bandung','Jalan Dago','Jalan Setiabudhi']},
+                {c:'Denpasar',s:'Bali',p:'80111',streets:['Jalan Raya Puputan','Jalan Teuku Umar Denpasar','Jalan Imam Bonjol Denpasar','Jalan Diponegoro Denpasar']},
+            ],
+            country:'Indonesia',phone:()=>'+62 8'+['1','2','3','5','7','8'][ri(6)]+rn(8),
+            email:['gmail.com','yahoo.com','yahoo.co.id'],tz:'Asia/Jakarta',
+            coord:{lat:[-8.9,5.9],lng:[95.0,141.0]}
+            },
+            ph:{
+            m:['Juan','Jose','Mario','Carlo','Marco','Angelo','Miguel','Luis','Roberto','Antonio'],
+            f:['Maria','Ana','Rosa','Elena','Gloria','Carmen','Luz','Marites','Liza','Grace'],
+            last:['Santos','Reyes','Cruz','Garcia','Ramos','Gonzales','Flores','Torres','Villanueva','Aquino'],
+            locs:[
+                {c:'Quezon City',s:'Metro Manila',p:'1100',streets:['Quezon Avenue','Commonwealth Avenue','EDSA Quezon City','Mindanao Avenue','Elliptical Road','Timog Avenue']},
+                {c:'Makati City',s:'Metro Manila',p:'1200',streets:['Ayala Avenue','Paseo de Roxas','Gil Puyat Avenue','Buendia Avenue','Chino Roces Avenue']},
+                {c:'Cebu City',s:'Cebu',p:'6000',streets:['Osmeña Boulevard','Gorordo Avenue','Lahug Road','Colon Street Cebu','Escario Street']},
+                {c:'Davao City',s:'Davao del Sur',p:'8000',streets:['Bonifacio Street Davao','JP Laurel Avenue Davao','CM Recto Street','Quezon Boulevard Davao']},
+            ],
+            country:'Philippines',phone:()=>'+63 9'+['1','2','5','6','7','8','9'][ri(7)]+rn(8),
+            email:['gmail.com','yahoo.com','outlook.com'],tz:'Asia/Manila',
+            coord:{lat:[5.5,20.5],lng:[116.9,126.6]}
+            },
+            ng:{
+            m:['Chukwuemeka','Oluwaseun','Adebayo','Musa','Ibrahim','Emeka','Segun','Tunde','Bola','Uche'],
+            f:['Ngozi','Chidinma','Amaka','Fatima','Kemi','Yetunde','Adaeze','Blessing','Chiamaka','Chioma'],
+            last:['Okonkwo','Adeleke','Babatunde','Muhammad','Abubakar','Okafor','Eze','Obi','Nwosu','Adeyemi'],
+            locs:[
+                {c:'Victoria Island',s:'Lagos',p:'101001',streets:['Adeola Odeku Street','Akin Adesola Street','Sanusi Fafunwa Street','Ligali Ayorinde Street','Walter Carrington Crescent']},
+                {c:'Ikeja',s:'Lagos',p:'100271',streets:['Mobolaji Bank Anthony Way','Awolowo Road Ikeja','Allen Avenue','Isaac John Street','Airport Road Lagos']},
+                {c:'Abuja',s:'FCT',p:'900001',streets:['Aso Drive','Herbert Macaulay Way Abuja','Aminu Kano Crescent Abuja','Dalaba Street Wuse']},
+                {c:'Port Harcourt',s:'Rivers',p:'500001',streets:['Trans Amadi Road','Aba Road Port Harcourt','Rumuola Road','Peter Odili Road']},
+            ],
+            country:'Nigeria',phone:()=>'+234 '+['0802','0803','0805','0806','0807','0808','0810','0811','0812','0813'][ri(10)]+rn(7),
+            email:['gmail.com','yahoo.com','hotmail.com'],tz:'Africa/Lagos',
+            coord:{lat:[4.3,13.9],lng:[2.7,14.7]}
+            },
+            eg:{
+            m:['Mohammed','Ahmed','Mahmoud','Ibrahim','Omar','Hassan','Ali','Karim','Youssef','Amr'],
+            f:['Fatima','Nour','Dina','Rana','Mona','Heba','Sara','Rania','Noha','Mariam'],
+            last:['Ibrahim','Hassan','Ahmed','Mohamed','Mahmoud','Elshamy','Abdallah','Nasser','El-Sayed','Khalil'],
+            locs:[
+                {c:'Heliopolis',s:'Cairo Governorate',p:'11341',streets:['Al Merghany Street','Ibrahim Laqqany Street','Osman Ibn Affan Street Heliopolis','Sheraton Road Cairo']},
+                {c:'Nasr City',s:'Cairo Governorate',p:'11762',streets:['Abbas Al Akkad Street','Mostafa Al Nahas Street','Al Thawra Street Nasr City','Ahmed Tayseer Road']},
+                {c:'Dokki',s:'Giza Governorate',p:'12511',streets:['Al Tahrir Street Dokki','Ahmed Orabi Street','Giza Street','El Batal Ahmed Abd El Aziz Street']},
+                {c:'Sidi Gaber',s:'Alexandria Governorate',p:'21521',streets:['El Horriya Road Alexandria','Abu Qir Street Alexandria','Fawzy Moaz Street','Omar Lotfy Road']},
+            ],
+            country:'Egypt',phone:()=>'+20 1'+['0','1','2','5'][ri(4)]+rn(8),
+            email:['gmail.com','yahoo.com','hotmail.com'],tz:'Africa/Cairo',
+            coord:{lat:[22.0,31.7],lng:[24.7,36.9]}
+            },
+            za:{
+            m:['Sipho','Thabo','Siyabonga','Luthando','Andile','Teboho','Kagiso','Lesego','Mpho','Tshepo'],
+            f:['Nomvula','Zanele','Bongiwe','Khanyisile','Lerato','Palesa','Dineo','Naledi','Ayanda','Nompumelelo'],
+            last:['Dlamini','Nkosi','Zulu','Ndlovu','Khumalo','Mthembu','Mabaso','Radebe','Shabalala','Sithole'],
+            locs:[
+                {c:'Sandton',s:'Gauteng',p:'2196',streets:['Sandton Drive','West Street Sandton','Rivonia Road','Grayston Drive','Katherine Street Sandton']},
+                {c:'Johannesburg CBD',s:'Gauteng',p:'2001',streets:['Commissioner Street Johannesburg','Eloff Street','Marshall Street Johannesburg','Noord Street','Bree Street Johannesburg']},
+                {c:'Cape Town City Centre',s:'Western Cape',p:'8001',streets:['Long Street Cape Town','Bree Street Cape Town','Adderley Street','Kloof Street','De Waal Drive']},
+                {c:'Durban CBD',s:'KwaZulu-Natal',p:'4001',streets:['Anton Lembede Street','Dr Pixley KaSeme Street','Smith Street Durban','West Street Durban']},
+            ],
+            country:'South Africa',phone:()=>'+27 '+['011','012','021','031','041','071','081','082','083','084'][ri(10)]+' '+rp(3)+' '+rp(4),
+            email:['gmail.com','yahoo.com','webmail.co.za'],tz:'Africa/Johannesburg',
+            coord:{lat:[-34.8,-22.1],lng:[16.5,32.9]}
+            },
+            ke:{
+            m:['Kamau','Mwangi','Njoroge','Kariuki','Brian','Kevin','Dennis','Joseph','Peter','Moses'],
+            f:['Wanjiru','Njoki','Achieng','Moraa','Muthoni','Grace','Faith','Mercy','Eunice','Agnes'],
+            last:['Mwangi','Kamau','Otieno','Odhiambo','Njenga','Kinyua','Njoroge','Gitau','Kiprotich','Cheruiyot'],
+            locs:[
+                {c:'Westlands',s:'Nairobi County',p:'00800',streets:['Waiyaki Way','Rhapta Road','Woodvale Grove','Westlands Road','Riverside Drive']},
+                {c:'Karen',s:'Nairobi County',p:'00502',streets:['Karen Road','Bogani Road','Langata Road Nairobi','Hardy Road Nairobi']},
+                {c:'Mombasa CBD',s:'Mombasa County',p:'80100',streets:['Moi Avenue Mombasa','Nkrumah Road','Nyerere Avenue','Digo Road Mombasa']},
+                {c:'Nakuru Town',s:'Nakuru County',p:'20100',streets:['George Morara Road','Kenyatta Avenue Nakuru','Section 58 Road']},
+            ],
+            country:'Kenya',phone:()=>'+254 7'+['0','1','2','3','4','5','6','7','8','9'][ri(10)]+rn(7),
+            email:['gmail.com','yahoo.com','hotmail.com'],tz:'Africa/Nairobi',
+            coord:{lat:[-4.7,5.0],lng:[33.9,41.9]}
+            },
+            ma:{
+            m:['Mohammed','Ahmed','Youssef','Hamza','Khalid','Omar','Hassan','Rachid','Amine','Karim'],
+            f:['Fatima','Khadija','Zineb','Aicha','Nadia','Samira','Sara','Meryem','Layla','Imane'],
+            last:['Benali','Idrissi','El Fassi','Ouali','Moussaoui','Chraibi','Bennis','Lamrani','Benjelloun','Bensouda'],
+            locs:[
+                {c:'Casablanca',s:'Casablanca-Settat',p:'20000',streets:['Boulevard Mohammed V','Boulevard de la Corniche','Rue Nationale Casablanca','Boulevard Zerktouni','Avenue Hassan II Casablanca']},
+                {c:'Rabat',s:'Rabat-Salé-Kénitra',p:'10000',streets:['Avenue Mohammed VI','Boulevard de la Résistance','Avenue Fal Ould Oumeir','Avenue Annakhil']},
+                {c:'Marrakesh',s:'Marrakesh-Safi',p:'40000',streets:['Avenue Mohammed VI Marrakech','Rue Yougoslavie','Boulevard El Yarmouk','Avenue Hassan II Marrakech']},
+                {c:'Tangier',s:'Tanger-Tétouan-Al Hoceïma',p:'90000',streets:['Avenue Mohammed VI Tangier','Boulevard Pasteur','Rue du Mexique','Avenue de la Résistance Tangier']},
+            ],
+            country:'Morocco',phone:()=>'+212 '+['06','07'][ri(2)]+rn(8),
+            email:['gmail.com','yahoo.fr','hotmail.fr'],tz:'Africa/Casablanca',
+            coord:{lat:[27.7,35.9],lng:[-13.2,-1.0]}
+            },
+            it:{
+            m:['Marco','Luca','Matteo','Davide','Andrea','Giulio','Roberto','Stefano','Alessio','Simone'],
+            f:['Giulia','Sofia','Laura','Valentina','Chiara','Martina','Francesca','Elena','Sara','Giorgia'],
+            last:['Rossi','Ferrari','Russo','Bianchi','Romano','Gallo','Costa','Fontana','Conti','Esposito'],
+            locs:[
+                {c:'Roma',s:'Lazio',p:'00118',streets:['Via Nazionale','Via del Corso','Via Veneto','Via del Tritone','Viale Trastevere','Via Tiburtina']},
+                {c:'Milano',s:'Lombardia',p:'20121',streets:['Via Montenapoleone','Corso Buenos Aires','Corso Vittorio Emanuele II','Via della Spiga','Viale Certosa']},
+                {c:'Napoli',s:'Campania',p:'80121',streets:['Via Toledo','Via Roma Napoli','Corso Umberto I','Via Chiaia','Via Caracciolo']},
+                {c:'Torino',s:'Piemonte',p:'10121',streets:['Corso Francia','Via Po Torino','Corso Vittorio Emanuele II Torino','Corso Re Umberto']},
+            ],
+            country:'Italy',phone:()=>'+39 0'+rp(2)+' '+rp(7),
+            email:['gmail.com','libero.it','virgilio.it'],tz:'Europe/Rome',
+            postalFn:()=>rp(5),
+            coord:{lat:[36.6,47.1],lng:[6.6,18.5]}
+            },
+            ru:{
+            m:['Ivan','Aleksandr','Sergey','Andrey','Dmitry','Aleksey','Nikolay','Mikhail','Vladimir','Evgeny'],
+            f:['Elena','Natalia','Olga','Marina','Tatyana','Ekaterina','Irina','Svetlana','Anastasia','Victoria'],
+            last:['Ivanov','Smirnov','Kuznetsov','Popov','Vasiliev','Petrov','Sokolov','Mikhailov','Novikov','Fedorov'],
+            locs:[
+                {c:'Moscow',s:'Moscow',p:'101000',streets:['Tverskaya Street','Kutuzovsky Prospekt','Leninsky Prospekt','Novy Arbat','Leniningradsky Prospekt']},
+                {c:'Saint Petersburg',s:'Saint Petersburg',p:'190000',streets:['Nevsky Prospekt','Ligovsky Prospekt','Moskovsky Prospekt','Sadovaya Ulitsa']},
+                {c:'Novosibirsk',s:'Novosibirsk Oblast',p:'630099',streets:['Krasny Prospekt Novosibirsk','Lenina Street Novosibirsk','Zheleznodorozhnaya Ulitsa']},
+                {c:'Yekaterinburg',s:'Sverdlovsk Oblast',p:'620000',streets:['Lenina Avenue Yekaterinburg','Malysheva Ulitsa','Karl Liebknecht Street']},
+            ],
+            country:'Russia',phone:()=>'+7 '+['495','812','343','383','831','846'][ri(6)]+' '+rp(7),
+            email:['gmail.com','mail.ru','yandex.ru'],tz:'Europe/Moscow',
+            postalFn:()=>String(ri(900000)+100000),
+            coord:{lat:[41.2,82.0],lng:[19.6,169.0]}
+            },
+            lk:{
+            m:['Kumara','Suresh','Manoj','Pradeep','Chathura','Lahiru','Kasun','Tharaka','Dhanushka','Saman'],
+            f:['Kumari','Dilhani','Madavi','Sandya','Tharini','Nimesha','Thilini','Kavindra','Ishara','Chamari'],
+            last:['Fernando','Silva','Perera','Rodrigo','Jayasuriya','Jayawardena','Wickramasinghe','Gunawardena','Seneviratne','Dissanayake'],
+            locs:[
+                {c:'Colombo 03',s:'Western Province',p:'00300',streets:['Galle Road Colombo 3','R.A. De Mel Mawatha','Dharmapala Mawatha','Alfred Place','Union Place Colombo']},
+                {c:'Kandy City',s:'Central Province',p:'20000',streets:['Dalada Veediya','Kotugodella Veediya','DS Senanayake Street Kandy','Rajapihilla Mawatha','Peradeniya Road']},
+                {c:'Galle',s:'Southern Province',p:'80000',streets:['Matara Road Galle','Church Street Galle','Galle Fort Road','Akmeemana Road']},
+                {c:'Jaffna City',s:'Northern Province',p:'40000',streets:['Hospital Road Jaffna','Kasturiya Road','Stanley Road Jaffna','Point Pedro Road']},
+            ],
+            country:'Sri Lanka',phone:()=>'+94 7'+['1','2','5','6','7','8'][ri(6)]+rn(7),
+            email:['gmail.com','yahoo.com','sltnet.lk'],tz:'Asia/Colombo',
+            postalFn:()=>rp(5),
+            coord:{lat:[5.9,9.8],lng:[79.6,81.9]}
+            },
+            np:{
+            m:['Ram','Hari','Krishna','Shyam','Mohan','Bikash','Sanjay','Dipak','Rajesh','Suresh'],
+            f:['Sita','Gita','Maya','Sunita','Savita','Sangita','Puja','Aarti','Laxmi','Kamala'],
+            last:['Shrestha','Thapa','KC','Adhikari','Gurung','Tamang','Magar','Rai','Limbu','Sherpa'],
+            locs:[
+                {c:'Kathmandu',s:'Bagmati Province',p:'44600',streets:['Kantipath Road Kathmandu','New Road Kathmandu','Durbar Marg','Tridevi Marg','Putalisadak Road','Naxal Road']},
+                {c:'Lalitpur',s:'Bagmati Province',p:'44700',streets:['Kupondol Road','Ekantakuna Road','Jhamsikhel Road','Patan Dhoka Road']},
+                {c:'Pokhara',s:'Gandaki Province',p:'33700',streets:['Lakeside Road Pokhara','Prithvi Chowk Road','Airport Road Pokhara','Mahendrapul Road']},
+                {c:'Biratnagar',s:'Province No. 1',p:'56613',streets:['Traffic Chowk Road Biratnagar','Mahendra Highway Biratnagar','Main Road Biratnagar']},
+            ],
+            country:'Nepal',phone:()=>'+977 9'+['8','7'][ri(2)]+rn(8),
+            email:['gmail.com','yahoo.com','ntc.net.np'],tz:'Asia/Kathmandu',
+            postalFn:()=>rp(5),
+            coord:{lat:[26.4,30.4],lng:[80.1,88.2]}
+            },
+            my:{
+            m:['Muhammad','Ahmad','Abdullah','Hafiz','Faiz','Azhar','Haziq','Faizal','Nizam','Razak'],
+            f:['Nur','Nurul','Siti','Fatimah','Aisyah','Nadia','Liyana','Hajar','Adibah','Zarina'],
+            last:['Abdullah','Ibrahim','Hassan','Ahmad','Mohd','Ismail','Rahman','Rahim','Hasan','Aziz'],
+            locs:[
+                {c:'Kuala Lumpur City Centre',s:'Wilayah Persekutuan KL',p:'50450',streets:['Jalan Ampang','Jalan P. Ramlee','Jalan Sultan Ismail','Jalan Conlay','Persiaran KLCC']},
+                {c:'Petaling Jaya',s:'Selangor',p:'47810',streets:['Jalan Templer Petaling Jaya','Jalan SS 2','Jalan Universiti PJ','Jalan Gasing','Persiaran Barat']},
+                {c:'George Town',s:'Pulau Pinang',p:'10050',streets:['Jalan Penang','Lebuh Campbell','Gurney Drive Penang','Northam Road Penang','Jalan Macalister']},
+                {c:'Johor Bahru City',s:'Johor',p:'80000',streets:['Jalan Trus Johor Bahru','Jalan Wong Ah Fook','Jalan Stesen Johor Bahru','Jalan Dato Sulaiman']},
+                {c:'Kota Kinabalu',s:'Sabah',p:'88000',streets:['Jalan Lintas Kota Kinabalu','Jalan Coastal Highway','Jalan Tuaran KK','Jalan Mat Salleh']},
+            ],
+            country:'Malaysia',phone:()=>'+60 1'+['0','1','2','3','4','6','7','8','9'][ri(9)]+'-'+rp(7),
+            email:['gmail.com','yahoo.com','hotmail.com'],tz:'Asia/Kuala_Lumpur',
+            postalFn:()=>rp(5),
+            coord:{lat:[0.9,7.4],lng:[99.6,119.3]}
+            },
+            ar:{
+            m:['Martín','Sebastián','Matías','Lucas','Nicolás','Tomás','Facundo','Agustín','Santiago','Rodrigo'],
+            f:['Valentina','Florencia','Camila','Sofía','Catalina','Agustina','Romina','Valeria','Paola','Verónica'],
+            last:['González','Rodríguez','Gómez','Fernández','López','Martínez','García','Pérez','Díaz','Sánchez'],
+            locs:[
+                {c:'Palermo',s:'Ciudad de Buenos Aires',p:'C1425',streets:['Avenida Santa Fe','Avenida Córdoba','Honduras Street','Avenida Juan B. Justo','Thames Street']},
+                {c:'Recoleta',s:'Ciudad de Buenos Aires',p:'C1113',streets:['Avenida Alvear','Junín Street','Libertad Street Buenos Aires','Pueyrredón Avenue','Avenida Las Heras']},
+                {c:'Centro Córdoba',s:'Córdoba',p:'X5000',streets:['Bulevar San Juan Córdoba','Calle Deán Funes','Avenida Hipólito Yrigoyen Córdoba']},
+                {c:'Centro Rosario',s:'Santa Fe',p:'S2000',streets:['Córdoba Street Rosario','San Martín Street Rosario','Balcarce Street Rosario']},
+            ],
+            country:'Argentina',phone:()=>'+54 9 11 '+rp(8),
+            email:['gmail.com','yahoo.com','hotmail.com'],tz:'America/Argentina/Buenos_Aires',
+            postalFn:()=>'C'+rp(4)+'A'+String.fromCharCode(65+ri(26))+String.fromCharCode(65+ri(26)),
+            coord:{lat:[-55.1,-21.8],lng:[-73.6,-53.6]}
+            },
+            sg:{
+            m:['Wei Ming','Jun Jie','Yi Xuan','Zhi Wei','Kang Wei','Jian Hao','Hao Yang','Jing Hao'],
+            f:['Hui Ling','Xiao Yan','Jia Hui','Mei Ling','Xiu Ying','Ying Ying','Xiao Ting','Xue Fen'],
+            last:['Tan','Lim','Lee','Ng','Ong','Wong','Chua','Koh','Teo','Chan'],
+            locs:[
+                {c:'Orchard',s:'Central Region',p:'238823',streets:['Orchard Road','Scotts Road Singapore','Paterson Road','Penang Road','Somerset Road']},
+                {c:'Marina Bay',s:'Central Region',p:'018961',streets:['Marina Boulevard','Raffles Place','Battery Road Singapore','Cross Street Singapore']},
+                {c:'Tampines',s:'East Region',p:'520201',streets:['Tampines Avenue 4','Tampines Street 45','Tampines North Drive 1','Tampines Central 5']},
+                {c:'Woodlands',s:'North Region',p:'730771',streets:['Woodlands Avenue 1','Woodlands Drive 52','Woodlands Centre Road','Admiralty Road']},
+            ],
+            country:'Singapore',phone:()=>'+65 '+['8','9'][ri(2)]+rp(7),
+            email:['gmail.com','yahoo.com.sg','singnet.com.sg'],tz:'Asia/Singapore',
+            postalFn:()=>rp(6),
+            coord:{lat:[1.24,1.47],lng:[103.6,104.0]}
+            },
+            gh:{
+            m:['Kwame','Kofi','Kwesi','Kwabena','Yaw','Akwasi','Mensah','Ofori','Asante','Boateng'],
+            f:['Akua','Abena','Adwoa','Afia','Akosua','Ama','Gifty','Josephine','Esther','Florence'],
+            last:['Mensah','Boateng','Asante','Osei','Agyemang','Appiah','Antwi','Owusu','Amoah','Asare'],
+            locs:[
+                {c:'Accra',s:'Greater Accra',p:'GA100',streets:['Liberation Road Accra','Ring Road Central','Independence Avenue Accra','Cantonments Road','Airport City Link Road']},
+                {c:'Kumasi',s:'Ashanti Region',p:'AK001',streets:['Kumasi-Accra Highway','Osei Tutu II Boulevard','Asafo Market Road','Santasi Road Kumasi']},
+                {c:'Takoradi',s:'Western Region',p:'WR001',streets:['Market Circle Road Takoradi','Liberation Road Takoradi','John Mensah Sarbah Road']},
+                {c:'Tamale',s:'Northern Region',p:'NR001',streets:['Bolgatanga Road Tamale','Salaga Road Tamale','Hospital Road Tamale']},
+            ],
+            country:'Ghana',phone:()=>'+233 '+['024','025','026','027','028','054','055','056'][ri(8)]+rn(7),
+            email:['gmail.com','yahoo.com','hotmail.com'],tz:'Africa/Accra',
+            coord:{lat:[4.7,11.2],lng:[-3.3,1.2]}
+            },
+            _:{
+            m:['Alex','Jordan','Morgan','Taylor','Casey','Riley','Jamie','Avery'],
+            f:['Reese','Skylar','Drew','Cameron','Kendall','Leslie','Peyton','Dana'],
+            last:['Smith','Johnson','Williams','Brown','Jones','Miller','Davis','Wilson'],
+            locs:[
+                {c:'Capital City',s:'Central Province',p:'10001',streets:['Main Street','Park Avenue','Victoria Road']},
+                {c:'Metro City',s:'Northern Region',p:'20002',streets:['High Street','Market Road','Station Avenue']},
+            ],
+            country:'Unknown',phone:()=>'+1 '+rp(10),
+            email:['gmail.com','yahoo.com'],tz:'UTC',
+            coord:{lat:[-60,60],lng:[-150,150]}
+            }
+        };
+
+        const ge=id=>document.getElementById(id);
+        let generated=[],sessionTotal=0;
+        const cap=s=>s?s.charAt(0).toUpperCase()+s.slice(1):'';
+        const rnd=a=>a[Math.floor(Math.random()*a.length)];
+        const ri=n=>Math.floor(Math.random()*n);
+        const rn=d=>String(Math.floor(Math.pow(10,d-1)+Math.random()*9*Math.pow(10,d-1)));
+        const rp=d=>{let s='';for(let i=0;i<d;i++)s+=ri(10);return s;}
+
+        function randDob(){
+            const age=18+ri(55);const y=new Date().getFullYear()-age;
+            const m=ri(12);const d=1+ri(28);
+            return{date:new Date(y,m,d).toISOString(),age};
+        }
+        function fmtDate(s){
+            if(!s)return'—';const d=new Date(s);
+            if(isNaN(d))return s;
+            return`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+        }
+        function randCoord(rng){
+            const lat=(rng.lat[0]+Math.random()*(rng.lat[1]-rng.lat[0])).toFixed(6);
+            const lng=(rng.lng[0]+Math.random()*(rng.lng[1]-rng.lng[0])).toFixed(6);
+            return{lat,lng};
+        }
+
+        // BUILD SELECT
+        function buildSelect(filter=''){
+            const sel=ge('country'),prev=sel.value;
+            sel.innerHTML='<option value="">— Choose a Country —</option>';
+            const regions={};
+            ALL_COUNTRIES.forEach(c=>{
+                const q=filter.toLowerCase();
+                if(q&&!c.name.toLowerCase().includes(q)&&!c.code.includes(q))return;
+                if(!regions[c.region])regions[c.region]=[];
+                regions[c.region].push(c);
+            });
+            Object.keys(regions).sort().forEach(r=>{
+                const grp=document.createElement('optgroup');grp.label=r;
+                regions[r].forEach(c=>{
+                const o=document.createElement('option');o.value=c.code;
+                o.textContent=c.flag+' '+c.name+(c.api?' ●':'');grp.appendChild(o);
+                });
+                sel.appendChild(grp);
+            });
+            if(prev)sel.value=prev;
+        }
+        function filterCountries(){buildSelect(ge('countrySearch').value)}
+
+        window.onload=function(){
+            loadData();
+            buildSelect();
+        };
+
+        function onSlider(v){ge('qtyNum').textContent=v}
+        function onCountryChange(){
+            const k=ge('country').value;const c=CMAP[k];
+            ge('sCountry').textContent=c?c.flag+' '+c.name.split(' ')[0]:'—';
+            ge('sNatCode').textContent=c?c.name.toUpperCase():'SELECT A COUNTRY';
+            ge('tmNat2').textContent=c?c.name:'—';
+        }
+        function setProgress(pct,txt){
+            ge('gpFill').style.width=pct+'%';ge('gpPct').textContent=pct+'%';ge('gpTxt').textContent=txt;
+        }
+
+        // LOCAL GENERATION
+        function genLocalUser(code){
+            const d=LOCAL[code]||LOCAL._;
+            const cInfo=CMAP[code]||{name:code.toUpperCase(),flag:'🌍'};
+            const isFemale=Math.random()>.5;
+            const firstName=rnd(isFemale&&d.f?d.f:d.m);
+            const lastName=rnd(d.last);
+            const loc=rnd(d.locs);
+            const streetPool=loc.streets||(d.streets||['Main Street','High Street','Park Avenue']);
+            const streetName=rnd(streetPool);
+            const stNum=1+ri(999);
+            const postal=d.postalFn?d.postalFn():loc.p;
+            const dobInfo=randDob();
+            const coords=randCoord(d.coord||{lat:[-60,60],lng:[-150,150]});
+            const cleanFirst=firstName.replace(/\s/g,'').replace(/[^a-zA-Z]/g,'x').toLowerCase().slice(0,8);
+            const cleanLast=lastName.replace(/\s/g,'').replace(/[^a-zA-Z]/g,'').toLowerCase().slice(0,8);
+            const user=(cleanFirst+cleanLast+rn(3)).slice(0,20);
+            const pass=Math.random().toString(36).slice(2,10)+rn(2);
+            const email=`${cleanFirst}.${cleanLast}${rn(2)}@${rnd(d.email)}`;
+            return{
+                name:{first:firstName,last:lastName},
+                location:{
+                street:{number:stNum,name:streetName},
+                city:loc.c,state:loc.s,
+                country:cInfo.name,
+                postcode:postal,
+                coordinates:{latitude:coords.lat,longitude:coords.lng},
+                timezone:{description:d.tz||'Local Time'}
+                },
+                email,phone:d.phone(),cell:d.phone(),
+                dob:{date:dobInfo.date,age:dobInfo.age},
+                gender:isFemale?'female':'male',
+                login:{username:user,password:pass},
+                nat:code.toUpperCase(),_local:true
+            };
+        }
+
+        // MAIN GENERATE
+        async function doGenerate(){
+            const nat=ge('country').value;
+            if(!nat){
+                Swal.fire({icon:'error', title:'Select a country', background:'#070000', color:'#fff', confirmButtonColor:'#dc2626'});
+                return;
+            }
+            const qty=parseInt(ge('qty').value)||10;
+            const cInfo=CMAP[nat];
+            ge('genBtn').disabled=true;
+            ge('genProg').style.display='block';
+            setProgress(10,'INITIALIZING...');
+            const area=ge('cardsArea');area.innerHTML='';
+            
+            // Skeletons matching new theme
+            for(let i=0;i<Math.min(qty,6);i++){
+                const sc=document.createElement('div');
+                sc.style.cssText="background:#030000; border:1px solid rgba(220,38,38,0.2); border-radius:6px; height:150px; margin-bottom:10px;";
+                area.appendChild(sc);
+            }
+            
+            try{
+                let results=[];
+                const apiNat=cInfo&&cInfo.api?nat:null;
+                if(apiNat){
+                    setProgress(30,'CONNECTING TO API...');
+                    const url=`https://randomuser.me/api/?results=${qty}&nat=${apiNat}&inc=name,location,email,dob,phone,login,gender&noinfo`;
+                    const res=await fetch(url);
+                    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+                    setProgress(65,'PARSING RESPONSE...');
+                    const json=await res.json();
+                    results=json.results.map(u=>({...u,nat:nat.toUpperCase()}));
+                } else {
+                    setProgress(40,'GENERATING LOCAL DATA...');
+                    await new Promise(r=>setTimeout(r,100));
+                    for(let i=0;i<qty;i++)results.push(genLocalUser(nat));
+                    setProgress(72,'PROCESSING...');
+                    await new Promise(r=>setTimeout(r,80));
+                }
+                setProgress(90,'RENDERING CARDS...');await new Promise(r=>setTimeout(r,50));
+                generated=results;area.innerHTML='';
+                generated.forEach((u,i)=>area.appendChild(buildCard(u,i)));
+                sessionTotal+=qty;
+                ge('sGen').textContent=sessionTotal;ge('tmCount').textContent=qty+' RECORDS';
+                setProgress(100,'COMPLETE');
+            }catch(e){
+                area.innerHTML=`<div class="empty-state"><strong>ERROR</strong><br>${e.message}<br>Check connection or try again.</div>`;
+                setProgress(0,'ERROR');
+            }finally{
+                ge('genBtn').disabled=false;
+                setTimeout(()=>{ge('genProg').style.display='none';setProgress(0,'');},1800);
+            }
+        }
+
+        // BUILD CARD
+        function buildCard(u,idx){
+            const card=document.createElement('div');card.className='addr-card';
+            const name=cap(u.name.first)+' '+cap(u.name.last);
+            const loc=u.location;
+            const street=`${loc.street.number} ${cap(loc.street.name)}`;
+            const city=cap(loc.city);const state=cap(loc.state);
+            const post=String(loc.postcode||'');const country=cap(loc.country);
+            const nat=u.nat||'—';
+            const{date:dobDate,age}=u.dob||{};const dob=fmtDate(dobDate);
+            const gender=cap(u.gender||'');const phone=u.phone||u.cell||'—';
+            const cell=u.cell||u.phone||'—';const email=u.email||'—';
+            const uname=u.login?.username||'—';const pass=u.login?.password||'—';
+            const lat=loc.coordinates?.latitude||'—';const lng=loc.coordinates?.longitude||'—';
+            const tz=loc.timezone?.description||loc.timezone?.offset||'—';
+            u._parsed={name,street,city,state,post,country,nat,phone,cell,email,dob,age:age||'',gender,user:uname,pass,lat,lng,tz};
+            const cInfo=CMAP[nat.toLowerCase()];const flag=cInfo?cInfo.flag:'🌍';
+            const typeTag=u._local?'<span style="border:1px solid rgba(234,179,8,0.4); color:var(--yellow); background:rgba(234,179,8,0.1); padding:2px 6px; border-radius:4px; font-size:8px;">LOCAL</span>':'<span style="border:1px solid rgba(16,185,129,0.4); color:var(--green); background:rgba(16,185,129,0.1); padding:2px 6px; border-radius:4px; font-size:8px;">LIVE API</span>';
+            const chk=id=>ge(id)?.checked;
+            
+            let html=`
+                <div class="addr-card-hd">
+                    <div>
+                        <span style="font-size:10px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:3px;">REC #${String(idx+1).padStart(3,'0')}</span>
+                        <span style="font-size:12px; font-weight:700; color:white;">${flag} ${country.toUpperCase()} ${typeTag}</span>
+                    </div>
+                    <button class="copy-btn-small" style="position:static;" onclick="copyIdx(${idx})"><i class="fa-solid fa-copy"></i> COPY ALL</button>
+                </div>
+                <div class="addr-card-bd">`;
+            
+            if(chk('chkName'))html+=fld('fa-solid fa-user','FULL NAME',name,'val-red');
+            html+=fld('fa-solid fa-road','STREET',street,'');
+            html+=fld('fa-solid fa-city','CITY',city,'val-red');
+            html+=fld('fa-solid fa-map','STATE / REGION',state,'');
+            html+=fld('fa-solid fa-envelope-open-text','POSTAL CODE',post,'val-green');
+            html+=fld('fa-solid fa-globe','COUNTRY',flag+' '+country,'');
+            if(chk('chkNat'))html+=fld('fa-solid fa-flag','NATIONALITY',nat,'val-purple');
+            if(chk('chkPhone')){
+                html+=fld('fa-solid fa-phone','PHONE',phone,'val-yellow');
+                if(cell!==phone)html+=fld('fa-solid fa-mobile-screen','MOBILE',cell,'val-yellow');
+            }
+            if(chk('chkEmail'))html+=fld('fa-solid fa-at','EMAIL',email,'val-blue');
+            if(chk('chkDob'))html+=fld('fa-solid fa-cake-candles','DATE OF BIRTH',`${dob} (Age ${age})`,'');
+            if(chk('chkGender'))html+=fld('fa-solid fa-venus-mars','GENDER',gender,'');
+            if(chk('chkTz'))html+=fld('fa-solid fa-clock','TIMEZONE',tz,'val-purple');
+            if(chk('chkUser'))html+=fld('fa-solid fa-circle-user','USERNAME',uname,'val-green');
+            if(chk('chkPass'))html+=fld('fa-solid fa-lock','PASSWORD',pass,'val-yellow');
+            if(chk('chkCoords'))html+=fld('fa-solid fa-crosshairs','COORDINATES',`${lat}, ${lng}`,'val-blue');
+            
+            html+='</div>';card.innerHTML=html;return card;
+        }
+
+        function fld(icon,label,val,cls){
+            const safe=String(val).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+            return`
+            <div class="result-row-stacked" onclick="copyField('${safe}')">
+                <span><i class="${icon}" style="margin-right:5px; color:var(--accent-blue);"></i> ${label}</span>
+                <div class="val-wrapper">
+                    <span class="val-text ${cls}">${val}</span>
+                    <i class="fa-solid fa-copy copy-ico"></i>
+                </div>
+            </div>`;
+        }
+
+        // COPY / EXPORT
+        function getCardText(u){
+            const p=u._parsed;if(!p)return JSON.stringify(u,null,2);
+            return[`Name         : ${p.name}`,`Street       : ${p.street}`,`City         : ${p.city}`,
+                `State/Region : ${p.state}`,`Postal Code  : ${p.post}`,`Country      : ${p.country}`,
+                `Nationality  : ${p.nat}`,`Phone        : ${p.phone}`,`Mobile       : ${p.cell}`,
+                `Email        : ${p.email}`,`Date of Birth: ${p.dob} (Age ${p.age})`,
+                `Gender       : ${p.gender}`,`Username     : ${p.user}`,`Password     : ${p.pass}`,
+                `Coordinates  : ${p.lat}, ${p.lng}`].join('\n');
+        }
+        function showToast(msg) {
+            Swal.fire({title: msg, icon: 'success', toast: true, position: 'bottom', timer: 1500, showConfirmButton: false, background: '#070000', color: '#10b981'});
+        }
+        function copyField(v){navigator.clipboard.writeText(v).then(()=>showToast('COPIED ✓'))}
+        function copyIdx(i){navigator.clipboard.writeText(getCardText(generated[i])).then(()=>showToast('RECORD COPIED ✓'))}
+        function copyAll(){if(!generated.length){Swal.fire({icon:'error',title:'NO DATA',background:'#070000',color:'#fff',confirmButtonColor:'#dc2626'});return;}navigator.clipboard.writeText(generated.map(getCardText).join('\n\n'+'═'.repeat(44)+'\n\n')).then(()=>showToast('ALL '+generated.length+' RECORDS COPIED'));}
+        
+        function dl(blob,fn){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;a.click();}
+        function exportJSON(){if(!generated.length){Swal.fire({icon:'error',title:'NO DATA',background:'#070000',color:'#fff',confirmButtonColor:'#dc2626'});return;}dl(new Blob([JSON.stringify(generated.map(u=>u._parsed||u),null,2)],{type:'application/json'}),'BCT_'+Date.now()+'.json');showToast('JSON EXPORTED');}
+        function exportCSV(){
+            if(!generated.length){Swal.fire({icon:'error',title:'NO DATA',background:'#070000',color:'#fff',confirmButtonColor:'#dc2626'});return;}
+            const keys=['name','street','city','state','post','country','nat','phone','cell','email','dob','age','gender','user','pass'];
+            const rows=generated.map(u=>{const p=u._parsed||{};return keys.map(k=>`"${String(p[k]||'').replace(/"/g,'""')}"`).join(',');}).join('\n');
+            dl(new Blob([keys.join(',')+'\n'+rows],{type:'text/csv'}),'BCT_'+Date.now()+'.csv');showToast('CSV EXPORTED');
+        }
+        function exportTXT(){if(!generated.length){Swal.fire({icon:'error',title:'NO DATA',background:'#070000',color:'#fff',confirmButtonColor:'#dc2626'});return;}dl(new Blob([generated.map(getCardText).join('\n\n'+'═'.repeat(44)+'\n\n')],{type:'text/plain'}),'BCT_'+Date.now()+'.txt');showToast('TXT EXPORTED');}
+        function doClear(){
+            generated=[];
+            ge('cardsArea').innerHTML=`<div class="empty-state"><i class="fa-solid fa-map-location-dot" style="font-size:30px; opacity:0.5; margin-bottom:10px;"></i><br><strong>AWAITING GENERATION</strong><br>Select a country, set quantity, and press Generate.</div>`;
+            ge('tmCount').textContent='0 RECORDS';showToast('CLEARED');
+        }
+    </script>
+</body>
+</html>
+
