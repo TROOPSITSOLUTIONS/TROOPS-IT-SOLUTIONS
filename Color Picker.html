@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Colour Picker Pro - Team BCT</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* ========================================================
+           GLOBAL SITE STYLES (Age Calculator Theme)
+           ======================================================== */
+        :root {
+            --bg-color: #030000;
+            --header-bg: #000000;
+            --card-bg: #070000;
+            --border-color: #3a0808;
+            --border-light: rgba(220, 38, 38, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-blue: #dc2626; /* Deep Red Accent */
+            
+            /* Status Colors */
+            --red: #ef4444; 
+            --green: #10b981; 
+            --yellow: #eab308; 
+            --blue: #3b82f6;
+            --purple: #c084fc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; -webkit-tap-highlight-color: transparent;}
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 2px; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #150000 0%, transparent 40%);
+        }
+
+        /* Sticky Wrapper */
+        .sticky-wrapper {
+            position: sticky; top: 0; z-index: 1000; background-color: #000000;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        header { background-color: #000000; padding: 15px 20px; display: flex; align-items: center; }
+        .menu-icon { font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: auto; width: 25px; display: inline-block; }
+        .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
+        .logo-img-container { display: flex; align-items: center; justify-content: center; }
+        .logo-img-container img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); object-fit: cover; }
+        .logo-icon { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #150000, #050000); padding: 6px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); font-size: 15px; color: var(--accent-blue); width: 38px; height: 38px; }
+        .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
+        .logo-text span { font-family: 'Rajdhani', sans-serif; font-weight: 700; margin-left: 4px; color: #b91c1c; text-transform: uppercase !important; }
+
+        /* Dropdown Menu */
+        .nav-menu-dropdown {
+            background: linear-gradient(to bottom, #050000, #000000); backdrop-filter: blur(10px);
+            border-top: 1px solid #1a0000; border-bottom: 1px solid #3a0808; display: none; padding: 10px 0;
+            position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9); animation: menuFadeIn 0.2s ease-out forwards;
+        }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-links { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .dropdown-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: transparent; border-left: 3px solid transparent; border-bottom: 1px solid #0f0000; transition: all 0.2s ease; }
+        .dropdown-links a:hover { background: linear-gradient(90deg, #150000 0%, #000000 100%); color: #ffffff; border-left: 3px solid #dc2626; padding-left: 24px; }
+        .dropdown-links a:hover i { color: #dc2626; }
+
+        /* Container */
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; width: 100%; flex-grow: 1; }
+
+        /* Announcement Banner */
+        .announcement-banner {
+            background: linear-gradient(145deg, #0f0000, #030000); border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 25px; display: none; position: relative; overflow: hidden;
+        }
+        .announcement-banner p { font-family: 'Play', sans-serif; font-weight: 400; font-size: 15px; line-height: 1.6; color: #ffc2c2; margin-bottom: 15px; position: relative; z-index: 1; }
+        .join-btn { display: inline-block; position: relative; z-index: 1; background-color: #dc2626; color: white; padding: 10px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s ease; }
+        .join-btn:hover { background-color: #ef4444; transform: translateY(-2px); }
+
+        /* Popular Tools */
+        .popular-tools-btn { background-color: #0a0000; border: none; border-left: 4px solid #dc2626; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); padding: 14px 18px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 20px; transition: all 0.3s ease; }
+        .popular-tools-btn:hover { background-color: #150000; border-left-color: #ff4d4d; }
+        .popular-tools-list { background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 4px; margin-top: -15px; margin-bottom: 20px; display: none; flex-direction: column; overflow: hidden; }
+        .popular-item { padding: 12px 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); font-size: 13px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .popular-item:hover { background-color: #120000; }
+        .popular-item i { color: rgba(220, 38, 38, 0.8); }
+
+        /* Tool Card */
+        .tool-card {
+            background: linear-gradient(145deg, #0a0000, #030000); border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .tool-card h2 { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: white; margin-bottom: 20px; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+
+        /* General Button */
+        .calc-btn { width: 100%; background-color: var(--accent-blue); color: white; border: none; padding: 14px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 1px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px;}
+        .calc-btn:hover:not(:disabled) { background-color: #ef4444; box-shadow: 0 6px 15px rgba(220, 38, 38, 0.4); transform: translateY(-2px); }
+        .calc-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ========================================================
+           COLOR PICKER SPECIFIC UI (Adapted to Age Calc Theme)
+           ======================================================== */
+
+        /* Tabs System */
+        .tabs { display: flex; gap: 6px; margin-bottom: 20px; padding: 4px; background: rgba(220, 38, 38, 0.04); border: 1px solid var(--border-color); border-radius: 8px; }
+        .tab {
+            flex: 1; padding: 10px 6px; font-family: 'Rajdhani', sans-serif; font-size: 13px; letter-spacing: 1px; font-weight: 700;
+            border-radius: 6px; border: none; cursor: pointer; transition: all .25s; color: var(--text-muted); background: transparent; text-align: center;
+        }
+        .tab.active { background: rgba(220, 38, 38, 0.15); color: var(--accent-blue); border: 1px solid rgba(220, 38, 38, 0.3); }
+        .tab-panel { display: none; animation: menuFadeIn 0.3s ease; }
+        .tab-panel.active { display: block; }
+        .tab svg, .tab i { margin-bottom: 4px; display: block; margin-left: auto; margin-right: auto; width: 16px; height: 16px; font-size:16px;}
+
+        /* Section Title */
+        .sec-title {
+            font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--accent-blue);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;
+            display: flex; align-items: center; gap: 8px; text-shadow: 0 0 10px rgba(220,38,38,0.5);
+        }
+        .sec-title::after { content:''; flex:1; height:1px; background: linear-gradient(90deg, var(--accent-blue), transparent); opacity: 0.5; }
+
+        /* VIEW 1: ENGINE */
+        .preview-box {
+            width: 100%; height: 90px; border-radius: 8px; margin-bottom: 25px;
+            border: 1px solid var(--accent-blue); box-shadow: 0 10px 25px rgba(220,38,38,0.2);
+            position: relative; overflow: hidden;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAACpJREFUKFNjTc3W/88ABowgdgxL1m9A52HEqIiR1YEMwKkYlxm4FBM2CwB8GguP63Ip6AAAAABJRU5ErkJggg==');
+        }
+        .preview-fill {
+            position: absolute; inset: 0; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; transition: background-color 0.1s;
+        }
+        .p-hex { font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+        .p-rgb { font-family: 'JetBrains Mono', monospace; font-size: 11px; opacity: 0.9; margin-top: 5px; font-weight: bold; background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 4px; }
+
+        /* Color Wheel */
+        .wheel-container {
+            width: 250px; height: 250px; margin: 0 auto 30px; position: relative;
+            border-radius: 50%; padding: 5px; background: linear-gradient(145deg, #1c0303, #000);
+            box-shadow: 0 0 30px rgba(220,38,38,0.1), inset 0 0 15px #000;
+            border: 1px solid rgba(220,38,38,0.3);
+        }
+        #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; touch-action: none; }
+        .wheel-cursor {
+            position: absolute; width: 26px; height: 26px; border: 3px solid #fff;
+            border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none;
+            box-shadow: 0 0 15px rgba(0,0,0,0.9); z-index: 10; transition: background-color 0.1s;
+        }
+
+        /* Sliders */
+        .slider-card {
+            background: #000; border: 1px solid var(--border-light);
+            padding: 15px; border-radius: 8px; margin-bottom: 15px;
+        }
+        .sl-top { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-weight: 700; margin-bottom: 12px; letter-spacing: 1px; }
+        .sl-val { color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; outline: none; background: #111; border: 1px solid rgba(220,38,38,0.4); }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+            background: #fff; cursor: pointer; border: 4px solid var(--accent-blue); box-shadow: 0 0 10px rgba(220,38,38,0.5);
+        }
+        #slV { background: linear-gradient(to right, #000, #dc2626, #fff); }
+        #slA { background: linear-gradient(to right, transparent, var(--accent-blue)); }
+
+        /* Data Grid */
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        .data-box {
+            background: #000; border: 1px solid var(--border-light);
+            padding: 15px; border-radius: 8px; position: relative; transition: 0.2s;
+            border-left: 3px solid rgba(220,38,38,0.5); cursor: pointer;
+        }
+        .data-box:active { border-color: var(--accent-blue); background: rgba(220,38,38,0.05); transform: scale(0.98); border-left-color: var(--accent-blue); }
+        .d-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-muted); margin-bottom: 5px; letter-spacing: 1px; }
+        .d-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #fff; font-weight: bold; }
+        .btn-copy { position: absolute; top: 15px; right: 15px; color: rgba(220,38,38,0.5); font-size: 14px; background: none; border: none; transition: 0.2s; }
+        .data-box:active .btn-copy { color: var(--accent-blue); text-shadow: 0 0 10px var(--accent-blue); }
+
+        .code-box {
+            background: #000; border: 1px dashed rgba(220,38,38,0.5); border-radius: 8px;
+            padding: 15px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent-blue);
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;
+        }
+        .code-box:active { background: rgba(220,38,38,0.1); border-color: var(--accent-blue); }
+
+        /* VIEW 2: TOOLS */
+        .scale-wrap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 25px; }
+        .scale-bar { display: flex; height: 50px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-light); }
+        .s-color { flex: 1; transition: flex 0.3s; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .s-color:hover, .s-color:active { flex: 2; z-index: 2; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        .s-hex { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #fff; opacity: 0; background: rgba(0,0,0,0.6); padding: 2px 4px; border-radius: 3px; transition: 0.3s; }
+        .s-color:hover .s-hex, .s-color:active .s-hex { opacity: 1; }
+
+        .pal-container { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 25px; }
+        .pal-card { background: #000; border: 1px solid var(--border-light); padding: 15px; border-radius: 8px; }
+        .pal-title { font-family: 'Rajdhani', sans-serif; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; font-weight: 700; }
+        .pal-row { display: flex; height: 45px; border-radius: 4px; overflow: hidden; border: 1px solid #111; }
+        .pal-c { flex: 1; display: flex; justify-content: center; align-items: center; transition: flex 0.3s; cursor: pointer; }
+        .pal-c:active { flex: 2; }
+        .pal-c .pal-hex { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #fff; opacity: 0; background: rgba(0,0,0,0.5); padding: 2px 4px; border-radius: 3px; }
+        .pal-c:active .pal-hex { opacity: 1; }
+
+        .wcag-card { background: #000; border: 1px solid var(--border-light); padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+        .w-txt { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; margin-bottom: 10px; letter-spacing: 2px; }
+        .w-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 5px 15px; border-radius: 20px; font-weight: bold; display: inline-block; border: 1px solid currentColor; }
+
+        /* VIEW 3: SCANNER */
+        .upload-area {
+            border: 2px dashed rgba(220,38,38,0.5); background: rgba(220,38,38,0.05);
+            border-radius: 10px; padding: 50px 20px; text-align: center;
+            margin-top: 10px; transition: 0.3s; cursor: pointer;
+        }
+        .upload-area:active { background: rgba(220,38,38,0.15); border-color: var(--accent-blue); }
+        .upload-area i { font-size: 40px; color: var(--accent-blue); margin-bottom: 15px; }
+        .upload-area h3 { font-family: 'Orbitron', sans-serif; font-size: 16px; color: #fff; margin-bottom: 5px; letter-spacing: 1px; }
+        .upload-area p { font-size: 12px; color: var(--text-muted); }
+
+        .scanner-stage {
+            position: relative; margin-top: 20px; display: none; width: 100%;
+            border-radius: 8px; overflow: hidden; border: 1px solid rgba(220,38,38,0.5);
+            background: #000; touch-action: none; box-shadow: 0 10px 30px rgba(220,38,38,0.1);
+        }
+        #targetImg { width: 100%; display: block; object-fit: contain; }
+        
+        .loupe {
+            position: absolute; width: 90px; height: 90px; border: 3px solid var(--accent-blue);
+            border-radius: 50%; pointer-events: none; display: none;
+            box-shadow: 0 5px 25px #000, 0 0 15px rgba(220,38,38,0.5); 
+            background: #000; z-index: 50; overflow: hidden;
+        }
+        .loupe-cross {
+            position: absolute; top: 50%; left: 50%; width: 8px; height: 8px;
+            background: transparent; border: 1px solid #fff;
+            transform: translate(-50%, -50%); border-radius: 50%;
+        }
+
+        .scan-result {
+            display: none; margin-top: 20px; background: #000;
+            border: 1px solid var(--border-light); border-radius: 8px; padding: 15px;
+            align-items: center; gap: 15px; box-shadow: 0 5px 20px rgba(220,38,38,0.1);
+            cursor: pointer;
+        }
+        .scan-result:active { background: rgba(220,38,38,0.1); border-color:var(--accent-blue);}
+        #scanColorBox { width: 50px; height: 50px; border-radius: 6px; border: 2px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .scan-data { flex: 1; }
+        .scan-hex { font-family: 'JetBrains Mono', monospace; font-size: 20px; color: #fff; font-weight: bold; }
+        .scan-rgb { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+        /* Footer */
+        footer { position: relative; background-color: #000000; padding: 30px 15px 15px 15px; margin-top: auto; border-top: 1px solid rgba(220, 38, 38, 0.1); }
+        footer::before { content: ''; position: absolute; top: -1px; left: 20%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.8), transparent); box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .footer-about h4 { color: rgba(220, 38, 38, 0.9); margin-bottom: 8px; font-size: 14px; }
+        .footer-about p { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .footer-col h5 { font-size: 13px; color: var(--text-main); margin-bottom: 10px; }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color 0.2s; }
+        .footer-links a:hover { color: #fecaca; }
+        .copyright-bar { position: relative; max-width: 600px; margin: 20px auto 0 auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: center; align-items: center; font-size: 13px; color: #9ca3af; text-align: center; }
+        .trustiq-link { color: #dc2626 !important; font-weight: 700; text-decoration: none; letter-spacing: 0.5px; transition: all 0.3s ease; }
+        .trustiq-link:hover { color: #ef4444 !important; text-shadow: 0 0 8px rgba(220, 38, 38, 0.6); }
+        .scroll-top-btn { position: absolute; right: 0; background: linear-gradient(145deg, #120000, #050000); color: white; border: 1px solid rgba(220, 38, 38, 0.3); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05); }
+        .scroll-top-btn:hover { background: #2e0505; border-color: rgba(220, 38, 38, 0.8); color: #ffc2c2; }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Header -->
+    <div class="sticky-wrapper">
+        <header>
+            <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
+            <a href="/" class="logo" id="headerLogoContainer"></a>
+        </header>
+        <div class="nav-menu-dropdown" id="navDropdown">
+            <ul class="dropdown-links" id="drawerLinksContainer"></ul>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <div class="announcement-banner" id="announceBanner">
+            <p id="announcementText"></p>
+            <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
+        </div>
+
+        <div class="popular-tools-btn" id="popularBtn">
+            <span>Popular Tools</span>
+            <i class="fa-solid fa-chevron-right" id="popArrow"></i>
+        </div>
+        <div class="popular-tools-list" id="popularList"></div>
+        
+        <!-- Tool Card: COLOUR PICKER PRO -->
+        <div class="tool-card">
+            <h2>COLOUR PICKER PRO <span style="font-size:10px; border:1px solid var(--border-color); padding: 2px 6px; border-radius:4px; font-weight:500;">v4.0</span></h2>
+            
+            <!-- TABS (Replaces bottom nav) -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('engine', this)"><i class="fa-solid fa-dharmachakra"></i> ENGINE</button>
+                <button class="tab" onclick="switchTab('tools', this)"><i class="fa-solid fa-vials"></i> TOOLS</button>
+                <button class="tab" onclick="switchTab('scanner', this)"><i class="fa-solid fa-crosshairs"></i> SCANNER</button>
+            </div>
+
+            <!-- TAB 1: ENGINE -->
+            <div id="tab-engine" class="tab-panel active">
+                
+                <div class="preview-box">
+                    <div class="preview-fill" id="previewBg">
+                        <div class="p-hex" id="previewHex">#DC2626</div>
+                        <div class="p-rgb" id="previewRgbText">rgb(220, 38, 38)</div>
+                    </div>
+                </div>
+
+                <div class="wheel-container" id="wheelBox">
+                    <canvas id="wheelCanvas" width="250" height="250"></canvas>
+                    <div class="wheel-cursor" id="cursor"></div>
+                </div>
+
+                <div class="slider-card">
+                    <div class="sl-top"><span>LUMINANCE (V)</span><span class="sl-val" id="vVal">100%</span></div>
+                    <input type="range" id="slV" min="0" max="100" value="100">
+                </div>
+                <div class="slider-card">
+                    <div class="sl-top"><span>OPACITY (A)</span><span class="sl-val" id="aVal">100%</span></div>
+                    <input type="range" id="slA" min="0" max="100" value="100">
+                </div>
+
+                <div class="sec-title"><i class="fa-solid fa-database"></i> Color Data Matrix</div>
+                <div class="data-grid">
+                    <div class="data-box" onclick="copyData('outHex')">
+                        <i class="fa-solid fa-copy btn-copy"></i>
+                        <div class="d-lbl">HEX CODE</div><div class="d-val" id="outHex">#DC2626</div>
+                    </div>
+                    <div class="data-box" onclick="copyData('outRgb')">
+                        <i class="fa-solid fa-copy btn-copy"></i>
+                        <div class="d-lbl">RGB VALUE</div><div class="d-val" id="outRgb">220, 38, 38</div>
+                    </div>
+                    <div class="data-box" onclick="copyData('outHsl')">
+                        <i class="fa-solid fa-copy btn-copy"></i>
+                        <div class="d-lbl">HSL VALUE</div><div class="d-val" id="outHsl">360, 71%, 51%</div>
+                    </div>
+                    <div class="data-box" onclick="copyData('outCmyk')">
+                        <i class="fa-solid fa-copy btn-copy"></i>
+                        <div class="d-lbl">CMYK</div><div class="d-val" id="outCmyk">0, 83, 83, 14</div>
+                    </div>
+                </div>
+
+                <div class="code-box" onclick="copyData('codeCss')">
+                    <span><i class="fa-solid fa-code"></i> CSS VAR</span>
+                    <span id="codeCss">--bct-main: #DC2626;</span>
+                </div>
+            </div>
+
+            <!-- TAB 2: TOOLS -->
+            <div id="tab-tools" class="tab-panel">
+                
+                <div class="sec-title"><i class="fa-solid fa-fire"></i> Red Scale Generator</div>
+                <div style="font-family:'Inter', sans-serif; font-size:11px; color:var(--text-muted); margin-bottom:10px;">Auto-generated intensity scale based on selection</div>
+                <div class="scale-wrap">
+                    <div class="scale-bar" id="redScaleBar"></div>
+                </div>
+
+                <div class="sec-title" style="margin-top:30px;"><i class="fa-solid fa-swatchbook"></i> Responsive Palettes</div>
+                <div class="pal-container">
+                    <div class="pal-card">
+                        <div class="pal-title">Complementary</div>
+                        <div class="pal-row" id="palComp"></div>
+                    </div>
+                    <div class="pal-card">
+                        <div class="pal-title">Analogous</div>
+                        <div class="pal-row" id="palAna"></div>
+                    </div>
+                    <div class="pal-card">
+                        <div class="pal-title">Triadic</div>
+                        <div class="pal-row" id="palTri"></div>
+                    </div>
+                </div>
+
+                <div class="sec-title" style="margin-top:30px;"><i class="fa-solid fa-eye"></i> WCAG Contrast Lab</div>
+                <div class="wcag-card">
+                    <div class="w-txt" id="tbText">DARK BACKGROUND</div>
+                    <div class="w-badge" id="tbScore" style="background:var(--green); color:#000;">PASS (12.5)</div>
+                    <p style="font-family:'Share Tech Mono', monospace; font-size:10px; color:#666; margin-top:10px;">Simulates readability on deep black (#000)</p>
+                </div>
+            </div>
+
+            <!-- TAB 3: IMAGE SCANNER -->
+            <div id="tab-scanner" class="tab-panel">
+                <div class="sec-title" style="margin-top:0;"><i class="fa-solid fa-satellite-dish"></i> Image Pixel Extractor</div>
+                
+                <div class="upload-area" id="upZone" onclick="document.getElementById('fileIn').click()">
+                    <i class="fa-solid fa-fingerprint"></i>
+                    <h3>TAP TO UPLOAD</h3>
+                    <p>Load an image to extract exact hex codes</p>
+                    <input type="file" id="fileIn" hidden accept="image/*">
+                </div>
+
+                <div class="scanner-stage" id="imgStage">
+                    <img id="targetImg" src="">
+                    <div class="loupe" id="loupe"><div class="loupe-cross"></div></div>
+                </div>
+
+                <div class="scan-result" id="imgResult" onclick="copyData('imgHex')">
+                    <div id="scanColorBox"></div>
+                    <div class="scan-data">
+                        <div class="scan-hex" id="imgHex">#000000</div>
+                        <div class="scan-rgb" id="imgRgb">rgb(0, 0, 0)</div>
+                    </div>
+                    <i class="fa-solid fa-copy" style="color:var(--accent-blue); font-size:20px;"></i>
+                </div>
+
+                <button class="calc-btn" id="btnResetImg" style="margin-top:20px; background:#111; border:1px solid #333; display:none;" onclick="resetImage()">
+                    <i class="fa-solid fa-rotate-right"></i> UPLOAD NEW IMAGE
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Hidden Canvas for Image Processing -->
+    <canvas id="pCanvas" style="display:none;"></canvas>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <h4>About Us</h4>
+                <p id="footerAboutText">One Step Online Tools</p>
+            </div>
+            <div class="footer-grid" id="footerGridContainer"></div>
+        </div>
+        <div class="copyright-bar">
+            <span class="copyright-text" id="copyrightSpan">
+                &copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">Trustiq</a>.
+            </span>
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. SITE CONFIG LOGIC (GIST API)
+        // ==========================================
+        const GIST_OWNER = 'TROOPSITSOLUTIONS';
+        const GIST_ID = '3bfa4b9ca8dbdc1038918d63329096b3';
+        const GIST_URL = `https://gist.githubusercontent.com/${GIST_OWNER}/${GIST_ID}/raw/tools.json`;
+
+        let siteData = null;
+
+        async function loadData() {
+            try {
+                const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
+                if (res.ok) {
+                    siteData = await res.json();
+                    applyTheme();
+                    applySiteConfig();
+                }
+            } catch (e) { console.error("Gist Load Failed."); }
+        }
+
+        function applyTheme() {
+            if (siteData && siteData.themeConfig) {
+                const root = document.documentElement;
+                Object.entries(siteData.themeConfig).forEach(([key, val]) => {
+                    const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+                    root.style.setProperty(cssKey, val);
+                });
+            }
+        }
+
+        function applySiteConfig() {
+            if(!siteData) return;
+            // Header
+            const logoContainer = document.getElementById('headerLogoContainer');
+            let imgHTML = '';
+            if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
+                imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
+            } else {
+                let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
+                if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
+                imgHTML = `<div class="logo-icon"><i class="${iconClass}"></i></div>`;
+            }
+
+            const siteName = siteData.siteConfig.siteName || "TEAM BCT";
+            let textHTML = "";
+            const parts = siteName.trim().split(/\s+/);
+            if (parts.length > 1) {
+                textHTML = `${parts[0].toUpperCase()}<span>${parts.slice(1).join(" ").toUpperCase()}</span>`;
+            } else {
+                if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
+                    textHTML = `TEAM<span>${siteName.slice(4).toUpperCase()}</span>`;
+                } else {
+                    textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
+                }
+            }
+            logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
+
+            // Dropdown Menu
+            const drawerLinks = document.getElementById('drawerLinksContainer');
+            drawerLinks.innerHTML = '';
+            siteData.navigationMenu.forEach(menu => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
+                drawerLinks.appendChild(li);
+            });
+
+            // Announcement
+            const banner = document.getElementById('announceBanner');
+            if (siteData.siteConfig.showAnnouncement) {
+                banner.style.display = 'block';
+                document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
+                document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
+            }
+
+            // Popular tools
+            const popList = document.getElementById('popularList');
+            popList.innerHTML = '';
+            siteData.siteConfig.popularTools.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'popular-item';
+                div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
+                div.onclick = function() { window.location.href = tool.link; };
+                popList.appendChild(div);
+            });
+
+            // Footer
+            document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
+            const footerGrid = document.getElementById('footerGridContainer');
+            footerGrid.innerHTML = '';
+            siteData.footerConfig.columns.forEach(col => {
+                const div = document.createElement('div');
+                div.className = 'footer-col';
+                div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
+                const ul = div.querySelector('.footer-links');
+                col.links.forEach(l => {
+                    ul.innerHTML += `<li style="margin-bottom:8px;"><a href="${l.url}" style="color:var(--text-muted); text-decoration:none; font-size:12px;">${escapeHtml(l.title)}</a></li>`;
+                });
+                footerGrid.appendChild(div);
+            });
+        }
+
+        function toggleNavDropdown() {
+            const dropdown = document.getElementById('navDropdown');
+            const menuIcon = document.querySelector('.menu-icon i');
+            if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; menuIcon.className = 'fa-solid fa-bars'; } 
+            else { dropdown.style.display = 'block'; menuIcon.className = 'fa-solid fa-xmark'; }
+        }
+
+        document.getElementById('popularBtn').addEventListener('click', () => {
+            const list = document.getElementById('popularList');
+            const arr = document.getElementById('popArrow');
+            if (list.style.display === 'flex') { list.style.display = 'none'; arr.className = 'fa-solid fa-chevron-right'; }
+            else { list.style.display = 'flex'; arr.className = 'fa-solid fa-chevron-down'; }
+        });
+
+        function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])) : ''; }
+
+        // ==========================================
+        // 2. COLOUR PICKER PRO EXACT LOGIC
+        // ==========================================
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function copyData(id) { 
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text);
+            Swal.fire({title: 'Copied!', text: text, icon: 'success', toast: true, position: 'bottom', timer: 1500, showConfirmButton: false, background: '#070000', color: '#10b981'});
+        }
+        window.copyHex = function(hex) { 
+            navigator.clipboard.writeText(hex);
+            Swal.fire({title: 'Copied!', text: hex, icon: 'success', toast: true, position: 'bottom', timer: 1500, showConfirmButton: false, background: '#070000', color: '#10b981'});
+        }
+
+        // --- Math & Conversions ---
+        function hsvToRgb(h,s,v){ s/=100; v/=100; let f=(n,k=(n+h/60)%6)=>v-v*s*Math.max(Math.min(k,4-k,1),0); return {r:Math.round(f(5)*255),g:Math.round(f(3)*255),b:Math.round(f(1)*255)}; }
+        function rgbToHex(r,g,b){ return "#" + ((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1).toUpperCase(); }
+        function hsvToHsl(h,s,v){ s/=100; v/=100; const l=(2-s)*v/2; if(l!=0){if(l==1)s=0; else if(l<0.5)s=s*v/(l*2); else s=s*v/(2-l*2);} return {h:Math.round(h), s:Math.round(s*100), l:Math.round(l*100)}; }
+        function rgbToCmyk(r,g,b){ let c=1-(r/255), m=1-(g/255), y=1-(b/255), k=Math.min(c,Math.min(m,y)); return {c:Math.round(((c-k)/(1-k)||0)*100), m:Math.round(((m-k)/(1-k)||0)*100), y:Math.round(((y-k)/(1-k)||0)*100), k:Math.round(k*100)}; }
+        function hslToHex(h,s,l){ l/=100; const a=s*Math.min(l,1-l)/100; const f=n=>{const k=(n+h/30)%12; const color=l-a*Math.max(Math.min(k-3,9-k,1),-1); return Math.round(255*color).toString(16).padStart(2,'0');}; return `#${f(0)}${f(8)}${f(4)}`.toUpperCase(); }
+        
+        function getLuminance(r, g, b) { let a = [r, g, b].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722; }
+        function getContrast(rgb1, rgb2) { let lum1 = getLuminance(rgb1.r, rgb1.g, rgb1.b); let lum2 = getLuminance(rgb2.r, rgb2.g, rgb2.b); let brightest = Math.max(lum1, lum2); let darkest = Math.min(lum1, lum2); return (brightest + 0.05) / (darkest + 0.05); }
+
+        // --- Color Wheel Engine ---
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const wheelBox = document.getElementById('wheelBox');
+        const cursor = document.getElementById('cursor');
+        
+        const W_SIZE = 250, CX = 125, CY = 125, RAD = 125;
+        let h = 360, s = 100, v = 100, a = 1; // Default to Red
+
+        function drawWheel() {
+            ctx.clearRect(0,0,W_SIZE,W_SIZE);
+            for(let i=0; i<360; i++) {
+                ctx.beginPath(); ctx.moveTo(CX, CY);
+                ctx.arc(CX, CY, RAD, (i-0.6)*(Math.PI/180), (i+1.6)*(Math.PI/180));
+                ctx.fillStyle = `hsl(${i}, 100%, 50%)`; ctx.fill();
+            }
+            const g = ctx.createRadialGradient(CX, CY, 0, CX, CY, RAD);
+            g.addColorStop(0, 'white'); g.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(CX, CY, RAD, 0, Math.PI*2); ctx.fill();
+        }
+        drawWheel();
+
+        function updateWheel(x, y) {
+            const dx = x - CX; const dy = y - CY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            let ang = Math.atan2(dy, dx) * (180/Math.PI);
+            if(ang < 0) ang += 360;
+            let sat = (dist/RAD)*100; if(sat > 100) sat = 100;
+
+            const fDist = Math.min(dist, RAD);
+            const rAng = ang * (Math.PI/180);
+            cursor.style.left = (CX + fDist * Math.cos(rAng)) + 'px';
+            cursor.style.top = (CY + fDist * Math.sin(rAng)) + 'px';
+
+            h = ang; s = sat; updateUI();
+        }
+
+        function handleInput(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            let x = (clientX - rect.left) * (W_SIZE / rect.width);
+            let y = (clientY - rect.top) * (W_SIZE / rect.height);
+            updateWheel(x, y);
+        }
+
+        let isDrag = false;
+        wheelBox.addEventListener('touchstart', e => { isDrag=true; handleInput(e); }, {passive:true});
+        wheelBox.addEventListener('touchmove', e => { if(isDrag) { e.preventDefault(); handleInput(e); } }, {passive:false});
+        window.addEventListener('touchend', () => { isDrag=false; });
+
+        wheelBox.addEventListener('mousedown', e => { isDrag=true; handleInput(e); });
+        window.addEventListener('mousemove', e => { if(isDrag) handleInput(e); });
+        window.addEventListener('mouseup', () => { isDrag=false; });
+
+        document.getElementById('slV').addEventListener('input', e => { v = parseInt(e.target.value); document.getElementById('vVal').innerText=v+'%'; updateUI(); });
+        document.getElementById('slA').addEventListener('input', e => { a = parseInt(e.target.value)/100; document.getElementById('aVal').innerText=Math.round(a*100)+'%'; updateUI(); });
+
+        // --- UI Sync ---
+        function updateUI() {
+            const rgb = hsvToRgb(h,s,v); const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+            const hsl = hsvToHsl(h,s,v); const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
+            const rgbaStr = `rgba(${rgb.r},${rgb.g},${rgb.b},${a})`;
+            const isDark = (v > 60 && s < 40);
+
+            // Preview
+            document.getElementById('previewBg').style.backgroundColor = rgbaStr;
+            document.getElementById('previewHex').innerText = hex;
+            document.getElementById('previewHex').style.color = isDark ? '#000' : '#fff';
+            document.getElementById('previewRgbText').innerText = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+            document.getElementById('previewRgbText').style.color = isDark ? '#33000a' : '#ff99aa';
+            cursor.style.backgroundColor = hex;
+
+            // Cards
+            document.getElementById('outHex').innerText = hex;
+            document.getElementById('outRgb').innerText = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+            document.getElementById('outHsl').innerText = `${hsl.h}, ${hsl.s}%, ${hsl.l}%`;
+            document.getElementById('outCmyk').innerText = `${cmyk.c}, ${cmyk.m}, ${cmyk.y}, ${cmyk.k}`;
+            
+            document.getElementById('codeCss').innerText = `--bct-main: ${hex};`;
+
+            // WCAG Contrast
+            const cBlack = getContrast(rgb, {r:0,g:0,b:0}).toFixed(2);
+            document.getElementById('tbText').style.color = rgbaStr;
+            document.getElementById('tbScore').innerText = cBlack >= 4.5 ? `PASS (${cBlack})` : `FAIL (${cBlack})`;
+            document.getElementById('tbScore').style.background = cBlack >= 4.5 ? 'var(--green)' : 'var(--red)';
+
+            // Generate Scale & Palettes
+            generateRedScale(hsl);
+            generatePalettes(hsl);
+        }
+
+        // Red Scale Generator
+        function generateRedScale(hsl) {
+            const bar = document.getElementById('redScaleBar'); bar.innerHTML = '';
+            const lightLevels = [80, 65, hsl.l, 35, 20];
+            lightLevels.forEach(l => {
+                let shex = hslToHex(hsl.h, hsl.s, l);
+                bar.innerHTML += `<div class="s-color" style="background:${shex}" onclick="copyHex('${shex}')"><div class="s-hex">${shex}</div></div>`;
+            });
+        }
+
+        function generatePalettes(hsl) {
+            const createRow = (id, angles) => {
+                const el = document.getElementById(id); el.innerHTML = '';
+                angles.forEach(ang => {
+                    let nh = (hsl.h + ang) % 360; if(nh<0) nh+=360;
+                    let phex = hslToHex(nh, hsl.s, hsl.l);
+                    el.innerHTML += `<div class="pal-c" style="background:${phex}" onclick="copyHex('${phex}')"><div class="pal-hex">${phex}</div></div>`;
+                });
+            };
+            createRow('palComp', [0, 180]); createRow('palAna', [0, 30, -30]); createRow('palTri', [0, 120, 240]);
+        }
+
+        // --- Image Scanner ---
+        const fileIn = document.getElementById('fileIn');
+        const img = document.getElementById('targetImg');
+        const imgStage = document.getElementById('imgStage');
+        const loupe = document.getElementById('loupe');
+        const pCanvas = document.getElementById('pCanvas');
+        const pCtx = pCanvas.getContext('2d');
+
+        fileIn.addEventListener('change', e => {
+            const f = e.target.files[0];
+            if(f) {
+                const r = new FileReader();
+                r.onload = evt => {
+                    img.src = evt.target.result;
+                    imgStage.style.display = 'block';
+                    document.getElementById('upZone').style.display = 'none';
+                    document.getElementById('btnResetImg').style.display = 'flex';
+                    img.onload = () => {
+                        pCanvas.width = img.naturalWidth; pCanvas.height = img.naturalHeight;
+                        pCtx.drawImage(img, 0, 0);
+                    }
+                };
+                r.readAsDataURL(f);
+            }
+        });
+
+        window.resetImage = function() {
+            img.src = ''; imgStage.style.display = 'none';
+            document.getElementById('imgResult').style.display = 'none';
+            document.getElementById('btnResetImg').style.display = 'none';
+            document.getElementById('upZone').style.display = 'block';
+        }
+
+        const pickImg = (e) => {
+            if(!img.src) return;
+            loupe.style.display = 'block';
+            
+            const r = img.getBoundingClientRect();
+            let cX = e.touches ? e.touches[0].clientX : e.clientX;
+            let cY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            if(cX < r.left || cX > r.right || cY < r.top || cY > r.bottom) return;
+
+            let x = cX - r.left; let y = cY - r.top;
+            
+            loupe.style.left = (x - 45) + 'px'; loupe.style.top = (y - 90) + 'px'; 
+
+            const sx = img.naturalWidth / r.width; const sy = img.naturalHeight / r.height;
+            let px = Math.floor(x * sx); let py = Math.floor(y * sy);
+            px = Math.max(0, Math.min(px, img.naturalWidth - 1));
+            py = Math.max(0, Math.min(py, img.naturalHeight - 1));
+
+            loupe.style.backgroundImage = `url(${img.src})`;
+            loupe.style.backgroundRepeat = 'no-repeat';
+            loupe.style.backgroundSize = `${r.width * 2}px ${r.height * 2}px`;
+            loupe.style.backgroundPosition = `-${x * 2 - 45}px -${y * 2 - 45}px`;
+
+            const d = pCtx.getImageData(px, py, 1, 1).data;
+            const hex = rgbToHex(d[0], d[1], d[2]);
+
+            loupe.style.borderColor = hex;
+            document.getElementById('imgResult').style.display = 'flex';
+            document.getElementById('scanColorBox').style.backgroundColor = hex;
+            document.getElementById('imgHex').innerText = hex;
+            document.getElementById('imgRgb').innerText = `rgb(${d[0]}, ${d[1]}, ${d[2]})`;
+        };
+
+        let isImgDrag = false;
+        imgStage.addEventListener('touchstart', e => { isImgDrag=true; pickImg(e); }, {passive:true});
+        imgStage.addEventListener('touchmove', e => { if(isImgDrag) { e.preventDefault(); pickImg(e); } }, {passive:false});
+        imgStage.addEventListener('touchend', () => { isImgDrag=false; loupe.style.display='none'; });
+
+        imgStage.addEventListener('mousemove', pickImg);
+        imgStage.addEventListener('mouseleave', () => loupe.style.display='none');
+
+        // Setup App
+        window.onload = () => {
+            loadData();
+            updateWheel(CX + 80, CY); // Set default color to red on load
+        }
+    </script>
+</body>
+</html>
