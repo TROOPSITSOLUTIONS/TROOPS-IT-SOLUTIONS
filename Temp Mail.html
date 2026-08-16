@@ -1,0 +1,696 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Temp Mail - Team BCT</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- External Server Config (GIST URL comes from here) -->
+    <script src="teambct-config-server.js"></script>
+    
+    <style>
+        /* ========================================================
+           GLOBAL SITE STYLES (Deep Black & Red Theme)
+           ======================================================== */
+        :root {
+            --bg-color: #030000;
+            --header-bg: #000000;
+            --card-bg: #070000;
+            --border-color: #3a0808;
+            --border-light: rgba(220, 38, 38, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-blue: #dc2626; /* Deep Red Accent */
+            
+            /* Status Colors */
+            --red: #ef4444; 
+            --green: #10b981; 
+            --yellow: #eab308; 
+            --blue: #3b82f6;
+            --cyan: #06b6d4;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; -webkit-tap-highlight-color: transparent;}
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 2px; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #150000 0%, transparent 40%);
+        }
+
+        /* Sticky Wrapper */
+        .sticky-wrapper {
+            position: sticky; top: 0; z-index: 1000; background-color: #000000;
+            border-bottom: 1px solid rgba(220, 38, 38, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        header { background-color: #000000; padding: 15px 20px; display: flex; align-items: center; }
+        .menu-icon { font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: auto; width: 25px; display: inline-block; }
+        .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
+        .logo-img-container { display: flex; align-items: center; justify-content: center; }
+        .logo-img-container img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); object-fit: cover; }
+        .logo-icon { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #150000, #050000); padding: 6px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); font-size: 15px; color: var(--accent-blue); width: 38px; height: 38px; }
+        .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
+        .logo-text span { font-family: 'Rajdhani', sans-serif; font-weight: 700; margin-left: 4px; color: #b91c1c; text-transform: uppercase !important; }
+
+        /* Dropdown Menu */
+        .nav-menu-dropdown {
+            background: linear-gradient(to bottom, #050000, #000000); backdrop-filter: blur(10px);
+            border-top: 1px solid #1a0000; border-bottom: 1px solid #3a0808; display: none; padding: 10px 0;
+            position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9); animation: menuFadeIn 0.2s ease-out forwards;
+        }
+        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-links { list-style: none; display: flex; flex-direction: column; gap: 0; }
+        .dropdown-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: transparent; border-left: 3px solid transparent; border-bottom: 1px solid #0f0000; transition: all 0.2s ease; }
+        .dropdown-links a:hover { background: linear-gradient(90deg, #150000 0%, #000000 100%); color: #ffffff; border-left: 3px solid #dc2626; padding-left: 24px; }
+        .dropdown-links a:hover i { color: #dc2626; }
+
+        /* Container */
+        .container { padding: 15px; max-width: 800px; margin: 0 auto; width: 100%; flex-grow: 1; }
+
+        /* Announcement Banner */
+        .announcement-banner {
+            background: linear-gradient(145deg, #0f0000, #030000); border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 25px; display: none; position: relative; overflow: hidden;
+        }
+        .announcement-banner p { font-family: 'Play', sans-serif; font-weight: 400; font-size: 15px; line-height: 1.6; color: #ffc2c2; margin-bottom: 15px; position: relative; z-index: 1; }
+        .join-btn { display: inline-block; position: relative; z-index: 1; background-color: #dc2626; color: white; padding: 10px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s ease; }
+        .join-btn:hover { background-color: #ef4444; transform: translateY(-2px); }
+
+        /* Popular Tools */
+        .popular-tools-btn { background-color: #0a0000; border: none; border-left: 4px solid #dc2626; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); padding: 14px 18px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 20px; transition: all 0.3s ease; }
+        .popular-tools-btn:hover { background-color: #150000; border-left-color: #ff4d4d; }
+        .popular-tools-list { background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 4px; margin-top: -15px; margin-bottom: 20px; display: none; flex-direction: column; overflow: hidden; }
+        .popular-item { padding: 12px 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); font-size: 13px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .popular-item:hover { background-color: #120000; }
+
+        /* Tool Card */
+        .tool-card {
+            background: linear-gradient(145deg, #0a0000, #030000); border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 10px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .tool-card h2 { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: white; margin-bottom: 20px; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Form Elements */
+        .form-group { margin-bottom: 20px; position: relative;}
+        .form-group label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
+        
+        .form-control { 
+            width: 100%; background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 6px; padding: 15px; color: var(--green); font-size: 18px; outline: none; transition: 0.2s; font-family: 'Share Tech Mono', monospace; font-weight: bold; text-align: center; letter-spacing: 1px;
+        }
+        .form-control:focus { 
+            border-color: var(--accent-blue); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(220, 38, 38, 0.2); background: #0a0000; 
+        }
+
+        /* Buttons */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        @media (max-width: 500px) { .action-grid { grid-template-columns: 1fr; } }
+        
+        .act-btn { background: #000; border: 1px solid var(--border-light); color: var(--text-muted); padding: 14px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase;}
+        .act-btn:hover { border-color: rgba(220, 38, 38, 0.5); color: var(--text-main); background: rgba(220, 38, 38, 0.05); }
+        .act-btn.primary { background: rgba(16,185,129,0.1); border-color: #10b981; color: #10b981; }
+        .act-btn.primary:hover { background: #10b981; color: #fff; box-shadow: 0 0 15px rgba(16,185,129,0.3); }
+
+        /* Inbox View */
+        .mail-view-box { border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden; background: #000; margin-top: 10px; }
+        .mail-header { padding: 12px 15px; background: #050000; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; }
+        .mail-header h3 { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px; }
+        .mail-badge { font-size: 11px; color: var(--accent-blue); font-weight: bold; padding: 3px 8px; background: rgba(220, 38, 38, 0.1); border-radius: 4px; border: 1px solid rgba(220, 38, 38, 0.2);}
+        
+        .inbox-list-area { min-height: 350px; max-height: 500px; overflow-y: auto; }
+        
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 350px; color: var(--text-muted); opacity: 0.6; }
+        .empty-state i { font-size: 35px; margin-bottom: 15px; color: var(--accent-blue); }
+        .empty-state p { font-size: 13px; font-weight: 500;}
+
+        /* Email Rows */
+        .mail-row { padding: 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); cursor: pointer; transition: 0.2s; position: relative; display: flex; flex-direction: column; gap: 5px; }
+        .mail-row:last-child { border-bottom: none; }
+        .mail-row:hover { background: rgba(220, 38, 38, 0.05); padding-left: 20px; border-left: 3px solid var(--accent-blue); }
+        
+        .m-sender { font-weight: 600; font-size: 14px; color: var(--text-main); }
+        .m-subject { font-size: 13px; color: var(--text-muted); font-family: 'Share Tech Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 60px; }
+        .m-time { position: absolute; right: 15px; top: 15px; font-size: 11px; color: var(--accent-blue); font-family: 'Share Tech Mono', monospace; font-weight: bold; }
+
+        /* Reader View */
+        .reader-header { padding: 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); background: #030000; }
+        .r-subject { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; word-break: break-all; }
+        .r-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: flex; flex-wrap: wrap; gap: 5px;}
+        .r-meta strong { color: var(--accent-blue); min-width: 45px; display: inline-block; }
+        
+        .reader-body { background: #070000; min-height: 300px; padding: 0; }
+        .mail-iframe { width: 100%; height: 400px; border: none; display: block; }
+
+        .back-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; font-family: 'Rajdhani', sans-serif; font-weight: bold; text-transform: uppercase; transition: 0.2s; display: flex; align-items: center; gap: 8px;}
+        .back-btn:hover { color: var(--accent-blue); }
+
+        /* Footer */
+        footer { position: relative; background-color: #000000; padding: 30px 15px 15px 15px; margin-top: auto; border-top: 1px solid rgba(220, 38, 38, 0.1); }
+        footer::before { content: ''; position: absolute; top: -1px; left: 20%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.8), transparent); box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .footer-about h4 { color: rgba(220, 38, 38, 0.9); margin-bottom: 8px; font-size: 14px; }
+        .footer-about p { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .footer-col h5 { font-size: 13px; color: var(--text-main); margin-bottom: 10px; }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color 0.2s; }
+        .footer-links a:hover { color: #fecaca; }
+        .copyright-bar { position: relative; max-width: 600px; margin: 20px auto 0 auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: center; align-items: center; font-size: 13px; color: #9ca3af; text-align: center; }
+        .trustiq-link { color: #dc2626 !important; font-weight: 700; text-decoration: none; letter-spacing: 0.5px; transition: all 0.3s ease; }
+        .trustiq-link:hover { color: #ef4444 !important; text-shadow: 0 0 8px rgba(220, 38, 38, 0.6); }
+        .scroll-top-btn { position: absolute; right: 0; background: linear-gradient(145deg, #120000, #050000); color: white; border: 1px solid rgba(220, 38, 38, 0.3); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05); }
+        .scroll-top-btn:hover { background: #2e0505; border-color: rgba(220, 38, 38, 0.8); color: #ffc2c2; }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Header -->
+    <div class="sticky-wrapper">
+        <header>
+            <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
+            <a href="/" class="logo" id="headerLogoContainer"></a>
+        </header>
+        <div class="nav-menu-dropdown" id="navDropdown">
+            <ul class="dropdown-links" id="drawerLinksContainer"></ul>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <div class="announcement-banner" id="announceBanner">
+            <p id="announcementText"></p>
+            <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
+        </div>
+
+        <div class="popular-tools-btn" id="popularBtn">
+            <span>Popular Tools</span>
+            <i class="fa-solid fa-chevron-right" id="popArrow"></i>
+        </div>
+        <div class="popular-tools-list" id="popularList"></div>
+        
+        <!-- Tool Card: SECURE TEMP MAIL -->
+        <div class="tool-card">
+            <h2>SECURE TEMP MAIL <span style="font-size:10px; border:1px solid var(--border-color); padding: 2px 6px; border-radius:4px; font-weight:500;">v2.0</span></h2>
+
+            <!-- Identity Generator -->
+            <div class="form-group" style="position: relative;">
+                <label><i class="fa-solid fa-shield-halved"></i> Your Secure Email Address</label>
+                <input type="text" id="email-address" class="form-control" readonly value="Connecting to server...">
+            </div>
+
+            <!-- Action Area -->
+            <div class="action-grid">
+                <button class="act-btn" onclick="copyToClipboard()">
+                    <i class="fa-solid fa-copy"></i> COPY EMAIL
+                </button>
+                <button class="act-btn primary" onclick="getNewEmail()">
+                    <i class="fa-solid fa-rotate"></i> NEW EMAIL
+                </button>
+            </div>
+
+            <!-- Timer / Session Status -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 12px 15px; border: 1px solid var(--border-light); border-radius: 6px; background: #000;">
+                <div style="font-size: 13px; color: var(--text-muted); font-weight: 500;">
+                    <i class="fa-regular fa-clock" style="margin-right: 5px;"></i> Session Expires in: 
+                    <span id="timer" style="color: var(--accent-blue); font-weight: bold; font-family: 'Share Tech Mono', monospace; font-size: 16px; margin-left: 5px;">10:00</span>
+                </div>
+                <button onclick="extendTimer()" style="background: none; border: none; color: var(--green); cursor: pointer; font-size: 12px; font-weight: bold; text-transform: uppercase; transition: 0.2s;">
+                    <i class="fa-solid fa-plus"></i> ADD TIME
+                </button>
+            </div>
+
+            <!-- Inbox View -->
+            <div id="inbox-view" class="mail-view-box">
+                <div class="mail-header">
+                    <h3><i class="fa-solid fa-inbox"></i> INBOX</h3>
+                    <span id="mail-count" class="mail-badge">0 MESSAGES</span>
+                </div>
+                <div id="inbox-list" class="inbox-list-area">
+                    <div id="empty-inbox" class="empty-state">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <p>Waiting for incoming emails...</p>
+                    </div>
+                    <!-- Emails injected here -->
+                </div>
+            </div>
+
+            <!-- Reader View -->
+            <div id="reader-view" class="mail-view-box" style="display: none;">
+                <div class="mail-header">
+                    <button class="back-btn" onclick="closeEmail()">
+                        <i class="fa-solid fa-arrow-left"></i> BACK TO INBOX
+                    </button>
+                </div>
+                <div class="reader-header">
+                    <h3 id="view-subject" class="r-subject">Loading subject...</h3>
+                    <div class="r-meta"><strong>From:</strong> <span id="view-from"></span></div>
+                    <div class="r-meta"><strong>Date:</strong> <span id="view-date"></span></div>
+                </div>
+                <div id="view-body-container" class="reader-body">
+                    <!-- iframe here -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <h4>About Us</h4>
+                <p id="footerAboutText">One Step Online Tools</p>
+            </div>
+            <div class="footer-grid" id="footerGridContainer"></div>
+        </div>
+        <div class="copyright-bar">
+            <span class="copyright-text" id="copyrightSpan">
+                &copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">Trustiq</a>.
+            </span>
+            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. SITE CONFIG LOGIC (EXTERNAL SCRIPT VARS)
+        // ==========================================
+        let siteData = null;
+
+        async function loadData() {
+            if (typeof GIST_URL === 'undefined') {
+                console.warn("GIST_URL is not defined. Ensure teambct-config-server.js is loaded.");
+                return;
+            }
+            try {
+                const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
+                if (res.ok) {
+                    siteData = await res.json();
+                    applyTheme();
+                    applySiteConfig();
+                }
+            } catch (e) { console.error("Gist Load Failed."); }
+        }
+
+        function applyTheme() {
+            if (siteData && siteData.themeConfig) {
+                const root = document.documentElement;
+                Object.entries(siteData.themeConfig).forEach(([key, val]) => {
+                    const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+                    root.style.setProperty(cssKey, val);
+                });
+            }
+        }
+
+        function applySiteConfig() {
+            if(!siteData) return;
+            const logoContainer = document.getElementById('headerLogoContainer');
+            let imgHTML = '';
+            if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
+                imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
+            } else {
+                let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
+                if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
+                imgHTML = `<div class="logo-icon"><i class="${iconClass}"></i></div>`;
+            }
+
+            const siteName = siteData.siteConfig.siteName || "TEAM BCT";
+            let textHTML = "";
+            const parts = siteName.trim().split(/\s+/);
+            if (parts.length > 1) {
+                textHTML = `${parts[0].toUpperCase()}<span>${parts.slice(1).join(" ").toUpperCase()}</span>`;
+            } else {
+                if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
+                    textHTML = `TEAM<span>${siteName.slice(4).toUpperCase()}</span>`;
+                } else {
+                    textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
+                }
+            }
+            logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
+
+            const drawerLinks = document.getElementById('drawerLinksContainer');
+            drawerLinks.innerHTML = '';
+            siteData.navigationMenu.forEach(menu => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
+                drawerLinks.appendChild(li);
+            });
+
+            const banner = document.getElementById('announceBanner');
+            if (siteData.siteConfig.showAnnouncement) {
+                banner.style.display = 'block';
+                document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
+                document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
+            }
+
+            const popList = document.getElementById('popularList');
+            popList.innerHTML = '';
+            siteData.siteConfig.popularTools.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'popular-item';
+                div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
+                div.onclick = function() { window.location.href = tool.link; };
+                popList.appendChild(div);
+            });
+
+            document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
+            const footerGrid = document.getElementById('footerGridContainer');
+            footerGrid.innerHTML = '';
+            siteData.footerConfig.columns.forEach(col => {
+                const div = document.createElement('div');
+                div.className = 'footer-col';
+                div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
+                const ul = div.querySelector('.footer-links');
+                col.links.forEach(l => {
+                    ul.innerHTML += `<li style="margin-bottom:8px;"><a href="${l.url}" style="color:var(--text-muted); text-decoration:none; font-size:12px;">${escapeHtml(l.title)}</a></li>`;
+                });
+                footerGrid.appendChild(div);
+            });
+        }
+
+        function toggleNavDropdown() {
+            const dropdown = document.getElementById('navDropdown');
+            const menuIcon = document.querySelector('.menu-icon i');
+            if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; menuIcon.className = 'fa-solid fa-bars'; } 
+            else { dropdown.style.display = 'block'; menuIcon.className = 'fa-solid fa-xmark'; }
+        }
+
+        document.getElementById('popularBtn').addEventListener('click', () => {
+            const list = document.getElementById('popularList');
+            const arr = document.getElementById('popArrow');
+            if (list.style.display === 'flex') { list.style.display = 'none'; arr.className = 'fa-solid fa-chevron-right'; }
+            else { list.style.display = 'flex'; arr.className = 'fa-solid fa-chevron-down'; }
+        });
+
+        function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])) : ''; }
+
+
+        // ==========================================
+        // 2. SECURE MAIL LOGIC (Mail.tm API)
+        // ==========================================
+        
+        const API_URL = 'https://api.mail.tm';
+        
+        let state = {
+            email: localStorage.getItem('bct_temp_email') || '',
+            token: localStorage.getItem('bct_temp_token') || '',
+            messages: JSON.parse(localStorage.getItem('bct_temp_msgs')) || [],
+            timeLeft: 600,
+            timerInterval: null,
+            pollingInterval: null
+        };
+
+        // UI Toast helper
+        function showToast(msg, type = 'success') {
+            const iconType = type === 'error' ? 'error' : (type === 'info' ? 'info' : 'success');
+            const color = type === 'error' ? '#ef4444' : (type === 'info' ? '#3b82f6' : '#10b981');
+            
+            Swal.fire({
+                title: msg,
+                icon: iconType,
+                toast: true,
+                position: 'bottom',
+                timer: 3000,
+                showConfirmButton: false,
+                background: '#070000',
+                color: color
+            });
+        }
+
+        async function initMail() {
+            if (state.email && state.token) {
+                updateUI(); 
+                startPolling(); 
+                startTimer(); 
+                renderInbox();
+            } else { 
+                await getNewEmail(true); 
+            }
+        }
+
+        async function getNewEmail(silent = false) {
+            try {
+                if(!silent) {
+                    Swal.fire({ title: 'Generating Identity...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }, background: '#070000', color: '#fff' });
+                }
+
+                const domains = await fetch(`${API_URL}/domains`).then(r => r.json());
+                const domain = domains['hydra:member'][0].domain;
+                const address = `${Math.random().toString(36).substring(2, 12)}@${domain}`;
+                const password = Math.random().toString(36);
+
+                await fetch(`${API_URL}/accounts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address, password })
+                });
+
+                const tokenData = await fetch(`${API_URL}/token`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address, password })
+                }).then(r => r.json());
+
+                state.email = address;
+                state.token = tokenData.token;
+                state.messages = [];
+                state.timeLeft = 600;
+
+                saveState(); 
+                updateUI(); 
+                startPolling(); 
+                startTimer(); 
+                renderInbox();
+                
+                if(!silent) Swal.close();
+                if(!silent) showToast("New email address ready.");
+                
+                closeEmail(); 
+            } catch (e) { 
+                if(!silent) Swal.close();
+                showToast("Connection to mail server failed.", "error"); 
+                document.getElementById('email-address').value = "Connection Error";
+            }
+        }
+
+        async function checkInbox() {
+            if (!state.token) return;
+            try {
+                const res = await fetch(`${API_URL}/messages`, {
+                    headers: { 'Authorization': `Bearer ${state.token}` }
+                });
+                
+                if (res.status === 401) {
+                    return getNewEmail(true);
+                }
+                
+                const data = await res.json();
+                
+                if (data['hydra:member'].length > state.messages.length) {
+                    showToast("New email received!", "info");
+                }
+
+                state.messages = data['hydra:member'].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+                saveState(); 
+                renderInbox();
+            } catch (e) { 
+                console.log("Polling error..."); 
+            }
+        }
+
+        async function openEmail(id) {
+            try {
+                Swal.fire({ title: 'Decrypting Email...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }, background: '#070000', color: '#fff' });
+
+                const mail = await fetch(`${API_URL}/messages/${id}`, {
+                    headers: { 'Authorization': `Bearer ${state.token}` }
+                }).then(r => r.json());
+
+                document.getElementById('view-subject').innerText = mail.subject || '(No Subject)';
+                
+                // Formatted Sender
+                let senderName = mail.from.name ? `${mail.from.name} <${mail.from.address}>` : mail.from.address;
+                document.getElementById('view-from').innerText = senderName;
+                
+                // Formatted Date
+                const dateObj = new Date(mail.createdAt);
+                document.getElementById('view-date').innerText = dateObj.toLocaleString();
+                
+                const container = document.getElementById('view-body-container');
+                container.innerHTML = `<iframe id="mail-frame" class="mail-iframe"></iframe>`;
+                
+                const frame = document.getElementById('mail-frame');
+                const doc = frame.contentDocument || frame.contentWindow.document;
+                
+                // Match iframe to Deep Black & Red Theme
+                const darkStyle = `
+                    <style>
+                        body { 
+                            background-color: #070000; 
+                            color: #ffffff; 
+                            font-family: 'Inter', sans-serif; 
+                            margin: 0; 
+                            padding: 20px; 
+                            line-height: 1.6;
+                            word-wrap: break-word;
+                            font-size: 14px;
+                        }
+                        * { max-width: 100% !important; box-sizing: border-box !important; }
+                        img { max-width: 100% !important; height: auto !important; border-radius: 4px; }
+                        a { color: #dc2626; text-decoration: underline; }
+                        pre { background: #000; padding: 12px; border: 1px solid #3a0808; color: #10b981; white-space: pre-wrap; font-family: monospace; border-radius: 6px; overflow-x: auto;}
+                        blockquote { border-left: 3px solid #dc2626; margin: 0; padding-left: 15px; color: #a1a1aa; }
+                        ::-webkit-scrollbar { width: 6px; height: 6px; }
+                        ::-webkit-scrollbar-track { background: #030000; }
+                        ::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 3px; }
+                    </style>`;
+                
+                doc.open();
+                doc.write(darkStyle + (mail.html || `<pre>${mail.intro || mail.text || 'No Content'}</pre>`));
+                doc.close();
+
+                // Auto-adjust height based on content
+                frame.onload = () => {
+                    const adjustHeight = () => {
+                        try {
+                            const height = doc.body.scrollHeight;
+                            frame.style.height = (height > 300 ? height + 30 : 300) + 'px';
+                        } catch(e){}
+                    };
+                    adjustHeight();
+                    setTimeout(adjustHeight, 500); 
+                };
+
+                document.getElementById('inbox-view').style.display = 'none';
+                document.getElementById('reader-view').style.display = 'block';
+                
+                Swal.close();
+            } catch (e) { 
+                Swal.close();
+                showToast("Failed to open email.", "error"); 
+            }
+        }
+
+        function renderInbox() {
+            const list = document.getElementById('inbox-list');
+            const empty = document.getElementById('empty-inbox');
+            document.getElementById('mail-count').innerText = `${state.messages.length} MESSAGES`;
+
+            if (state.messages.length === 0) {
+                empty.style.display = 'flex';
+                Array.from(list.children).forEach(child => {
+                    if(child.id !== 'empty-inbox') child.remove();
+                });
+                return;
+            }
+
+            empty.style.display = 'none';
+            Array.from(list.children).forEach(child => {
+                if(child.id !== 'empty-inbox') child.remove();
+            });
+
+            state.messages.forEach((msg) => {
+                const div = document.createElement('div');
+                div.className = "mail-row";
+                div.onclick = () => openEmail(msg.id);
+                
+                const mailTime = new Date(msg.createdAt);
+                
+                // Format logic: If today show time, if older show date
+                const today = new Date();
+                const isToday = mailTime.getDate() === today.getDate() && mailTime.getMonth() === today.getMonth() && mailTime.getFullYear() === today.getFullYear();
+                const timeStr = isToday ? mailTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : mailTime.toLocaleDateString([], {month:'short', day:'numeric'});
+                
+                const senderName = msg.from.name || msg.from.address;
+
+                div.innerHTML = `
+                    <div class="m-sender">${escapeHtml(senderName)}</div>
+                    <div class="m-subject">${escapeHtml(msg.subject || '(No Subject)')}</div>
+                    <div class="m-time">${timeStr}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function saveState() {
+            localStorage.setItem('bct_temp_email', state.email);
+            localStorage.setItem('bct_temp_token', state.token);
+            localStorage.setItem('bct_temp_msgs', JSON.stringify(state.messages));
+        }
+
+        function updateUI() { 
+            document.getElementById('email-address').value = state.email; 
+        }
+
+        function startPolling() {
+            if(state.pollingInterval) clearInterval(state.pollingInterval);
+            checkInbox(); 
+            state.pollingInterval = setInterval(checkInbox, 8000); 
+        }
+
+        function startTimer() {
+            if(state.timerInterval) clearInterval(state.timerInterval);
+            state.timerInterval = setInterval(() => {
+                state.timeLeft--;
+                const m = Math.floor(state.timeLeft / 60);
+                const s = state.timeLeft % 60;
+                
+                const timerEl = document.getElementById('timer');
+                timerEl.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                
+                if (state.timeLeft < 60) {
+                    timerEl.style.color = 'var(--red)';
+                } else {
+                    timerEl.style.color = 'var(--accent-blue)';
+                }
+
+                if(state.timeLeft <= 0) {
+                    getNewEmail(true);
+                }
+            }, 1000);
+        }
+
+        // Global functions
+        window.copyToClipboard = () => {
+            if(state.email && state.email !== "Connecting to server...") {
+                navigator.clipboard.writeText(state.email).then(() => {
+                    showToast("Email copied to clipboard!", "success");
+                });
+            }
+        };
+        
+        window.getNewEmail = getNewEmail;
+        
+        window.extendTimer = () => { 
+            state.timeLeft += 600; 
+            document.getElementById('timer').style.color = 'var(--accent-blue)';
+            showToast("Session extended by 10 minutes.", "info"); 
+        };
+        
+        window.closeEmail = () => {
+            document.getElementById('inbox-view').style.display = 'block';
+            document.getElementById('reader-view').style.display = 'none';
+            document.getElementById('view-body-container').innerHTML = '';
+        };
+
+        // Bootstrap App
+        window.onload = () => {
+            loadData();
+            initMail();
+        };
+
+    </script>
+</body>
+</html>
