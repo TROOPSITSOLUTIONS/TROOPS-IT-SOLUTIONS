@@ -1,400 +1,458 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Team BCT</title>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <!-- External Server Config (GIST URL comes from here) -->
-    <script src="teambct-config-server.js"></script>
-    
-    <style>
-        /* ========================================================
-           GLOBAL SITE STYLES (Deep Black & Red Theme)
-           ======================================================== */
-        :root {
-            --bg-color: #030000;
-            --header-bg: #000000;
-            --card-bg: #070000;
-            --border-color: #3a0808;
-            --border-light: rgba(220, 38, 38, 0.2);
-            --text-main: #ffffff;
-            --text-muted: #a1a1aa;
-            --accent-red: #dc2626; 
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us - Team BCT</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Play:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="teambct-config-server.js"></script>
+<style>
+:root{--bg-color:#030000;--header-bg:#000;--card-bg:#070000;--border-color:#3a0808;--border-light:rgba(220,38,38,.2);--text-main:#fff;--text-muted:#a1a1aa;--accent-red:#dc2626}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;outline:none;-webkit-tap-highlight-color:transparent}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg-color)}::-webkit-scrollbar-thumb{background:rgba(220,38,38,.5);border-radius:2px}
+body{background-color:var(--bg-color);color:var(--text-main);display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden;background-image:radial-gradient(circle at 50% 0%,#150000 0%,transparent 40%)}
+.sticky-wrapper{position:sticky;top:0;z-index:1000;background-color:#000;border-bottom:1px solid rgba(220,38,38,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.02),0 2px 8px rgba(0,0,0,.7)}
+header{background-color:#000;padding:15px 20px;display:flex;align-items:center}
+.menu-icon{font-size:20px;color:var(--text-main);cursor:pointer;margin-right:auto;width:25px;display:inline-block}
+.logo{display:flex;align-items:center;gap:10px;margin-right:auto;transform:translateX(-10px);text-decoration:none;color:inherit}
+.logo-img-container{display:flex;align-items:center;justify-content:center}
+.logo-img-container img{width:38px;height:38px;border-radius:50%;border:1px solid rgba(220,38,38,.6);box-shadow:inset 0 2px 4px rgba(255,255,255,.1),0 0 10px rgba(220,38,38,.3);object-fit:cover}
+.logo-icon{display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#150000,#050000);padding:6px;border-radius:50%;border:1px solid rgba(220,38,38,.6);box-shadow:inset 0 2px 4px rgba(255,255,255,.1),0 0 10px rgba(220,38,38,.3);font-size:15px;color:var(--accent-red);width:38px;height:38px}
+.logo-text{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:27px;display:flex;align-items:center;color:#d1d5db;text-transform:uppercase!important}
+.logo-text span{font-family:'Rajdhani',sans-serif;font-weight:700;margin-left:4px;color:#b91c1c;text-transform:uppercase!important}
+.nav-menu-dropdown{background:linear-gradient(to bottom,#050000,#000);backdrop-filter:blur(10px);border-top:1px solid #1a0000;border-bottom:1px solid #3a0808;display:none;padding:10px 0;position:absolute;top:100%;left:0;width:100%;z-index:1000;box-shadow:0 15px 30px rgba(0,0,0,.9);animation:menuFadeIn .2s ease-out forwards}
+@keyframes menuFadeIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.dropdown-links{list-style:none;display:flex;flex-direction:column;gap:0}
+.dropdown-links a{color:#d1d5db;text-decoration:none;font-size:14px;font-weight:500;display:flex;align-items:center;gap:12px;padding:12px 20px;background:transparent;border-left:3px solid transparent;border-bottom:1px solid #0f0000;transition:all .2s ease}
+.dropdown-links a:hover{background:linear-gradient(90deg,#150000 0%,#000 100%);color:#fff;border-left:3px solid var(--accent-red);padding-left:24px}
+.dropdown-links a:hover i{color:var(--accent-red)}
+.container{padding:15px;max-width:800px;margin:0 auto;width:100%;flex-grow:1}
+.announcement-banner{background:linear-gradient(145deg,#0f0000,#030000);border:1px solid rgba(220,38,38,.3);box-shadow:0 6px 15px rgba(0,0,0,.6);border-radius:8px;padding:20px;text-align:center;margin-bottom:25px;display:none;position:relative;overflow:hidden}
+.announcement-banner p{font-family:'Play',sans-serif;font-weight:400;font-size:15px;color:#ffc2c2;margin-bottom:15px;position:relative;z-index:1}
+.join-btn{display:inline-block;position:relative;z-index:1;background-color:var(--accent-red);color:#fff;padding:10px 32px;border-radius:4px;text-decoration:none;font-weight:600;font-size:14px;transition:all .2s ease;text-transform:uppercase;letter-spacing:1px}
+.join-btn:hover{background-color:#ef4444;box-shadow:0 0 10px rgba(220,38,38,.5)}
+.popular-tools-btn{background-color:#0a0000;border:none;border-left:4px solid var(--accent-red);box-shadow:0 4px 8px rgba(0,0,0,.6);padding:14px 18px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;color:#fff;font-weight:600;font-size:15px;cursor:pointer;margin-bottom:20px;transition:all .3s ease}
+.popular-tools-btn:hover{background-color:#150000;border-left-color:#ff4d4d}
+.popular-tools-list{background-color:#070000;border:1px solid rgba(220,38,38,.2);border-radius:4px;margin-top:-15px;margin-bottom:20px;display:none;flex-direction:column;overflow:hidden}
+.popular-item{padding:12px 15px;border-bottom:1px solid rgba(220,38,38,.1);font-size:13px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .2s}
+.popular-item:hover{background-color:#120000}.popular-item i{color:var(--accent-red)}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; -webkit-tap-highlight-color: transparent;}
+/* ===== ABOUT PAGE ===== */
+.ab{display:flex;flex-direction:column;gap:34px;padding-bottom:10px}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+.rv.on{opacity:1;transform:none}
+.sec-title{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;letter-spacing:.5px;color:#fff;margin-bottom:4px}
+.sec-sub{font-size:13px;color:var(--text-muted);margin-bottom:16px}
+.sec-title i{color:var(--accent-red);margin-right:8px;font-size:18px}
 
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.5); border-radius: 2px; }
+/* hero */
+.hero{position:relative;border-radius:14px;overflow:hidden;border:1px solid rgba(220,38,38,.35);background:radial-gradient(circle at 50% 30%,#4a0010 0%,#1a0204 45%,#050000 100%);padding:38px 20px 30px;text-align:center;box-shadow:0 0 40px rgba(220,38,38,.18)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.7}
+.radar{position:relative;width:150px;height:150px;margin:0 auto 18px;z-index:1}
+.radar i.ring{position:absolute;inset:0;border:1px solid rgba(220,38,38,.55);border-radius:50%}
+.radar i.r2{inset:20px}.radar i.r3{inset:40px}
+.radar .sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(220,38,38,.65),transparent 28%);animation:spin 3.2s linear infinite}
+.radar .core{position:absolute;inset:52px;border-radius:50%;background:#000;border:1px solid #dc2626;display:flex;align-items:center;justify-content:center;color:#ef4444;font-size:22px;box-shadow:0 0 20px rgba(220,38,38,.8);animation:pulse 2s ease-in-out infinite}
+.radar .blip{position:absolute;width:7px;height:7px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 8px #ff4d4d;animation:blip 3.2s infinite}
+.radar .b1{top:22px;left:100px}.radar .b2{top:96px;left:24px;animation-delay:1s}.radar .b3{top:112px;left:104px;animation-delay:2s}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{box-shadow:0 0 34px rgba(255,60,60,1);transform:scale(1.08)}}
+@keyframes blip{0%,100%{opacity:0;transform:scale(.4)}20%{opacity:1;transform:scale(1.4)}60%{opacity:.2}}
+.hero h1{position:relative;z-index:1;font-family:'Rajdhani',sans-serif;font-size:40px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(90deg,#fff,#ff6b6b,#fff,#dc2626,#fff);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+@keyframes shine{to{background-position:-300% 0}}
+.hero .est{position:relative;z-index:1;display:inline-block;margin:10px 0 16px;padding:4px 14px;border:1px solid rgba(255,255,255,.25);border-radius:30px;font-family:'Share Tech Mono',monospace;font-size:12px;color:#ffc2c2;background:rgba(0,0,0,.4)}
+.hero .est b{color:#ff4d4d;animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.hero p.lead{position:relative;z-index:1;font-size:14.5px;line-height:1.75;color:#e5d5d5;max-width:640px;margin:0 auto}
+.hero p.lead strong{color:#fff}
 
-        body {
-            background-color: var(--bg-color); color: var(--text-main);
-            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 0%, #150000 0%, transparent 40%);
-        }
+/* stats */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{position:relative;background:linear-gradient(160deg,#120000,#050000);border:1px solid var(--border-light);border-radius:12px;padding:18px 12px 16px;text-align:center;overflow:hidden}
+.stat::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:0;background:linear-gradient(90deg,#7f1d1d,#ff4d4d);transition:width 2s ease .3s}
+.stat.on::after{width:100%}
+.stat .ico{font-size:18px;color:var(--accent-red);margin-bottom:6px}
+.stat .num{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:800;color:#fff;line-height:1;text-shadow:0 0 18px rgba(220,38,38,.55)}
+.stat .lbl{margin-top:6px;font-size:12px;color:var(--text-muted);font-weight:500}
+.ringbox{display:flex;align-items:center;justify-content:center;gap:16px;background:linear-gradient(160deg,#120000,#050000);border:1px solid var(--border-light);border-radius:12px;padding:18px;grid-column:1/-1}
+.ringbox svg{width:110px;height:110px;transform:rotate(-90deg);flex-shrink:0}
+.ringbox .bg{fill:none;stroke:#2a0808;stroke-width:9}
+.ringbox .fg{fill:none;stroke:url(#rg);stroke-width:9;stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:339.3;transition:stroke-dashoffset 2.2s cubic-bezier(.2,.8,.2,1)}
+.ringbox .txt{text-align:left}
+.ringbox .txt .num{font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:800;color:#fff}
+.ringbox .txt .lbl{font-size:13px;color:var(--text-muted)}
 
-        /* Sticky Wrapper */
-        .sticky-wrapper {
-            position: sticky; top: 0; z-index: 1000; background-color: #000000;
-            border-bottom: 1px solid rgba(220, 38, 38, 0.15);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 2px 8px rgba(0, 0, 0, 0.7);
-        }
-        header { background-color: #000000; padding: 15px 20px; display: flex; align-items: center; }
-        .menu-icon { font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: auto; width: 25px; display: inline-block; }
-        .logo { display: flex; align-items: center; gap: 10px; margin-right: auto; transform: translateX(-10px); text-decoration: none; color: inherit; }
-        .logo-img-container { display: flex; align-items: center; justify-content: center; }
-        .logo-img-container img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); object-fit: cover; }
-        .logo-icon { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, #150000, #050000); padding: 6px; border-radius: 50%; border: 1px solid rgba(220, 38, 38, 0.6); box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 0 10px rgba(220, 38, 38, 0.3); font-size: 15px; color: var(--accent-red); width: 38px; height: 38px; }
-        .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 27px; display: flex; align-items: center; color: #d1d5db; text-transform: uppercase !important; }
-        .logo-text span { font-family: 'Rajdhani', sans-serif; font-weight: 700; margin-left: 4px; color: #b91c1c; text-transform: uppercase !important; }
+/* chart */
+.panel{background:linear-gradient(160deg,#0d0000,#040000);border:1px solid var(--border-light);border-radius:12px;padding:20px 16px}
+.growth svg{width:100%;height:auto;display:block;overflow:visible}
+.growth .grid{stroke:rgba(220,38,38,.12);stroke-width:1}
+.growth .line{fill:none;stroke:#ff3b3b;stroke-width:3;stroke-linecap:round;stroke-dasharray:700;stroke-dashoffset:700;filter:drop-shadow(0 0 6px #dc2626);transition:stroke-dashoffset 2.6s ease}
+.growth .area{fill:url(#ag);opacity:0;transition:opacity 1.5s ease 1.6s}
+.growth.on .line{stroke-dashoffset:0}.growth.on .area{opacity:1}
+.growth .dot{fill:#000;stroke:#ff4d4d;stroke-width:3;opacity:0;transition:opacity .5s}
+.growth.on .dot{opacity:1}.growth.on .d1{transition-delay:.3s}.growth.on .d2{transition-delay:1.4s}.growth.on .d3{transition-delay:2.5s}
+.growth text{fill:#d1d5db;font-size:11px;font-family:'Share Tech Mono',monospace}
+.growth text.hl{fill:#fff;font-weight:700}
 
-        /* Dropdown Menu */
-        .nav-menu-dropdown {
-            background: linear-gradient(to bottom, #050000, #000000); backdrop-filter: blur(10px);
-            border-top: 1px solid #1a0000; border-bottom: 1px solid #3a0808; display: none; padding: 10px 0;
-            position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9); animation: menuFadeIn 0.2s ease-out forwards;
-        }
-        @keyframes menuFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        .dropdown-links { list-style: none; display: flex; flex-direction: column; gap: 0; }
-        .dropdown-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: transparent; border-left: 3px solid transparent; border-bottom: 1px solid #0f0000; transition: all 0.2s ease; }
-        .dropdown-links a:hover { background: linear-gradient(90deg, #150000 0%, #000000 100%); color: #ffffff; border-left: 3px solid var(--accent-red); padding-left: 24px; }
-        .dropdown-links a:hover i { color: var(--accent-red); }
+.bars{display:flex;flex-direction:column;gap:14px}
+.bar .top{display:flex;justify-content:space-between;font-size:12.5px;color:#d1d5db;margin-bottom:6px}
+.bar .top b{color:#ff6b6b;font-family:'Share Tech Mono',monospace}
+.bar .track{height:9px;border-radius:6px;background:#1a0505;overflow:hidden}
+.bar .fill{height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,#7f1d1d,#dc2626,#ff6b6b);background-size:200% 100%;transition:width 1.8s cubic-bezier(.2,.8,.2,1);animation:flow 3s linear infinite;box-shadow:0 0 10px rgba(220,38,38,.6)}
+@keyframes flow{to{background-position:-200% 0}}
 
-        /* Container */
-        .container { padding: 15px; max-width: 800px; margin: 0 auto; width: 100%; flex-grow: 1; }
+/* quotes */
+.quote{position:relative;border-radius:14px;padding:30px 22px 24px;overflow:hidden;border:1px solid rgba(220,38,38,.3)}
+.quote.v{background:linear-gradient(135deg,#2a0008,#080000 70%)}
+.quote.m{background:linear-gradient(225deg,#2a0008,#080000 70%)}
+.quote::before{content:'\201C';position:absolute;top:-18px;left:12px;font-family:Georgia,serif;font-size:140px;line-height:1;color:rgba(220,38,38,.22)}
+.quote .tag{position:relative;display:inline-flex;align-items:center;gap:8px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:1.5px;color:#ff6b6b;text-transform:uppercase;margin-bottom:12px}
+.quote blockquote{position:relative;font-family:'Play',sans-serif;font-size:18px;line-height:1.65;color:#fff;border-left:3px solid var(--accent-red);padding-left:14px}
+.quote cite{display:block;margin-top:12px;padding-left:17px;font-size:12px;font-style:normal;color:var(--text-muted)}
+.quote::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 40%,rgba(255,80,80,.1) 50%,transparent 60%);transform:translateX(-100%);animation:glide 5s ease-in-out infinite}
+@keyframes glide{60%,100%{transform:translateX(100%)}}
 
-        /* Announcement Banner */
-        .announcement-banner {
-            background: linear-gradient(145deg, #0f0000, #030000); border: 1px solid rgba(220, 38, 38, 0.3);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 25px; display: none; position: relative; overflow: hidden;
-        }
-        .announcement-banner p { font-family: 'Play', sans-serif; font-weight: 400; font-size: 15px; color: #ffc2c2; margin-bottom: 15px; position: relative; z-index: 1; }
-        .join-btn { display: inline-block; position: relative; z-index: 1; background-color: var(--accent-red); color: white; padding: 10px 32px; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 1px;}
-        .join-btn:hover { background-color: #ef4444; box-shadow: 0 0 10px rgba(220,38,38,0.5); }
+/* timeline */
+.tl{position:relative;padding-left:26px}
+.tl::before{content:'';position:absolute;left:7px;top:4px;bottom:4px;width:2px;background:linear-gradient(#dc2626,#3a0808);transform-origin:top;transform:scaleY(0);transition:transform 2s ease}
+.tl.on::before{transform:scaleY(1)}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-item::before{content:'';position:absolute;left:-26px;top:5px;width:16px;height:16px;border-radius:50%;background:#000;border:3px solid #ff3b3b;box-shadow:0 0 12px #dc2626}
+.tl-item .yr{font-family:'Share Tech Mono',monospace;color:#ff6b6b;font-size:13px}
+.tl-item h4{font-family:'Rajdhani',sans-serif;font-size:19px;margin:2px 0 4px}
+.tl-item p{font-size:13.5px;line-height:1.65;color:var(--text-muted)}
+.tl-item p strong{color:#e2e8f0}
 
-        /* Popular Tools */
-        .popular-tools-btn { background-color: #0a0000; border: none; border-left: 4px solid var(--accent-red); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); padding: 14px 18px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 20px; transition: all 0.3s ease; }
-        .popular-tools-btn:hover { background-color: #150000; border-left-color: #ff4d4d; }
-        .popular-tools-list { background-color: #070000; border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 4px; margin-top: -15px; margin-bottom: 20px; display: none; flex-direction: column; overflow: hidden; }
-        .popular-item { padding: 12px 15px; border-bottom: 1px solid rgba(220, 38, 38, 0.1); font-size: 13px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
-        .popular-item:hover { background-color: #120000; }
-        .popular-item i { color: var(--accent-red); }
+/* pillars */
+.pillars{display:grid;grid-template-columns:1fr;gap:12px}
+.pillar{position:relative;background:linear-gradient(160deg,#0f0000,#050000);border:1px solid var(--border-light);border-radius:12px;padding:18px 16px 16px 70px;overflow:hidden;transition:border-color .3s,transform .3s}
+.pillar:hover{border-color:rgba(255,60,60,.7);transform:translateX(4px)}
+.pillar .pi{position:absolute;left:14px;top:16px;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;background:linear-gradient(145deg,#b91c1c,#4a0505);box-shadow:0 0 16px rgba(220,38,38,.45)}
+.pillar h3{font-family:'Rajdhani',sans-serif;font-size:18px;color:#fff;margin-bottom:5px}
+.pillar p{font-size:13.5px;line-height:1.65;color:var(--text-muted)}
+.pillar p strong{color:#e2e8f0;font-weight:600}
 
-        /* ========================================================
-           ABOUT US PAGE SPECIFIC UI (MATCHED WITH SCREENSHOT)
-           ======================================================== */
-        
-        .tool-card {
-            background: var(--card-bg); border: 1px solid var(--border-light);
-            border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            overflow: hidden; /* Important for the header gradient */
-        }
+/* nexfly */
+.nexfly{position:relative;border-radius:14px;overflow:hidden;padding:26px 18px;background:linear-gradient(135deg,#1a0000,#000 55%,#2a0008);border:1px solid rgba(220,38,38,.4)}
+.nexfly::before{content:'';position:absolute;width:220px;height:220px;right:-70px;top:-70px;border-radius:50%;background:radial-gradient(circle,rgba(220,38,38,.45),transparent 70%);animation:float 6s ease-in-out infinite}
+@keyframes float{50%{transform:translate(-20px,20px) scale(1.15)}}
+.nexfly h3{position:relative;font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:800;letter-spacing:1px}
+.nexfly h3 span{color:#ef4444}
+.nexfly>p{position:relative;font-size:14px;line-height:1.7;color:#d6c6c6;margin:8px 0 16px}
+.chips{position:relative;display:flex;flex-wrap:wrap;gap:8px}
+.chips span{font-size:12px;padding:7px 12px;border-radius:20px;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.4);color:#ffd1d1;display:flex;align-items:center;gap:7px;animation:chip 3s ease-in-out infinite}
+.chips span:nth-child(2n){animation-delay:.6s}.chips span:nth-child(3n){animation-delay:1.2s}
+@keyframes chip{50%{box-shadow:0 0 14px rgba(220,38,38,.55);background:rgba(220,38,38,.22)}}
 
-        /* The Red Gradient Header (Like in the image) */
-        .about-header {
-            background: linear-gradient(180deg, #6a0012 0%, #2a0505 100%);
-            padding: 25px 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .about-header h2 {
-            font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 700; color: white;
-            margin-bottom: 5px; letter-spacing: 0.5px; text-transform: uppercase;
-        }
-        .about-header p {
-            color: rgba(255, 255, 255, 0.8); font-size: 13px; line-height: 1.5; font-weight: 400;
-        }
+.final{text-align:center;padding:34px 18px;border-radius:14px;background:radial-gradient(circle at 50% 100%,#5a0014,#050000 70%);border:1px solid rgba(220,38,38,.4)}
+.final q{display:block;font-family:'Play',sans-serif;font-size:20px;line-height:1.6;color:#fff;quotes:none}
+.final small{display:block;margin-top:12px;font-family:'Share Tech Mono',monospace;color:#ff6b6b;font-size:12px}
 
-        /* The Content Body */
-        .about-body { padding: 25px 20px; }
+@media(min-width:640px){.stats{grid-template-columns:repeat(4,1fr)}.pillars{grid-template-columns:1fr 1fr}.hero h1{font-size:50px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 
-        .about-body > p.intro-text {
-            font-size: 14.5px; color: var(--text-muted); line-height: 1.7;
-            margin-bottom: 30px; text-align: justify;
-        }
-        .about-body > p.intro-text strong { color: #e2e8f0; font-weight: 600; }
-
-        /* Individual Sections */
-        .about-section { margin-bottom: 30px; }
-        .about-section:last-child { margin-bottom: 0; }
-
-        .about-section h3 {
-            font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; 
-            color: var(--accent-red); margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .about-section h3 i { font-size: 16px; }
-
-        .about-section p {
-            font-size: 14.5px; color: var(--text-muted); line-height: 1.7; text-align: justify;
-        }
-        .about-section p strong { color: #e2e8f0; font-weight: 600; }
-
-        /* Subtle list style if needed */
-        .about-list { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px;}
-        .about-list li { font-size: 14px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 10px; line-height: 1.6;}
-        .about-list li i { color: var(--accent-red); font-size: 12px; margin-top: 4px;}
-
-        /* Footer */
-        footer { position: relative; background-color: #000000; padding: 30px 15px 15px 15px; margin-top: auto; border-top: 1px solid rgba(220, 38, 38, 0.1); }
-        footer::before { content: ''; position: absolute; top: -1px; left: 20%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.8), transparent); box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); }
-        .footer-content { max-width: 800px; margin: 0 auto; }
-        .footer-about h4 { color: rgba(220, 38, 38, 0.9); margin-bottom: 8px; font-size: 14px; }
-        .footer-about p { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
-        .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .footer-col h5 { font-size: 13px; color: var(--text-main); margin-bottom: 10px; }
-        .footer-links { list-style: none; }
-        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color 0.2s; }
-        .footer-links a:hover { color: #fecaca; }
-        .copyright-bar { position: relative; max-width: 800px; margin: 20px auto 0 auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: center; align-items: center; font-size: 13px; color: #9ca3af; text-align: center; }
-        .trustiq-link { color: var(--accent-red) !important; font-weight: 700; text-decoration: none; letter-spacing: 0.5px; transition: all 0.3s ease; }
-        .trustiq-link:hover { color: #ef4444 !important; text-shadow: 0 0 8px rgba(220, 38, 38, 0.6); }
-        .scroll-top-btn { position: absolute; right: 0; background: linear-gradient(145deg, #120000, #050000); color: white; border: 1px solid rgba(220, 38, 38, 0.3); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: inset 0 1px 1px rgba(255,255,255,0.05); }
-        .scroll-top-btn:hover { background: #2e0505; border-color: rgba(220, 38, 38, 0.8); color: #ffc2c2; }
-    </style>
+/* Footer */
+footer{position:relative;background-color:#000;padding:30px 15px 15px 15px;margin-top:auto;border-top:1px solid rgba(220,38,38,.1)}
+footer::before{content:'';position:absolute;top:-1px;left:20%;width:60%;height:1px;background:linear-gradient(90deg,transparent,rgba(220,38,38,.8),transparent);box-shadow:0 0 15px rgba(220,38,38,.6)}
+.footer-content{max-width:800px;margin:0 auto}
+.footer-about h4{color:rgba(220,38,38,.9);margin-bottom:8px;font-size:14px}
+.footer-about p{font-size:12px;color:var(--text-muted);margin-bottom:20px}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.footer-col h5{font-size:13px;color:var(--text-main);margin-bottom:10px}
+.footer-links{list-style:none}
+.footer-links a{color:var(--text-muted);text-decoration:none;font-size:12px;transition:color .2s}
+.footer-links a:hover{color:#fecaca}
+.copyright-bar{position:relative;max-width:800px;margin:20px auto 0 auto;padding-top:20px;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:center;align-items:center;font-size:13px;color:#9ca3af;text-align:center}
+.trustiq-link{color:var(--accent-red)!important;font-weight:700;text-decoration:none;letter-spacing:.5px;transition:all .3s ease}
+.trustiq-link:hover{color:#ef4444!important;text-shadow:0 0 8px rgba(220,38,38,.6)}
+.scroll-top-btn{position:absolute;right:0;background:linear-gradient(145deg,#120000,#050000);color:#fff;border:1px solid rgba(220,38,38,.3);width:32px;height:32px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:inset 0 1px 1px rgba(255,255,255,.05)}
+.scroll-top-btn:hover{background:#2e0505;border-color:rgba(220,38,38,.8);color:#ffc2c2}
+</style>
 </head>
 <body>
 
-    <!-- Sticky Header -->
-    <div class="sticky-wrapper">
-        <header>
-            <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
-            <a href="/" class="logo" id="headerLogoContainer"></a>
-        </header>
-        <div class="nav-menu-dropdown" id="navDropdown">
-            <ul class="dropdown-links" id="drawerLinksContainer"></ul>
+<div class="sticky-wrapper">
+  <header>
+    <div class="menu-icon" onclick="toggleNavDropdown()"><i class="fa-solid fa-bars"></i></div>
+    <a href="/" class="logo" id="headerLogoContainer"></a>
+  </header>
+  <div class="nav-menu-dropdown" id="navDropdown"><ul class="dropdown-links" id="drawerLinksContainer"></ul></div>
+</div>
+
+<div class="container">
+  <div class="announcement-banner" id="announceBanner">
+    <p id="announcementText"></p>
+    <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
+  </div>
+  <div class="popular-tools-btn" id="popularBtn"><span>Popular Tools</span><i class="fa-solid fa-chevron-right" id="popArrow"></i></div>
+  <div class="popular-tools-list" id="popularList"></div>
+
+  <!-- ================= ABOUT US ================= -->
+  <div class="ab">
+
+    <!-- HERO -->
+    <section class="hero rv">
+      <canvas id="heroCanvas"></canvas>
+      <div class="radar"><i class="ring"></i><i class="ring r2"></i><i class="ring r3"></i><div class="sweep"></div><span class="blip b1"></span><span class="blip b2"></span><span class="blip b3"></span><div class="core"><i class="fa-solid fa-shield-halved"></i></div></div>
+      <h1>About Team BCT</h1>
+      <div class="est">ACTIVE SINCE 2024 <b>_</b></div>
+      <p class="lead">BCT was established with a mission to safeguard cyberspace and equip individuals with hands-on <strong>cyber warfare</strong> and <strong>IT skills</strong>, positioning itself at the forefront of digital resilience in <strong>Bangladesh</strong> and around the world.</p>
+    </section>
+
+    <!-- STATS -->
+    <section class="rv">
+      <h2 class="sec-title"><i class="fa-solid fa-chart-line"></i>Our Achievements</h2>
+      <p class="sec-sub">Numbers earned through real work, not promises.</p>
+      <div class="stats" id="stats">
+        <div class="stat"><div class="ico"><i class="fa-solid fa-circle-check"></i></div><div class="num" data-to="1" data-suf="K+">0</div><div class="lbl">Resolved Incidents</div></div>
+        <div class="stat"><div class="ico"><i class="fa-solid fa-user-shield"></i></div><div class="num" data-to="700" data-suf="+">0</div><div class="lbl">Trained Specialists</div></div>
+        <div class="stat"><div class="ico"><i class="fa-solid fa-face-smile"></i></div><div class="num" data-to="90" data-suf="%">0</div><div class="lbl">Satisfaction Rate</div></div>
+        <div class="stat"><div class="ico"><i class="fa-solid fa-hourglass-half"></i></div><div class="num" data-to="2" data-suf="+ Years">0</div><div class="lbl">Operational Track Record</div></div>
+        <div class="ringbox">
+          <svg viewBox="0 0 120 120"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7f1d1d"/><stop offset="1" stop-color="#ff6b6b"/></linearGradient></defs><circle class="bg" cx="60" cy="60" r="54"/><circle class="fg" id="ringFg" cx="60" cy="60" r="54"/></svg>
+          <div class="txt"><div class="num" data-to="90" data-suf="%">0</div><div class="lbl">of the people we serve walk away satisfied.<br>Trust is our real currency.</div></div>
         </div>
-    </div>
+      </div>
+    </section>
 
-    <!-- Main Container -->
-    <div class="container">
-        
-        <div class="announcement-banner" id="announceBanner">
-            <p id="announcementText"></p>
-            <a href="#" id="telegramJoinLink" class="join-btn" target="_blank">Join Now</a>
-        </div>
+    <!-- GROWTH GRAPH -->
+    <section class="rv">
+      <h2 class="sec-title"><i class="fa-solid fa-arrow-trend-up"></i>From 11 to Hundreds</h2>
+      <p class="sec-sub">How the tribe grew since 2024.</p>
+      <div class="panel growth" id="growth">
+        <svg viewBox="0 0 340 190">
+          <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dc2626" stop-opacity=".5"/><stop offset="1" stop-color="#dc2626" stop-opacity="0"/></linearGradient></defs>
+          <g><line class="grid" x1="20" x2="330" y1="30" y2="30"/><line class="grid" x1="20" x2="330" y1="70" y2="70"/><line class="grid" x1="20" x2="330" y1="110" y2="110"/><line class="grid" x1="20" x2="330" y1="150" y2="150"/></g>
+          <path class="area" d="M30 148 C 90 146, 130 120, 175 92 S 270 40, 310 28 L310 150 L30 150Z"/>
+          <path class="line" d="M30 148 C 90 146, 130 120, 175 92 S 270 40, 310 28"/>
+          <circle class="dot d1" cx="30" cy="148" r="6"/><circle class="dot d2" cx="175" cy="92" r="6"/><circle class="dot d3" cx="310" cy="28" r="6"/>
+          <text x="30" y="172" text-anchor="middle">2024</text><text x="175" y="172" text-anchor="middle">2025</text><text x="310" y="172" text-anchor="middle">2026</text>
+          <text class="hl" x="30" y="134" text-anchor="middle">11 members</text><text class="hl" x="175" y="78" text-anchor="middle">Growing fast</text><text class="hl" x="296" y="16" text-anchor="end">700+ trained</text>
+        </svg>
+      </div>
+    </section>
 
-        <div class="popular-tools-btn" id="popularBtn">
-            <span>Popular Tools</span>
-            <i class="fa-solid fa-chevron-right" id="popArrow"></i>
-        </div>
-        <div class="popular-tools-list" id="popularList"></div>
-        
-        <!-- ABOUT US CARD (Matched with uploaded image style) -->
-        <div class="tool-card" style="padding: 0;">
-            
-            <!-- Red Gradient Header Area -->
-            <div class="about-header">
-                <h2>ABOUT TEAM BCT</h2>
-                <p>The digital sentinels of the nation. Safeguarding cyber borders, fighting propaganda, and serving humanity.</p>
-            </div>
+    <!-- VISION -->
+    <section class="quote v rv">
+      <div class="tag"><i class="fa-solid fa-eye"></i> Our Vision</div>
+      <blockquote>A Bangladesh where no citizen is silenced, scammed or stalked online &mdash; where every home, every business and every madrasa stands guarded by a generation that knows how to defend it.</blockquote>
+      <cite>&mdash; Team BCT, since 2024</cite>
+    </section>
 
-            <!-- Content Area -->
-            <div class="about-body">
-                
-                <p class="intro-text">
-                    Welcome to <strong>Bangladesh Cyber Tribe (Team BCT)</strong>. Our journey began in <strong>2024</strong> with only 11 highly dedicated members during a time of extreme national crisis. Formed strictly out of necessity to protect our digital sovereignty, this brotherhood has evolved massively. Today, in <strong>2026</strong>, we are operating with renewed energy, superior intelligence, and an unyielding commitment to our motherland. We are not just a group; we are the system that protects the truth.
-                </p>
+    <!-- MISSION -->
+    <section class="quote m rv">
+      <div class="tag"><i class="fa-solid fa-bullseye"></i> Our Mission</div>
+      <blockquote>Turn ordinary people into digital defenders, answer cyber harm with speed and proof, and stand beside the truth &mdash; online and on the street.</blockquote>
+      <cite>&mdash; The promise we renew every day</cite>
+    </section>
 
-                <!-- Section 1 -->
-                <div class="about-section">
-                    <h3><i class="fa-solid fa-mosque"></i> Deen, Desh & Islam</h3>
-                    <p>
-                        Our ultimate driving force. Every line of code we write, every operation we execute, is strictly rooted in the protection of our <strong>Deen (Faith)</strong>, our beloved homeland Bangladesh, and the sacred values of Islam. We strive for a cyberspace completely free from atheism, obscenity, and defamation. Over the years, we have successfully neutralized thousands of blasphemous contents and dismantled massive gambling syndicates.
-                    </p>
-                </div>
+    <!-- FOCUS BARS -->
+    <section class="rv">
+      <h2 class="sec-title"><i class="fa-solid fa-crosshairs"></i>Where We Spend Our Energy</h2>
+      <p class="sec-sub">A look at our areas of focus.</p>
+      <div class="panel bars" id="bars">
+        <div class="bar"><div class="top"><span>Cyber &amp; Social Media Security</span><b>95%</b></div><div class="track"><div class="fill" data-w="95"></div></div></div>
+        <div class="bar"><div class="top"><span>OSINT &amp; Crime Analysis</span><b>88%</b></div><div class="track"><div class="fill" data-w="88"></div></div></div>
+        <div class="bar"><div class="top"><span>Justice &amp; Public Awareness</span><b>92%</b></div><div class="track"><div class="fill" data-w="92"></div></div></div>
+        <div class="bar"><div class="top"><span>Humanitarian &amp; Social Work</span><b>85%</b></div><div class="track"><div class="fill" data-w="85"></div></div></div>
+        <div class="bar"><div class="top"><span>Training &amp; Skill Building</span><b>90%</b></div><div class="track"><div class="fill" data-w="90"></div></div></div>
+      </div>
+    </section>
 
-                <!-- Section 2 -->
-                <div class="about-section">
-                    <h3><i class="fa-solid fa-fist-raised"></i> Vanguard of July</h3>
-                    <p>
-                        Politically and morally, we proudly stand as the digital frontline of the historic <strong>July Revolution</strong>. We fiercely protect the mandate of the people, expose fascist remnants hidden within the system, and stand firmly with the indomitable spirit of the revolution that reshaped our nation. We honor the blood of our martyrs by continuously defending the truth online.
-                    </p>
-                </div>
+    <!-- TIMELINE -->
+    <section class="rv">
+      <h2 class="sec-title"><i class="fa-solid fa-road"></i>Our Journey</h2>
+      <p class="sec-sub">Working without pause since 2024.</p>
+      <div class="tl" id="tl">
+        <div class="tl-item"><div class="yr">2024</div><h4>11 Believers, One Cause</h4><p>In a time of national crisis, <strong>11 dedicated members</strong> came together to protect our digital sovereignty. That small circle became Bangladesh Cyber Tribe.</p></div>
+        <div class="tl-item"><div class="yr">2025</div><h4>Standing for Justice</h4><p>We took the fight beyond the screen. We stood in the struggle for justice over the killing of <strong>Shaheed Osman Hadi</strong> and joined the movement for Azadi, raising our voice online as one.</p></div>
+        <div class="tl-item"><div class="yr">2026</div><h4>Stronger, Wiser, Bigger</h4><p>With <strong>700+ trained specialists</strong>, hundreds of resolved cases and our own IT arm <strong>NexFly IT</strong>, we now work with sharper intelligence and a wider reach.</p></div>
+      </div>
+    </section>
 
-                <!-- Section 3 -->
-                <div class="about-section">
-                    <h3><i class="fa-solid fa-microchip"></i> Crime Data & OSINT Analysis</h3>
-                    <p>
-                        Team BCT functions as an elite cyber intelligence hub. We do not merely react; we <strong>analyze, trace, and predict</strong>. Our highly specialized units continuously monitor domestic crime rates, perform deep Open-Source Intelligence (OSINT) operations, trace cyber-criminal footprints, and analyze vast datasets to expose hidden illegal syndicates operating within and outside Bangladesh.
-                    </p>
-                </div>
+    <!-- PILLARS -->
+    <section class="rv">
+      <h2 class="sec-title"><i class="fa-solid fa-layer-group"></i>What We Stand For</h2>
+      <p class="sec-sub">Eight promises that shape every operation.</p>
+      <div class="pillars">
+        <div class="pillar"><div class="pi"><i class="fa-solid fa-mosque"></i></div><h3>Deen, Desh &amp; Islam</h3><p>Every line of code is rooted in our <strong>faith</strong>, our homeland and the values of Islam. We work for a cyberspace free from obscenity, blasphemy and defamation, and have taken down thousands of harmful posts and gambling networks.</p></div>
+        <div class="pillar"><div class="pi"><i class="fa-solid fa-fist-raised"></i></div><h3>Vanguard of July</h3><p>We are the digital frontline of the <strong>July Revolution</strong>. We guard the people's mandate and expose the remnants of fascism, honouring our martyrs by defending the truth.</p></div>
+        <div class="pillar"><div class="pi"><i class="fa-solid fa-scale-balanced"></i></div><h3>Fighting for Justice</h3><p>We side with the oppressed. From <strong>Shaheed Osman Hadi's</strong> case to everyday victims, we raise voices until justice is heard.</p></div>
+        <div class="pillar"><div class="pi"><i class="fa-solid fa-heart-crack"></i></div><h3>Love Trap Awareness</h3><p>We run awareness drives against deceptive <strong>Bhagwa love-trap</strong> schemes, so families and young people can spot manipulation before it hurts them.</p></div>
+        <div class="pillar"><div class="pi"><i class="fa-solid fa-child-reaching"></i></div><h3>Protecting Children in Madrasas</h3><p>We work against <strong>abuse inside madrasas</strong>. Our stand is simple: faith institutions must be safe places, and abusers must face the law.</p></div>
+        <div class="pillar"><div class="pi"><i class="fa-solid fa-microchip"></i></div><h3>OSINT &amp; Crime Data</h3><p>We <strong>analyze, trace and predict</strong>. Our units study crime patterns, follow digital footprints and expose illegal syndicates inside and outside Bangladesh.</p></div>
+        <div class="pillar"><div class="pi"><i class="fa-solid fa-comments"></i></div><h3>Our Own Voice</h3><p>We are proud guardians of Bangladesh. We back the government when it is right and speak against it when it is wrong. <strong>Our loyalty is to the nation.</strong></p></div>
+        <div class="pillar"><div class="pi"><i class="fa-solid fa-hand-holding-heart"></i></div><h3>Humanitarian Action</h3><p>From disaster relief to helping struggling families, our <strong>charity and social work</strong> make sure our real-world impact matches our digital one.</p></div>
+      </div>
+    </section>
 
-                <!-- Section 4 -->
-                <div class="about-section">
-                    <h3><i class="fa-solid fa-shield-halved"></i> Anti-Bhagwa Defense</h3>
-                    <p>
-                        We operate as a relentless shield against <strong>Indian expansionist agendas</strong> and anti-state propaganda. We actively dismantle foreign networks that spread targeted misinformation, attempt to destabilize our national sovereignty, or attack our cultural integrity. Any cyber aggression against Bangladesh is met with a massive, coordinated counter-offensive.
-                    </p>
-                </div>
+    <!-- NEXFLY -->
+    <section class="nexfly rv">
+      <h3><i class="fa-solid fa-rocket" style="color:#ef4444;margin-right:8px"></i>Nex<span>Fly</span> IT</h3>
+      <p>Our technology and education wing. NexFly IT builds secure web solutions, trains young talent and gives organizations a safer digital foundation, all under strict ethical cybersecurity rules.</p>
+      <div class="chips">
+        <span><i class="fa-solid fa-code"></i>Web Development</span>
+        <span><i class="fa-solid fa-lock"></i>Security Audits</span>
+        <span><i class="fa-solid fa-graduation-cap"></i>Cyber Training</span>
+        <span><i class="fa-solid fa-server"></i>Secure Hosting</span>
+        <span><i class="fa-solid fa-screwdriver-wrench"></i>Custom Tools</span>
+        <span><i class="fa-solid fa-bullhorn"></i>Youth Awareness</span>
+      </div>
+    </section>
 
-                <!-- Section 5 -->
-                <div class="about-section">
-                    <h3><i class="fa-solid fa-hand-holding-heart"></i> Humanitarian Action</h3>
-                    <p>
-                        Our duty extends far beyond the computer terminal. Team BCT actively engages in real-world <strong>charity and social welfare</strong>. From providing immediate disaster relief during national emergencies to supporting financially struggling families and standing beside the oppressed, we ensure our physical impact matches our powerful digital presence.
-                    </p>
-                </div>
+    <!-- FINAL -->
+    <section class="final rv">
+      <q>We are not just a group. We are the shield that stands when the truth is under attack.</q>
+      <small>// TEAM BCT &middot; 2024 &rarr; FOREVER</small>
+    </section>
 
-                <!-- Section 6 -->
-                <div class="about-section">
-                    <h3><i class="fa-solid fa-code-branch"></i> Trustiq & Cyber Ethics</h3>
-                    <p>
-                        Through <strong>Trustiq</strong>, our dedicated technological and educational division, we provide elite digital infrastructure and web solutions. Our operations adhere to strict ethical guidelines, focusing heavily on defensive cybersecurity, raising cyber awareness among the youth, and building robust, impenetrable systems for a safer digital ecosystem.
-                    </p>
-                </div>
+  </div>
+</div>
 
-            </div>
-        </div>
+<footer>
+  <div class="footer-content">
+    <div class="footer-about"><h4>About Us</h4><p id="footerAboutText">One Step Online Tools</p></div>
+    <div class="footer-grid" id="footerGridContainer"></div>
+  </div>
+  <div class="copyright-bar">
+    <span class="copyright-text" id="copyrightSpan">&copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">NexFly</a>.</span>
+    <button class="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+  </div>
+</footer>
 
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-about">
-                <h4>About Us</h4>
-                <p id="footerAboutText">One Step Online Tools</p>
-            </div>
-            <div class="footer-grid" id="footerGridContainer"></div>
-        </div>
-        <div class="copyright-bar">
-            <span class="copyright-text" id="copyrightSpan">
-                &copy; 2026. All Rights Reserved by <a href="https://www.facebook.com/profile.php?id=61586091802176" target="_blank" class="trustiq-link">Trustiq</a>.
-            </span>
-            <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
-        </div>
-    </footer>
-
-    <script>
-        // ==========================================
-        // 1. SITE CONFIG LOGIC (EXTERNAL SCRIPT VARS)
-        // ==========================================
-        let siteData = null;
-
-        async function loadData() {
-            if (typeof GIST_URL === 'undefined') {
-                console.warn("GIST_URL is not defined. Ensure teambct-config-server.js is loaded.");
-                return;
-            }
-            try {
-                const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
-                if (res.ok) {
-                    siteData = await res.json();
-                    applyTheme();
-                    applySiteConfig();
-                }
-            } catch (e) { console.error("Gist Load Failed."); }
-        }
-
-        function applyTheme() {
-            if (siteData && siteData.themeConfig) {
-                const root = document.documentElement;
-                Object.entries(siteData.themeConfig).forEach(([key, val]) => {
-                    const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
-                    root.style.setProperty(cssKey, val);
-                });
-            }
-        }
-
-        function applySiteConfig() {
-            if(!siteData) return;
-            // Header
-            const logoContainer = document.getElementById('headerLogoContainer');
-            let imgHTML = '';
-            if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
-                imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
-            } else {
-                let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
-                if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
-                imgHTML = `<div class="logo-icon"><i class="${iconClass}"></i></div>`;
-            }
-
-            const siteName = siteData.siteConfig.siteName || "TEAM BCT";
-            let textHTML = "";
-            const parts = siteName.trim().split(/\s+/);
-            if (parts.length > 1) {
-                textHTML = `${parts[0].toUpperCase()}<span>${parts.slice(1).join(" ").toUpperCase()}</span>`;
-            } else {
-                if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
-                    textHTML = `TEAM<span>${siteName.slice(4).toUpperCase()}</span>`;
-                } else {
-                    textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
-                }
-            }
-            logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
-
-            // Dropdown Menu
-            const drawerLinks = document.getElementById('drawerLinksContainer');
-            drawerLinks.innerHTML = '';
-            siteData.navigationMenu.forEach(menu => {
-                const li = document.createElement('li');
-                li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
-                drawerLinks.appendChild(li);
-            });
-
-            // Announcement
-            const banner = document.getElementById('announceBanner');
-            if (siteData.siteConfig.showAnnouncement) {
-                banner.style.display = 'block';
-                document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
-                document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
-            }
-
-            // Popular tools
-            const popList = document.getElementById('popularList');
-            popList.innerHTML = '';
-            siteData.siteConfig.popularTools.forEach(tool => {
-                const div = document.createElement('div');
-                div.className = 'popular-item';
-                div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
-                div.onclick = function() { window.location.href = tool.link; };
-                popList.appendChild(div);
-            });
-
-            // Footer
-            document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
-            const footerGrid = document.getElementById('footerGridContainer');
-            footerGrid.innerHTML = '';
-            siteData.footerConfig.columns.forEach(col => {
-                const div = document.createElement('div');
-                div.className = 'footer-col';
-                div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
-                const ul = div.querySelector('.footer-links');
-                col.links.forEach(l => {
-                    ul.innerHTML += `<li style="margin-bottom:8px;"><a href="${l.url}" style="color:var(--text-muted); text-decoration:none; font-size:12px;">${escapeHtml(l.title)}</a></li>`;
-                });
-                footerGrid.appendChild(div);
-            });
-        }
-
-        function toggleNavDropdown() {
-            const dropdown = document.getElementById('navDropdown');
-            const menuIcon = document.querySelector('.menu-icon i');
-            if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; menuIcon.className = 'fa-solid fa-bars'; } 
-            else { dropdown.style.display = 'block'; menuIcon.className = 'fa-solid fa-xmark'; }
-        }
-
-        document.getElementById('popularBtn').addEventListener('click', () => {
-            const list = document.getElementById('popularList');
-            const arr = document.getElementById('popArrow');
-            if (list.style.display === 'flex') { list.style.display = 'none'; arr.className = 'fa-solid fa-chevron-right'; }
-            else { list.style.display = 'flex'; arr.className = 'fa-solid fa-chevron-down'; }
+<script>
+// ===== 1. SITE CONFIG LOGIC (UNCHANGED) =====
+let siteData = null;
+async function loadData() {
+    if (typeof GIST_URL === 'undefined') { console.warn("GIST_URL is not defined. Ensure teambct-config-server.js is loaded."); return; }
+    try {
+        const res = await fetch(`${GIST_URL}?t=${Date.now()}`);
+        if (res.ok) { siteData = await res.json(); applyTheme(); applySiteConfig(); }
+    } catch (e) { console.error("Gist Load Failed."); }
+}
+function applyTheme() {
+    if (siteData && siteData.themeConfig) {
+        const root = document.documentElement;
+        Object.entries(siteData.themeConfig).forEach(([key, val]) => {
+            const cssKey = `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+            root.style.setProperty(cssKey, val);
         });
+    }
+}
+function applySiteConfig() {
+    if(!siteData) return;
+    const logoContainer = document.getElementById('headerLogoContainer');
+    let imgHTML = '';
+    if (siteData.siteConfig.logoUrl && siteData.siteConfig.logoUrl.trim() !== "") {
+        imgHTML = `<div class="logo-img-container"><img src="${siteData.siteConfig.logoUrl}"></div>`;
+    } else {
+        let iconClass = siteData.siteConfig.logoIcon || 'fa-shield-halved';
+        if (!iconClass.includes('fa-')) iconClass = 'fa-solid fa-' + iconClass;
+        imgHTML = `<div class="logo-icon"><i class="${iconClass}"></i></div>`;
+    }
+    const siteName = siteData.siteConfig.siteName || "TEAM BCT";
+    let textHTML = "";
+    const parts = siteName.trim().split(/\s+/);
+    if (parts.length > 1) {
+        textHTML = `${parts[0].toUpperCase()}<span>${parts.slice(1).join(" ").toUpperCase()}</span>`;
+    } else {
+        if (siteName.toLowerCase().startsWith("team") && siteName.length > 4) {
+            textHTML = `TEAM<span>${siteName.slice(4).toUpperCase()}</span>`;
+        } else {
+            textHTML = `${siteName.toUpperCase()}<span>BCT</span>`;
+        }
+    }
+    logoContainer.innerHTML = `${imgHTML}<span class="logo-text">${textHTML}</span>`;
 
-        function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])) : ''; }
+    const drawerLinks = document.getElementById('drawerLinksContainer');
+    drawerLinks.innerHTML = '';
+    siteData.navigationMenu.forEach(menu => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${menu.link}"><i class="fa-solid ${menu.icon || 'fa-link'}"></i> ${escapeHtml(menu.title)}</a>`;
+        drawerLinks.appendChild(li);
+    });
 
-        // Start App
-        window.onload = loadData;
+    const banner = document.getElementById('announceBanner');
+    if (siteData.siteConfig.showAnnouncement) {
+        banner.style.display = 'block';
+        document.getElementById('announcementText').innerText = siteData.siteConfig.announcementText;
+        document.getElementById('telegramJoinLink').href = siteData.siteConfig.telegramUrl;
+    }
 
-    </script>
+    const popList = document.getElementById('popularList');
+    popList.innerHTML = '';
+    siteData.siteConfig.popularTools.forEach(tool => {
+        const div = document.createElement('div');
+        div.className = 'popular-item';
+        div.innerHTML = `<i class="fa-solid fa-check"></i> <span>${escapeHtml(tool.title)}</span>`;
+        div.onclick = function() { window.location.href = tool.link; };
+        popList.appendChild(div);
+    });
+
+    document.getElementById('footerAboutText').innerText = siteData.footerConfig.aboutText;
+    const footerGrid = document.getElementById('footerGridContainer');
+    footerGrid.innerHTML = '';
+    siteData.footerConfig.columns.forEach(col => {
+        const div = document.createElement('div');
+        div.className = 'footer-col';
+        div.innerHTML = `<h5>${escapeHtml(col.title)}</h5><ul class="footer-links"></ul>`;
+        const ul = div.querySelector('.footer-links');
+        col.links.forEach(l => {
+            ul.innerHTML += `<li style="margin-bottom:8px;"><a href="${l.url}" style="color:var(--text-muted); text-decoration:none; font-size:12px;">${escapeHtml(l.title)}</a></li>`;
+        });
+        footerGrid.appendChild(div);
+    });
+}
+function toggleNavDropdown() {
+    const dropdown = document.getElementById('navDropdown');
+    const menuIcon = document.querySelector('.menu-icon i');
+    if (dropdown.style.display === 'block') { dropdown.style.display = 'none'; menuIcon.className = 'fa-solid fa-bars'; }
+    else { dropdown.style.display = 'block'; menuIcon.className = 'fa-solid fa-xmark'; }
+}
+document.getElementById('popularBtn').addEventListener('click', () => {
+    const list = document.getElementById('popularList');
+    const arr = document.getElementById('popArrow');
+    if (list.style.display === 'flex') { list.style.display = 'none'; arr.className = 'fa-solid fa-chevron-right'; }
+    else { list.style.display = 'flex'; arr.className = 'fa-solid fa-chevron-down'; }
+});
+function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])) : ''; }
+window.onload = loadData;
+</script>
+
+<script>
+// ===== 2. ABOUT PAGE ANIMATIONS (UI only) =====
+(function(){
+  function countUp(el){
+    const to=+el.dataset.to, suf=el.dataset.suf||'', dur=2000, t0=performance.now();
+    (function tick(t){const p=Math.min((t-t0)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(to*e)+(p>=1?suf:'');if(p<1)requestAnimationFrame(tick);})(t0);
+  }
+  const io=new IntersectionObserver(es=>es.forEach(en=>{
+    if(!en.isIntersecting)return;
+    const t=en.target; t.classList.add('on'); io.unobserve(t);
+    t.querySelectorAll('.num[data-to]').forEach(countUp);
+    t.querySelectorAll('.stat').forEach(s=>s.classList.add('on'));
+    t.querySelectorAll('.fill').forEach(f=>f.style.width=f.dataset.w+'%');
+    const r=t.querySelector('#ringFg'); if(r) r.style.strokeDashoffset=339.3*(1-.9);
+    const g=t.querySelector('#growth'); if(g) g.classList.add('on');
+    const tl=t.querySelector('#tl'); if(tl) tl.classList.add('on');
+  }),{threshold:.18});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+  // hero particle network
+  const c=document.getElementById('heroCanvas'); if(!c||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const x=c.getContext('2d'); let w,h,pts=[];
+  function size(){w=c.width=c.offsetWidth;h=c.height=c.offsetHeight;pts=Array.from({length:Math.round(w*h/9000)},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4}));}
+  size(); addEventListener('resize',size);
+  (function draw(){
+    x.clearRect(0,0,w,h);
+    pts.forEach((p,i)=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;
+      x.fillStyle='rgba(255,80,80,.8)';x.beginPath();x.arc(p.x,p.y,1.4,0,6.3);x.fill();
+      for(let j=i+1;j<pts.length;j++){const q=pts[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<70){x.strokeStyle='rgba(220,38,38,'+(.35*(1-d/70))+')';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();}}});
+    requestAnimationFrame(draw);
+  })();
+})();
+</script>
 </body>
 </html>
